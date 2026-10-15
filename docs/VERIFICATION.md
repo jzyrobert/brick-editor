@@ -2,6 +2,8 @@
 
 ## Benchmark CI portability — 15 October 2026
 
+The compiler and Codex sandboxes also mount `/lib64` read-only when present: x86 Linux locates its ELF loader there, while the ARM development host does not require it. Missing runtime support remains a fatal infrastructure failure.
+
 The first PR #20 run exposed missing Bubblewrap and a VM-specific Codex binary path in integration CI. The integration job now installs Bubblewrap and pinned Codex 0.162.1, probes namespace creation and sets the host-only `BRICK_CODEX_BINARY` override; the existing local default and recorded binary hashing remain. Ubuntu's unprivileged-user-namespace restriction is disabled only on the disposable integration runner so the actual sandbox tests can execute. No credentials or paid requests are needed: the upstream transport is mocked.
 
 An unchanged cache unit test also raced asynchronous hashing/persistence; it now waits for all three cache writes before asserting a hit. The original isolated rerun passed, and the revised cache plus spatial-benchmark/live/codex suites pass all 29 tests locally. Log: `.local/guidance-ci-fix-tests.log`. Full PR CI remains the merge gate.

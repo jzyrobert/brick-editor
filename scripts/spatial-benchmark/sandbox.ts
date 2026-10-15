@@ -58,6 +58,10 @@ function isolationArgs(worker: string) {
     "--ro-bind",
     "/lib",
     "/lib",
+    // x86 Linux uses /lib64 for the ELF loader; ARM may not have it.
+    "--ro-bind-try",
+    "/lib64",
+    "/lib64",
     "--proc",
     "/proc",
     "--dev",
