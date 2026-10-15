@@ -1,0 +1,799 @@
+{
+  "version": "post-evaluation-exact-count-audit/1",
+  "declaredAfterEvaluation": true,
+  "requirementSource": "All four frozen task briefs explicitly require exactly 16 parts. targetParts is not enforced by the runner; original status and assessments are preserved.",
+  "scope": "Exact count only. Compiler acceptance, inventory, physical support and visual quality remain separate.",
+  "summaries": [
+    {
+      "model": "sol",
+      "conditions": [
+        {
+          "condition": "control",
+          "scheduled": 8,
+          "runnerSubmitted": 5,
+          "strictlyCompliant": 5,
+          "originallySubmittedCountViolations": [],
+          "compliantVisualMean24": 17
+        },
+        {
+          "condition": "shape",
+          "scheduled": 8,
+          "runnerSubmitted": 7,
+          "strictlyCompliant": 7,
+          "originallySubmittedCountViolations": [],
+          "compliantVisualMean24": 17.857142857142858
+        },
+        {
+          "condition": "connections",
+          "scheduled": 8,
+          "runnerSubmitted": 6,
+          "strictlyCompliant": 6,
+          "originallySubmittedCountViolations": [],
+          "compliantVisualMean24": 17
+        },
+        {
+          "condition": "combined",
+          "scheduled": 8,
+          "runnerSubmitted": 6,
+          "strictlyCompliant": 6,
+          "originallySubmittedCountViolations": [],
+          "compliantVisualMean24": 19.166666666666668
+        }
+      ],
+      "rows": [
+        {
+          "caseId": "canal-landing--control--1",
+          "originalStatus": "infrastructure-failure",
+          "condition": "control",
+          "exactCount": {
+            "status": "unknown",
+            "expected": 16,
+            "actual": null
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "arched-toll-gate--shape--2",
+          "originalStatus": "submitted",
+          "condition": "shape",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "canal-landing--connections--1",
+          "originalStatus": "infrastructure-failure",
+          "condition": "connections",
+          "exactCount": {
+            "status": "unknown",
+            "expected": 16,
+            "actual": null
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "canal-landing--combined--1",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 19
+        },
+        {
+          "caseId": "stepped-lookout--connections--2",
+          "originalStatus": "submitted",
+          "condition": "connections",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 17
+        },
+        {
+          "caseId": "arched-toll-gate--connections--1",
+          "originalStatus": "submitted",
+          "condition": "connections",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "stepped-lookout--combined--1",
+          "originalStatus": "infrastructure-failure",
+          "condition": "combined",
+          "exactCount": {
+            "status": "unknown",
+            "expected": 16,
+            "actual": null
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "canal-landing--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 17
+        },
+        {
+          "caseId": "birds-at-feeder--combined--2",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "arched-toll-gate--combined--1",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "stepped-lookout--control--1",
+          "originalStatus": "model-failure",
+          "condition": "control",
+          "exactCount": {
+            "status": "unknown",
+            "expected": 16,
+            "actual": null
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "canal-landing--combined--2",
+          "originalStatus": "model-failure",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "stepped-lookout--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 16
+        },
+        {
+          "caseId": "stepped-lookout--shape--1",
+          "originalStatus": "submitted",
+          "condition": "shape",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "birds-at-feeder--combined--1",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "arched-toll-gate--connections--2",
+          "originalStatus": "submitted",
+          "condition": "connections",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 19
+        },
+        {
+          "caseId": "arched-toll-gate--shape--1",
+          "originalStatus": "infrastructure-failure",
+          "condition": "shape",
+          "exactCount": {
+            "status": "unknown",
+            "expected": 16,
+            "actual": null
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "birds-at-feeder--shape--1",
+          "originalStatus": "submitted",
+          "condition": "shape",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "canal-landing--shape--2",
+          "originalStatus": "submitted",
+          "condition": "shape",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "arched-toll-gate--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "stepped-lookout--combined--2",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "birds-at-feeder--connections--1",
+          "originalStatus": "model-failure",
+          "condition": "connections",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "arched-toll-gate--combined--2",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "birds-at-feeder--connections--2",
+          "originalStatus": "submitted",
+          "condition": "connections",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 14
+        },
+        {
+          "caseId": "birds-at-feeder--shape--2",
+          "originalStatus": "submitted",
+          "condition": "shape",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 14
+        },
+        {
+          "caseId": "stepped-lookout--connections--1",
+          "originalStatus": "submitted",
+          "condition": "connections",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 17
+        },
+        {
+          "caseId": "canal-landing--shape--1",
+          "originalStatus": "submitted",
+          "condition": "shape",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 19
+        },
+        {
+          "caseId": "birds-at-feeder--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 14
+        },
+        {
+          "caseId": "canal-landing--connections--2",
+          "originalStatus": "submitted",
+          "condition": "connections",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 15
+        },
+        {
+          "caseId": "birds-at-feeder--control--1",
+          "originalStatus": "infrastructure-failure",
+          "condition": "control",
+          "exactCount": {
+            "status": "unknown",
+            "expected": 16,
+            "actual": null
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "stepped-lookout--shape--2",
+          "originalStatus": "submitted",
+          "condition": "shape",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "arched-toll-gate--control--1",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        }
+      ]
+    },
+    {
+      "model": "luna",
+      "conditions": [
+        {
+          "condition": "control",
+          "scheduled": 8,
+          "runnerSubmitted": 6,
+          "strictlyCompliant": 5,
+          "originallySubmittedCountViolations": [
+            "canal-landing--control--1"
+          ],
+          "compliantVisualMean24": 15.8
+        },
+        {
+          "condition": "combined",
+          "scheduled": 8,
+          "runnerSubmitted": 3,
+          "strictlyCompliant": 3,
+          "originallySubmittedCountViolations": [],
+          "compliantVisualMean24": 18.333333333333332
+        }
+      ],
+      "rows": [
+        {
+          "caseId": "birds-at-feeder--combined--2",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "arched-toll-gate--combined--1",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 17
+        },
+        {
+          "caseId": "birds-at-feeder--control--2",
+          "originalStatus": "model-failure",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "birds-at-feeder--control--1",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 14
+        },
+        {
+          "caseId": "arched-toll-gate--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 15
+        },
+        {
+          "caseId": "birds-at-feeder--combined--1",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "stepped-lookout--combined--2",
+          "originalStatus": "model-failure",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "canal-landing--combined--1",
+          "originalStatus": "model-failure",
+          "condition": "combined",
+          "exactCount": {
+            "status": "unknown",
+            "expected": 16,
+            "actual": null
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "canal-landing--combined--2",
+          "originalStatus": "model-failure",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "stepped-lookout--control--1",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 16
+        },
+        {
+          "caseId": "canal-landing--control--1",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "invalid",
+            "expected": 16,
+            "actual": 14
+          },
+          "originalVisualTotal": 14
+        },
+        {
+          "caseId": "arched-toll-gate--combined--2",
+          "originalStatus": "model-failure",
+          "condition": "combined",
+          "exactCount": {
+            "status": "unknown",
+            "expected": 16,
+            "actual": null
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "canal-landing--control--2",
+          "originalStatus": "model-failure",
+          "condition": "control",
+          "exactCount": {
+            "status": "invalid",
+            "expected": 16,
+            "actual": 15
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "stepped-lookout--combined--1",
+          "originalStatus": "model-failure",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "stepped-lookout--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 17
+        },
+        {
+          "caseId": "arched-toll-gate--control--1",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 17
+        }
+      ]
+    },
+    {
+      "model": "astra",
+      "conditions": [
+        {
+          "condition": "control",
+          "scheduled": 8,
+          "runnerSubmitted": 7,
+          "strictlyCompliant": 7,
+          "originallySubmittedCountViolations": [],
+          "compliantVisualMean24": 16.857142857142858
+        },
+        {
+          "condition": "combined",
+          "scheduled": 8,
+          "runnerSubmitted": 7,
+          "strictlyCompliant": 7,
+          "originallySubmittedCountViolations": [],
+          "compliantVisualMean24": 18.428571428571427
+        }
+      ],
+      "rows": [
+        {
+          "caseId": "birds-at-feeder--combined--2",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "arched-toll-gate--combined--1",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "birds-at-feeder--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "birds-at-feeder--control--1",
+          "originalStatus": "model-failure",
+          "condition": "control",
+          "exactCount": {
+            "status": "unknown",
+            "expected": 16,
+            "actual": null
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "arched-toll-gate--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 20
+        },
+        {
+          "caseId": "birds-at-feeder--combined--1",
+          "originalStatus": "model-failure",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": null
+        },
+        {
+          "caseId": "stepped-lookout--combined--2",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "canal-landing--combined--1",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 16
+        },
+        {
+          "caseId": "canal-landing--combined--2",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "stepped-lookout--control--1",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 16
+        },
+        {
+          "caseId": "canal-landing--control--1",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 14
+        },
+        {
+          "caseId": "arched-toll-gate--combined--2",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 19
+        },
+        {
+          "caseId": "canal-landing--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 16
+        },
+        {
+          "caseId": "stepped-lookout--combined--1",
+          "originalStatus": "submitted",
+          "condition": "combined",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 18
+        },
+        {
+          "caseId": "stepped-lookout--control--2",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 15
+        },
+        {
+          "caseId": "arched-toll-gate--control--1",
+          "originalStatus": "submitted",
+          "condition": "control",
+          "exactCount": {
+            "status": "verified",
+            "expected": 16,
+            "actual": 16
+          },
+          "originalVisualTotal": 17
+        }
+      ]
+    }
+  ]
+}

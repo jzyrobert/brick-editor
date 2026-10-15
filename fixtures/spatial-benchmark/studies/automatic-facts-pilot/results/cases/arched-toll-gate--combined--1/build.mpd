@@ -1,0 +1,40 @@
+0 FILE red-signal-toll-entrance.mpd
+0 Red Signal Toll Entrance
+0 Name: red-signal-toll-entrance.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 red-signal-toll-entrance-01-gate-eight-parts.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 red-signal-toll-entrance-02-guard-hut-six-parts.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 red-signal-toll-entrance-03-entrance-paving-two-parts.ldr
+
+0 FILE red-signal-toll-entrance-01-gate-eight-parts.ldr
+0 Gate — eight parts
+0 Name: red-signal-toll-entrance-01-gate-eight-parts.ldr
+0 // Build script layer: Gate — eight parts
+1 72 0 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 72 80 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 71 40 -48 30 1 0 0 0 1 0 0 0 1 3659.dat
+1 71 40 -48 50 1 0 0 0 1 0 0 0 1 3659.dat
+1 71 40 -56 40 1 0 0 0 1 0 0 0 1 3068b.dat
+1 4 70 -56 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 4 70 -64 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 4 80 -72 40 1 0 0 0 1 0 0 0 1 3068b.dat
+
+0 FILE red-signal-toll-entrance-02-guard-hut-six-parts.ldr
+0 Guard hut — six parts
+0 Name: red-signal-toll-entrance-02-guard-hut-six-parts.ldr
+0 // Build script layer: Guard hut — six parts
+1 19 160 -24 40 1 0 0 0 1 0 0 0 1 3001.dat
+1 43 160 -48 40 1 0 0 0 1 0 0 0 1 3001.dat
+1 320 140 -72 50 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 180 -72 50 1 0 0 0 1 0 0 0 1 3039.dat
+1 46 190 -80 50 1 0 0 0 1 0 0 0 1 3024.dat
+1 46 190 -88 50 1 0 0 0 1 0 0 0 1 3024.dat
+
+0 FILE red-signal-toll-entrance-03-entrance-paving-two-parts.ldr
+0 Entrance paving — two parts
+0 Name: red-signal-toll-entrance-03-entrance-paving-two-parts.ldr
+0 // Build script layer: Entrance paving — two parts
+1 72 40 -8 -40 1 0 0 0 1 0 0 0 1 3068b.dat
+1 72 40 -8 0 1 0 0 0 1 0 0 0 1 3068b.dat

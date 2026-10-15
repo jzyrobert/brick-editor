@@ -108,6 +108,8 @@ describe("part compile pool", () => {
     await Promise.all(results);
     expect(compiler.stats.workerCompiles).toBe(3);
     await flush();
+    // Hashing and persistence are asynchronous; one timer tick is not a write barrier.
+    await expect.poll(() => cache.stats.writes).toBe(3);
     // A second request is served from the persistent cache, no worker.
     const again = await compiler.compile("a", () => {
       throw new Error("not needed");

@@ -1,0 +1,193 @@
+{
+  "buildScript": 1,
+  "title": "Beacon Toll Entrance",
+  "description": "Exactly 16 parts: a clear twin-arched passage with a red signal, beside a glazed guard hut with an overhanging red roof. Inventory: four 3001, four 3039, two 3659, five 3024 and one 3068b.",
+  "sections": [
+    {
+      "name": "Arched toll passage",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            -1,
+            0,
+            0
+          ],
+          "colour": "light bluish grey",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            3,
+            0,
+            0
+          ],
+          "colour": "light bluish grey",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "3659",
+          "at": [
+            0,
+            3,
+            1
+          ],
+          "colour": "light bluish grey",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3659",
+          "at": [
+            0,
+            3,
+            2
+          ],
+          "colour": "light bluish grey",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3068b",
+          "at": [
+            1,
+            6,
+            1
+          ],
+          "colour": "yellow",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            3,
+            6,
+            1
+          ],
+          "colour": "yellow",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            3,
+            7,
+            1
+          ],
+          "colour": "black",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            3,
+            8,
+            1
+          ],
+          "colour": "red",
+          "turn": 0
+        }
+      ]
+    },
+    {
+      "name": "Glazed guard hut",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            7,
+            0,
+            0
+          ],
+          "colour": "tan",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            7,
+            3,
+            0
+          ],
+          "colour": "trans light blue",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            6,
+            6,
+            0
+          ],
+          "colour": "dark red",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            8,
+            6,
+            0
+          ],
+          "colour": "dark red",
+          "turn": 270
+        },
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            6,
+            6,
+            2
+          ],
+          "colour": "dark red",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            8,
+            6,
+            2
+          ],
+          "colour": "dark red",
+          "turn": 270
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            8,
+            9,
+            3
+          ],
+          "colour": "dark bluish grey",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            8,
+            10,
+            3
+          ],
+          "colour": "dark bluish grey",
+          "turn": 0
+        }
+      ]
+    }
+  ]
+}

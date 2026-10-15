@@ -1,0 +1,34 @@
+0 FILE beacon-steps.mpd
+0 Beacon Steps
+0 Name: beacon-steps.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 beacon-steps-01-ascending-route.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 beacon-steps-02-sheltered-perch-and-beacon.ldr
+
+0 FILE beacon-steps-01-ascending-route.ldr
+0 Ascending route
+0 Name: beacon-steps-01-ascending-route.ldr
+0 // Build script layer: Ascending route
+1 71 0 -24 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 71 0 -48 40 1 0 0 0 1 0 0 0 1 3001.dat
+1 71 0 -72 60 1 0 0 0 1 0 0 0 1 3001.dat
+1 71 0 -96 80 1 0 0 0 1 0 0 0 1 3001.dat
+
+0 FILE beacon-steps-02-sheltered-perch-and-beacon.ldr
+0 Sheltered perch and beacon
+0 Name: beacon-steps-02-sheltered-perch-and-beacon.ldr
+0 // Build script layer: Sheltered perch and beacon
+1 72 0 -120 70 1 0 0 0 1 0 0 0 1 3659.dat
+1 72 0 -120 90 1 0 0 0 1 0 0 0 1 3659.dat
+1 320 -20 -144 90 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 20 -144 90 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 -20 -144 130 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 20 -144 130 1 0 0 0 1 0 0 0 1 3039.dat
+1 72 -20 -152 100 1 0 0 0 1 0 0 0 1 3068b.dat
+1 72 20 -152 100 1 0 0 0 1 0 0 0 1 3068b.dat
+1 72 20 -152 140 1 0 0 0 1 0 0 0 1 3068b.dat
+1 191 -10 -152 130 1 0 0 0 1 0 0 0 1 3024.dat
+1 191 -10 -160 130 1 0 0 0 1 0 0 0 1 3024.dat
+1 191 -20 -168 120 1 0 0 0 1 0 0 0 1 3068b.dat

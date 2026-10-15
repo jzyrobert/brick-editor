@@ -1,0 +1,34 @@
+0 FILE two-birds-at-the-seed-arch.mpd
+0 Two birds at the seed arch
+0 Name: two-birds-at-the-seed-arch.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 two-birds-at-the-seed-arch-01-birds.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 two-birds-at-the-seed-arch-02-shared-feeder.ldr
+
+0 FILE two-birds-at-the-seed-arch-01-birds.ldr
+0 Birds
+0 Name: two-birds-at-the-seed-arch-01-birds.ldr
+0 // Build script layer: Birds
+1 1 -140 -24 0 1 0 0 0 1 0 0 0 1 3001.dat
+1 1 -70 -48 0 0 0 1 0 1 0 -1 0 0 3039.dat
+1 320 140 -24 0 1 0 0 0 1 0 0 0 1 3001.dat
+1 320 70 -48 0 0 0 -1 0 1 0 1 0 0 3039.dat
+1 0 -90 -56 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 0 90 -56 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 14 -50 -56 -10 1 0 0 0 1 0 0 0 1 3024.dat
+1 14 50 -56 -10 1 0 0 0 1 0 0 0 1 3024.dat
+1 1 -150 -32 -10 1 0 0 0 1 0 0 0 1 3024.dat
+1 320 170 -32 -10 1 0 0 0 1 0 0 0 1 3024.dat
+
+0 FILE two-birds-at-the-seed-arch-02-shared-feeder.ldr
+0 Shared feeder
+0 Name: two-birds-at-the-seed-arch-02-shared-feeder.ldr
+0 // Build script layer: Shared feeder
+1 19 -10 -24 0 0 0 1 0 1 0 -1 0 0 3659.dat
+1 19 10 -24 0 0 0 1 0 1 0 -1 0 0 3659.dat
+1 308 0 -32 0 1 0 0 0 1 0 0 0 1 3068b.dat
+1 19 0 -56 0 1 0 0 0 1 0 0 0 1 3068b.dat
+1 308 -10 -40 -10 1 0 0 0 1 0 0 0 1 3024.dat
+1 308 10 -40 10 1 0 0 0 1 0 0 0 1 3024.dat

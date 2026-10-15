@@ -1,0 +1,2097 @@
+{
+  "version": "spatial-pilot-report/1",
+  "model": {
+    "id": "gpt-6-astra",
+    "effort": "medium",
+    "sampling": {
+      "temperature": null,
+      "topP": null,
+      "seed": null
+    }
+  },
+  "planned": 16,
+  "retained": 16,
+  "resultFileSha256": "591b8abfe233a1f6e2062e08b9b8d15b853551b879e779d1e15a7c7e29c1482c",
+  "conditions": [
+    {
+      "id": "control",
+      "scheduled": 8,
+      "retained": 8,
+      "submitted": 7,
+      "infrastructureFailures": 0,
+      "modelFailures": 1,
+      "inspectionRuns": 0,
+      "infoCalls": 0,
+      "visualAssessed": 0,
+      "visualMean24": null
+    },
+    {
+      "id": "combined",
+      "scheduled": 8,
+      "retained": 8,
+      "submitted": 7,
+      "infrastructureFailures": 0,
+      "modelFailures": 1,
+      "inspectionRuns": 0,
+      "infoCalls": 0,
+      "visualAssessed": 0,
+      "visualMean24": null
+    }
+  ],
+  "visualContrasts": {
+    "version": "two-arm-task-cluster/1",
+    "seed": 20261011,
+    "resamples": 10000,
+    "contrast": "combined-control",
+    "pairedTasks": [],
+    "omittedTasks": [],
+    "mean": null,
+    "percentile95": null
+  },
+  "rows": [
+    {
+      "caseId": "birds-at-feeder--combined--2",
+      "task": "birds-at-feeder",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "42f3e64046f0ac682b4e345fb167e906481a69e727a5f5b112a01c6990e03932",
+        "compilation.json": "28a6f02c9d66599efa84b5cfa5e9e917606724fee3dd8252219b1988626d1663",
+        "build.mpd": "ffe4569f0d0b76c46081c71075859681c394de13f44e2ff0294f2beb5203aeab"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 4,
+        "lots": 11,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1464,
+        "ldrawBytes": 1677,
+        "partsPerScriptKB": 11.2,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "9 part(s) in 2 group(s) are not connected to the main structure (largest group: 7 parts); e.g. 3024 at [12, 0, 0], 3001 at [7, 0, 2]",
+          "ops": [
+            "sections[1].ops[0] (code line 4)",
+            "sections[1].ops[2] (code line 4)",
+            "sections[1].ops[5] (code line 4)",
+            "sections[1].ops[4] (code line 4)",
+            "sections[1].ops[6] (code line 4)",
+            "sections[1].ops[3] (code line 4)",
+            "sections[1].ops[1] (code line 4)",
+            "sections[2].ops[0] (code line 17)",
+            "sections[2].ops[1] (code line 18)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91352,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 441
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36731,
+        "output_tokens": 1943,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 102422,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "arched-toll-gate--combined--1",
+      "task": "arched-toll-gate",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "e0763b2ca61e386e1d42d092733579fffbf8a867cf9c63254cde8c24cfd49dd7",
+        "compilation.json": "48e9d1dd2919a565f9616f0f8a84a8b5ae1e83e596525a870c437d2004aba381",
+        "build.mpd": "af5acc204bfd63e918dfa76259273e6c7b55e87cfcc94db08b2555c640d19b74"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 9,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1515,
+        "ldrawBytes": 1429,
+        "partsPerScriptKB": 10.8,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "4 part(s) in 1 group(s) are not connected to the main structure (largest group: 12 parts); e.g. 3001 at [9, 0, 2]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[3] (code line 13)",
+            "sections[1].ops[2] (code line 13)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91292,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 426
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36723,
+        "output_tokens": 863,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 487
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 49404,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "birds-at-feeder--control--2",
+      "task": "birds-at-feeder",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "868b1471dd39554aba7edf4ce1a67c855b1a579c314948b236534eacd895050d",
+        "compilation.json": "3889941112cfa4600c5b1c9a87708c0180880f9dee3a864c04fcd12ed1158577",
+        "build.mpd": "af243ab8ea37fb97499ee766fbd9514049e35f4a3686be7b8d9cdc2c44a6120c"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 4,
+        "lots": 14,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1492,
+        "ldrawBytes": 1699,
+        "partsPerScriptKB": 11,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "9 part(s) in 2 group(s) are not connected to the main structure (largest group: 7 parts); e.g. 3024 at [10, 0, 0], 3001 at [7, 0, 1]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[2] (code line 13)",
+            "sections[1].ops[6] (code line 17)",
+            "sections[1].ops[4] (code line 15)",
+            "sections[1].ops[5] (code line 16)",
+            "sections[1].ops[3] (code line 14)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[2].ops[0] (code line 20)",
+            "sections[2].ops[1] (code line 21)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73219,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 438
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30017,
+        "output_tokens": 3059,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2588
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 169118,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "birds-at-feeder--control--1",
+      "task": "birds-at-feeder",
+      "condition": "control",
+      "status": "model-failure",
+      "originalFrozenStatus": "model-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "fac2a1d7d0ecb914c9195dbaeb51677231a4e2d2a3d71aef02852575d645e270",
+        "compilation.json": "1e460f8eea9074e246d9231bdb6fb09209fb09df44332909607bb4c8110521df"
+      },
+      "compilerAccepted": false,
+      "stats": null,
+      "construction": null,
+      "problems": null,
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73219,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 389
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [],
+      "providerUsage": {
+        "input_tokens": 30017,
+        "output_tokens": 1961,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 97035,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "arched-toll-gate--control--2",
+      "task": "arched-toll-gate",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "16783ed53c743029b59bce4e92947d320f3e8a3b608b061ccf7f4ffbddd76542",
+        "compilation.json": "ca7e54d775c0d2495f04e5370b517014acbdebee416aebf5dc171c6752a6f730",
+        "build.mpd": "58318b4cfa92f6a33d8e99160d4323f469b589851ce611778e118eae12f6b099"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 8,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1693,
+        "ldrawBytes": 1725,
+        "partsPerScriptKB": 9.7,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "6 part(s) in 1 group(s) are not connected to the main structure (largest group: 10 parts); e.g. 3001 at [9, 0, 2]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[5] (code line 2)",
+            "sections[1].ops[4] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[2] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73159,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 448
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30009,
+        "output_tokens": 1331,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 950
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 72029,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "birds-at-feeder--combined--1",
+      "task": "birds-at-feeder",
+      "condition": "combined",
+      "status": "model-failure",
+      "originalFrozenStatus": "model-failure",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "5f8667e3216dfd18a798c6931b2fe7a45b66d7e8d5522fd4c58de1b81529be49",
+        "compilation.json": "154faf12fe46e399cacdb55a243de248acde6d150817ff3762b266bc4d62c2cd",
+        "build.mpd": "1825eec73fd220e1957e6a18cf667c9f8102e4fb8a50d72071fbf4c9cb644e09"
+      },
+      "compilerAccepted": false,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 11,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1474,
+        "ldrawBytes": 1626,
+        "partsPerScriptKB": 11.1,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 3,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 3 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "error",
+          "code": "colour-unavailable",
+          "message": "Slope 45° 2 × 2 (3039) is not made in dark brown (1×); it comes in white, black, red, blue, yellow, green, dark green, tan and more",
+          "ops": [
+            "sections[0].ops[2] (code line 2)"
+          ]
+        },
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "9 part(s) in 2 group(s) are not connected to the main structure (largest group: 7 parts); e.g. 3001 at [14, 0, 1], 3659 at [7, -1, 1]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[2] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[5] (code line 2)",
+            "sections[1].ops[4] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[2].ops[0] (code line 5)",
+            "sections[2].ops[2] (code line 5)",
+            "sections[2].ops[1] (code line 5)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91352,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 431
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36731,
+        "output_tokens": 2965,
+        "cached_input_tokens": 7552,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 2588
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 150759,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "stepped-lookout--combined--2",
+      "task": "stepped-lookout",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "157d0c20e056ed5a5039cd63f45f68a3afa1ae968c8b2b024260c2216659e789",
+        "compilation.json": "768e3f26b9309cb800066f3f10666e0df1c0ae9ace905427ebdeb3670a2e9819",
+        "build.mpd": "ed75807bba32cd9e3fca7abf164b022c8110e9aea3fa2d6a0ab333e273b60272"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 4,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1523,
+        "ldrawBytes": 2150,
+        "partsPerScriptKB": 10.8,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (35 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91320,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 430
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36724,
+        "output_tokens": 1382,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1034
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 74684,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "canal-landing--combined--1",
+      "task": "canal-landing",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "18ab9601048da8b0a20b0ef9e8bee87c3508812091bc4a0492e185d9c99a12b7",
+        "compilation.json": "2d2b27e49a0d07f0ad004284201f102819df4a4e372c9854e4e98c5a6b30b4e2",
+        "build.mpd": "fb1734a2d4cbe467f043afdf8ceb0cdb29ce8699bcc34cd5e2d7cc1da0db2d0d"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1491,
+        "ldrawBytes": 1661,
+        "partsPerScriptKB": 11,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "3 part(s) in 1 group(s) are not connected to the main structure (largest group: 13 parts); e.g. 3039 at [2, 0, -6]",
+          "ops": [
+            "sections[2].ops[0] (code line 2)",
+            "sections[2].ops[2] (code line 2)",
+            "sections[2].ops[1] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91335,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 429
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36729,
+        "output_tokens": 1926,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 91803,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "canal-landing--combined--2",
+      "task": "canal-landing",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "37d9e17426b4541699b264fd7ec911becbefabec7c98027603570f083e106db4",
+        "compilation.json": "5deaab404a4f6c3f430e507192a0e69741227efb73961a26240a4c9fb701467f",
+        "build.mpd": "f9779e46003f07cb23dd6d032fba51d69653c985817ef3cfd5a1a607c0115c5d"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1662,
+        "ldrawBytes": 1799,
+        "partsPerScriptKB": 9.9,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "3 part(s) in 1 group(s) are not connected to the main structure (largest group: 13 parts); e.g. 3039 at [2, 0, -3]",
+          "ops": [
+            "sections[2].ops[0] (code line 2)",
+            "sections[2].ops[2] (code line 2)",
+            "sections[2].ops[1] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91335,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 421
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36729,
+        "output_tokens": 1350,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 955
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 73341,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "stepped-lookout--control--1",
+      "task": "stepped-lookout",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "e38d74a23cd533b7d77962d4a8a26059df5920a14dfcc00e2f7129131c206352",
+        "compilation.json": "e509ed6410e795426a3dd190c851fbc6f65948ada3a6e808efb5c8665b62effb",
+        "build.mpd": "489e6c9dcb4c4a000205b9a0d1ea062e975b3441bc5734cfa32d74a73a543769"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 6,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 4,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1802,
+        "ldrawBytes": 2054,
+        "partsPerScriptKB": 9.1,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (39 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73187,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 422
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30010,
+        "output_tokens": 1363,
+        "cached_input_tokens": 7552,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 949
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 64940,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "canal-landing--control--1",
+      "task": "canal-landing",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "de0fef24adc2f9cd465c9a3ce711e7bc178aca954f5664877d04ea052e9888e3",
+        "compilation.json": "fd37719b29011df445e241cef3994ac3fcc6b89da7518e0779870658457ea7a3",
+        "build.mpd": "156ff1cfab0fe2b31777c21a3cfc74d6732b7f8d636d21178b69f2cb99134aae"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1566,
+        "ldrawBytes": 1529,
+        "partsPerScriptKB": 10.5,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "7 part(s) in 1 group(s) are not connected to the main structure (largest group: 9 parts); e.g. 3024 at [1, 0, -6]",
+          "ops": [
+            "sections[1].ops[0] (code line 11)",
+            "sections[1].ops[4] (code line 12)",
+            "sections[1].ops[6] (code line 14)",
+            "sections[1].ops[5] (code line 13)",
+            "sections[1].ops[1] (code line 11)",
+            "sections[1].ops[3] (code line 11)",
+            "sections[1].ops[2] (code line 11)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73202,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 434
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30015,
+        "output_tokens": 1402,
+        "cached_input_tokens": 7552,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1009
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 74045,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "arched-toll-gate--combined--2",
+      "task": "arched-toll-gate",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "13a4a5292ee955084d54b384e1fa7133a33a1fe97e8dccf234560cbb657bc311",
+        "compilation.json": "f7a2de07cd01756614a95dc7fc1ef15b182148830a15e40e89d620ee21da8251",
+        "build.mpd": "d0dcc128acb00dbf5357197b7a85a5c194fe370062ac63aeb49b2c29bd64cfc9"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 10,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1486,
+        "ldrawBytes": 1408,
+        "partsPerScriptKB": 11,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "4 part(s) in 1 group(s) are not connected to the main structure (largest group: 12 parts); e.g. 3001 at [8, 0, 2]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[3] (code line 2)",
+            "sections[1].ops[2] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91292,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 428
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36723,
+        "output_tokens": 1338,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1034
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 66081,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "canal-landing--control--2",
+      "task": "canal-landing",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "7b37bb573f44b33274f0ed1eac78d5fcf72b4115c9f7b9375bb5db29f3406c32",
+        "compilation.json": "59d5f43b01e42b6f0a8c7637dea4ca7c937318cd11a35dc1270acd543fe457be",
+        "build.mpd": "7b12ea3a770034aef1870ebe0bd0e57098c969ca03b8a2211b00cc4c1d6488f0"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 4,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1738,
+        "ldrawBytes": 1954,
+        "partsPerScriptKB": 9.4,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "3 part(s) in 1 group(s) are not connected to the main structure (largest group: 13 parts); e.g. 3039 at [2, 0, -5]",
+          "ops": [
+            "sections[3].ops[0] (code line 2)",
+            "sections[3].ops[2] (code line 2)",
+            "sections[3].ops[1] (code line 2)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73202,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 440
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30015,
+        "output_tokens": 1756,
+        "cached_input_tokens": 2432,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1325
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 86468,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "stepped-lookout--combined--1",
+      "task": "stepped-lookout",
+      "condition": "combined",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "b9761ccbc20a0bf81ffbcc0f2ee1f88abf76a99f2df89392591c22a4a6abf823",
+        "compilation.json": "99ea2fcd8b11430d8bb74b9ee52f8ae82ea17d9f3112376f8b46be82adee55df",
+        "build.mpd": "de25b55adefac380ba6cd5489f941ec23a337c4943281bf4435d88ea706c8bbb"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 7,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 3,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1361,
+        "ldrawBytes": 1833,
+        "partsPerScriptKB": 12,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (33 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91320,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 423
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 36724,
+        "output_tokens": 1356,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1034
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 67979,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "stepped-lookout--control--2",
+      "task": "stepped-lookout",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "3ea281c7d4134ee67feb611d763425bc7930216c4672ac5fadd2ff4cd4415485",
+        "compilation.json": "a95e5a96c8b167d11125b6bc3daa178f766172d0a2e2a64dbac33df053552771",
+        "build.mpd": "22f8841ab80c3d6e2b94fbfd68d31ffb9a8215e2a4c49d315ce3cf571148486b"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 6,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 4,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1500,
+        "ldrawBytes": 2161,
+        "partsPerScriptKB": 10.9,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 1,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "ok: All 16 parts with verified connectors are connected (33 stud connections)."
+      },
+      "problems": [],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73187,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 425
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30010,
+        "output_tokens": 1643,
+        "cached_input_tokens": 7552,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1311
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 84131,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    },
+    {
+      "caseId": "arched-toll-gate--control--1",
+      "task": "arched-toll-gate",
+      "condition": "control",
+      "status": "submitted",
+      "originalFrozenStatus": "submitted",
+      "failureCategory": null,
+      "files": {
+        "submission.txt": "95ef5cc8af963fa682cbd9642eddac9f00e9c60a31f7b2569821b08dc688b95a",
+        "compilation.json": "50717fd2c0ed91e6bf1f73d5bddd7c276833603e3e90fd0c6ed94e402b7f098b",
+        "build.mpd": "d5d284b5c47d8cfc9a02c95d388dbaca08f7d25adc6d23753767a1bbe9015f66"
+      },
+      "compilerAccepted": true,
+      "stats": {
+        "parts": 16,
+        "designs": 5,
+        "lots": 8,
+        "massingCells": 0,
+        "massingParts": 0,
+        "placedParts": 16,
+        "sections": 2,
+        "components": 0,
+        "opsRun": 16,
+        "scriptBytes": 1416,
+        "ldrawBytes": 1500,
+        "partsPerScriptKB": 11.6,
+        "compileMs": 0,
+        "checkMs": 0
+      },
+      "construction": {
+        "overlaps": 0,
+        "offGrid": 0,
+        "groups": 2,
+        "covered": 16,
+        "uncovered": 0,
+        "health": "warning: 16 parts with verified connectors form 2 separately connected groups; 0 parts are not connected to anything."
+      },
+      "problems": [
+        {
+          "severity": "warning",
+          "code": "floating",
+          "message": "4 part(s) in 1 group(s) are not connected to the main structure (largest group: 12 parts); e.g. 3001 at [11, 0, 1]",
+          "ops": [
+            "sections[1].ops[0] (code line 2)",
+            "sections[1].ops[1] (code line 2)",
+            "sections[1].ops[3] (code line 3)",
+            "sections[1].ops[2] (code line 3)"
+          ]
+        }
+      ],
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73159,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 441
+      },
+      "infoCalls": 0,
+      "infoResponseBytes": 0,
+      "selectedFactCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "providerUsage": {
+        "input_tokens": 30009,
+        "output_tokens": 1646,
+        "cached_input_tokens": 7552,
+        "cache_write_input_tokens": 0,
+        "reasoning_output_tokens": 1286
+      },
+      "usageRecords": 1,
+      "usageSource": "Responses terminal events",
+      "providerRequestAttempts": 1,
+      "elapsedMs": 81192,
+      "visualStatus": "unevaluated",
+      "visualTotal": null,
+      "visualAssessment": null
+    }
+  ],
+  "limitations": [
+    "One model family; fixed development briefs; 2 scheduled repetitions per condition.",
+    "One automated reviewer; no independent human agreement measured.",
+    "Compiler acceptance and detected contacts do not establish physical buildability.",
+    "Availability and returned facts are recorded; successful use is not inferred from retrieval.",
+    "Token fields retain native meanings; unavailable usage is null. Account quota includes other activity.",
+    "Views are not independent builds; failures and missing evaluations are retained."
+  ]
+}

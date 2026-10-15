@@ -1,0 +1,18 @@
+from pathlib import Path
+import json,subprocess,hashlib,time
+root=Path('/home/ubuntu/brick-benchmark');phase=root/'.local/gallery-reference-v2-runs/astra-phase-4';case='destroyer--reference-v2--1';out=root/'.local/gallery-reference-v2-astra-destroyer-recovery';out.mkdir()
+source=(phase/case/'submission.txt').read_bytes();r=json.loads((phase/'results.json').read_text())['results'][0];assert hashlib.sha256(source).hexdigest()==r['files']['submission.txt']
+reply=json.loads(source);assert reply['tool']=='brick.build';m=json.loads((phase/'manifest.json').read_text())
+worker=phase/'compiler.mjs';runtime='/tmp/brick-node/node-v22.14.0-linux-arm64/bin'
+args=['bwrap','--unshare-all','--die-with-parent','--new-session','--clearenv','--setenv','PATH','/runtime','--ro-bind',runtime,'/runtime','--ro-bind','/usr/lib','/usr/lib','--ro-bind','/lib','/lib','--proc','/proc','--dev','/dev','--tmpfs','/tmp','--dir','/scripts','--ro-bind',str(worker),'/scripts/worker.mjs','--ro-bind',str(root/'public/libraries'),'/public/libraries','--chdir','/tmp','/runtime/node','--max-old-space-size=1024','/scripts/worker.mjs']
+request={'code':reply['input']['code'],'seed':m['buildSeed'],'target':5000,'codeTimeoutMs':10000}
+start=time.monotonic()
+with (out/'compilation.raw.json').open('wb') as stdout,(out/'stderr.txt').open('wb') as stderr:
+ result=subprocess.run(args,input=json.dumps(request).encode(),stdout=stdout,stderr=stderr,timeout=120,env={'PATH':'/usr/bin:/bin'})
+metadata={'version':'frozen-source-compilation-recovery/1','originalStatus':'infrastructure-failure','sourceSha256':hashlib.sha256(source).hexdigest(),'compilerSha256':hashlib.sha256(worker.read_bytes()).hexdigest(),'originalHeapMiB':384,'recoveryHeapMiB':1024,'modelCalls':0,'renderFeedback':False,'sourceChanged':False,'exitCode':result.returncode,'elapsedSeconds':time.monotonic()-start,'note':'Gallery-only infrastructure recovery; original benchmark outcome retained.'}
+(out/'recovery.json').write_text(json.dumps(metadata,indent=2)+'\n');print(json.dumps(metadata))
+assert result.returncode==0
+raw=(out/'compilation.raw.json').read_bytes();assert len(raw)<=16000000
+c=json.loads(raw);assert c.get('report',{}).get('ok'),c.get('failure')
+(out/'compilation.json').write_bytes(raw);(out/'build.mpd').write_text(c['ldraw']);(out/'submission.txt').write_bytes(source)
+print(json.dumps({'recovered':True,'parts':c['report']['stats']['parts']}))

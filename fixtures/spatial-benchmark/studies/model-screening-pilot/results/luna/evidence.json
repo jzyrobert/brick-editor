@@ -1,0 +1,1814 @@
+{
+  "version": "screening-evidence/1",
+  "scheduled": 16,
+  "retained": 16,
+  "unattempted": [],
+  "baseCommit": "a2c9873689bf8d3deab2cb7bc45f0ef7ac887b20",
+  "sourceHashes": {
+    "prompts/build-agent.md": "39bf8fdf93449a6717f7ed25febf550657f8069892a5339d204791e02936369d",
+    "prompts/brick-build.md": "ad423321197b3434d3b0d3f1e3560a508ff2c6b6b7f2d87126f79b1c1eabec37",
+    "prompts/build-agent-diorama.md": "63eadf606a208d165e8095f43789df617b70137bb2293a889daf4888e1d2ad6b",
+    "prompts/brick-build-diorama.md": "2d728a55ca06d642fb146ce1fdd5baf025270b511da9e445172fbc033c9652af",
+    "scripts/one-shot-build.ts": "b94814566f7f02ae838254f348ba8577e06d544c84770521da86f5d489b4c26c",
+    "scripts/agent-part-facts.ts": "9fa0baeb6aae13a29adf5e8480f8453773f70055dc2892562f252e6c4362160f",
+    "scripts/brick-build.ts": "f6087d2054b7f0cd6a54dcbf10a3f859447761a1b7a5ef8a353f310746149f67",
+    "scripts/full-library-node.ts": "2a13817bd82f2b249147112245dd7494a7306e767649056d1026fd98afd5ee4c",
+    "src/build-script/part-list.ts": "49ada9cd778d08e5c462ca6b07c4878d833c1db199d70d8cc2f37d00f851408a",
+    "src/build-script/part-search.ts": "9253726d740d1e711616044c441c4d15a3fa81b0bb4ccc81576cb55b512eb656",
+    "src/build-script/spec.ts": "580a40a4cc6acf029a121fed26f46892a0b16c7499ee8f80ac152169d2199115",
+    "src/build-script/compile.ts": "c757095005f6f75feb4090f0bc6e99fea2de134735071ebd01a3ffcf23c00797",
+    "src/build-script/pack.ts": "3f6e1247b3b5c4e560012f9b5a74e707ff6de69a5054307e0862a976612b619e",
+    "src/catalog/data.json": "7d76f89934f932c4f23f15e4a2024a1ff134dace5e4005442e1bd4bab5325d77",
+    "src/catalog/bounds.json": "94ce2a806750a41b186b81876804d7afb3870881ef8dc9a8eac301fa73c6a877",
+    "src/catalog/connectors.json": "082b0aa40901a849d5c35071bd47fce0802183f9db973b0b7620f1a0a9c9ae69",
+    "src/catalog/full-library-lock.json": "18db3ee192d79bd322754ecd265f5c36912eff6a330961e474fb88d43024af89",
+    "src/catalog/full-connectors-lock.json": "2d49834746a0c6545f3ce67f1da30f4d3dceda4afa06137eb9e9d89dd5bcea85",
+    "src/catalog/color-availability.json": "c9fbb143aa186f13ec108ea9540c8122c1ab5ed85e39857664428df65df2b3b0",
+    "package.json": "6df89bf369fde0de74abe3fa564e90db549d155d14296018c3afbb738c78156e",
+    "package-lock.json": "2499ea7817c2f7b2202c43f6365ec688ba8e225ad5f6b78288d9a82dcfe3f7d7",
+    "scripts/spatial-benchmark.ts": "06d61ab0373e57f266e0c642bdcb83d67a3ec3090b88ae1ed4da8ca693ae00f8",
+    "scripts/spatial-benchmark/manifest.ts": "3cc963c4fc26ed2752dc0fa1554dea656fb19fc0aa6db7c0fc1a67c4f7e8f940",
+    "scripts/spatial-benchmark/part-reference.ts": "83627eb7151630aea45aeb65d67ebea6bafe8d4e9a1f01641e862963a261b125",
+    "scripts/spatial-benchmark/session.ts": "ab6e281450e8b0de218a4e312705f43dc50c85c728641d2ebed9e1c3c15fef9e",
+    "scripts/spatial-benchmark/sandbox.ts": "91ef1e018241b862c83d17a27c43865840dfd5856ef1d1b2d0b0fa8d78a7f11a",
+    "scripts/spatial-benchmark/compile-worker.ts": "cbee95c0240d1934f60bd75ade6a8a6d8d26196caf0a8b60779be93eb7c3024b",
+    "scripts/spatial-benchmark/calibration-evaluator.ts": "347c6fd2142a27e1097ec1e9323ca931019ef4fe1925ccc68840909b97421110",
+    "fixtures/spatial-benchmark/evaluator/witnesses.json": "7bfe6e110d6f5ff6c9a73fe41488c90403a7d0a667b560ced9534ee68454d025"
+  },
+  "compilerBundleSha256": "e2487fb8b7f221f7204802b93ae88d417688fcf1f487cced0c2aefc89ad78d2c",
+  "manifestSha256": "5e89dc8ade1681f23491c3980b74431c97a3bef3152642551000de97fca95756",
+  "resultsSha256": "5e8b257dd8c9fa10fde0b0ec14b98f84eefc78f440d77956b1fc221c2c6ae5c8",
+  "lastQuota": {
+    "checkedAt": "2026-10-13T10:45:36.721Z",
+    "ordinaryUsageAllowed": true,
+    "windows": [
+      {
+        "usedPercent": 17,
+        "windowDurationMins": 10080,
+        "resetsAt": 1792481675
+      }
+    ],
+    "weeklyRemaining": 83,
+    "reached": false
+  },
+  "rows": [
+    {
+      "caseId": "birds-at-feeder--combined--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "7bfcda462ce869fe71ebc200ce1e74a4856575de0ceeff261189b94f1f2fec91",
+        "compilation.json": "47d5da0841a42ac9e86a3375103236331bcecea3d1c9c6bedb80b8df3d8a70df",
+        "build.mpd": "3b3c9901fc0e9c4615dc862d60f00007739628fcd6d8648d74b4b8bbf63dadb2",
+        "freeze.json": "ef09c2874cf35c1ec45aab83d07fdb34db3e7f6b16087fabc5a6287e32d8d3f1",
+        "audit.jsonl": "95fdfae6bf9bd5a41377c85f8156903e9a8becc6f641eec9a0a90337613906b8",
+        "script.json": "38da0eaab670e5c04cc63ccf7941c32853bb1ff1b6b979f54b3530636e05fbe2"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91352,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 422
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 1,
+      "modelRequests": [
+        {
+          "sha256": "3213678f4293f4858a895689b8f09218f77023f65e227864ee8ecb974a8902d9",
+          "bytes": 138427,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:00:38.738Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 12,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 88,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:01:31.278Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 12,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 88,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--combined--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "7bf7cf3ebce50cc8219f01413ec43fe08c1746f0e224c29e97f19bad08f6ef3f",
+        "compilation.json": "4c7bb757370be3ed27819770010db83e36e7ccc2d3bf89910ebf8e9b34e6f4ba",
+        "build.mpd": "52f3798ea5bedbf3494119b1c91131ac5036c1afdbb4856cff42f13320d967f1",
+        "freeze.json": "1544e093a2940bdf827ff9a9a8911b37b75ff107af02a71aedca93115682eb4c",
+        "audit.jsonl": "57d512be2c430b20dfb54ad8f1cf4cc3aa4dbb8193bd382bfbdc5823842278af",
+        "script.json": "fc4b3582525a41c8d4e1dc9a93f4ad30d75f8fc8fe71d372395f18e0d54f7acb"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91292,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 429
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 2,
+      "modelRequests": [
+        {
+          "sha256": "4d93d3b068357295f720597b44a16c53c346c493415384a51dd82f4bee45524b",
+          "bytes": 138367,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:03:18.413Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 13,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 87,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:04:03.290Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 13,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 87,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--control--2",
+      "status": "model-failure",
+      "failure": "Submission failed benchmark validation",
+      "files": {
+        "submission.txt": "75cbe9ace97e8d7dba7a6e420c6e2a0ebb5d9bcdf364493c550d77e76e586172",
+        "compilation.json": "b81836548713cfc59686d25a7582b8cba712d3e4ec6293d714ef4794fee67849",
+        "build.mpd": "797268a73684d075259d1553236947ad272b1bd7fb6fcab577ae5a736fc2a775",
+        "freeze.json": "b2ffc515599e32640a5864dfd4782dca41cb69a1999186dc72ad32b5d20be12b",
+        "audit.jsonl": "9c2f59f8639867778cf747df0bf5b36e3dcd879443f5ec5f0adf3cdb935121da",
+        "script.json": "79db6bf1783cfa3f2e2a57a15f284bdb60ab81dedabdbf58269a03baa79e9034"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73219,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 432
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 3,
+      "modelRequests": [
+        {
+          "sha256": "f6f71c2cadbd47d32d9b2a2eaef7bdd6cb649b1625797bd64cd1a91a5dd28621",
+          "bytes": 118602,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:04:57.261Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 13,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 87,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:06:02.814Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 13,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 87,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--control--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "06d72a200aaa33c73f4102a0f2b0bf8863f124d268fa63e8cb3bfe959e675268",
+        "compilation.json": "c966c06dde1d8d7fe66fdf9a9d20c974fb694ba8f675516a0f739118b0ee6ba0",
+        "build.mpd": "5ee8a46d5cbcd8014c4970e58132cd93697149feefee7fe5abc767dd78328f38",
+        "freeze.json": "85fdbef103221d28dbf858406036e13cf1710d6f10db2d962b2ae000b7a502c7",
+        "audit.jsonl": "ea96dac4199b9325e62f91062100c901cc0db1e854dee3a13082a100055a3af1",
+        "script.json": "a14d4959c012700f09aa52e36811d510c43f835c808236e776432423b3015b41"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73219,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 443
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 4,
+      "modelRequests": [
+        {
+          "sha256": "30b96efb5552b57ee9c42a5a305b82527d440170bb1a8c513abdd36ba71045af",
+          "bytes": 118602,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:08:56.883Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 13,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 87,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:10:24.028Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 14,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 86,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--control--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "9e4d2d84f67bb48a980b5491dfc6761dba4cb48b8b824ea0bcfc09ccce5850bc",
+        "compilation.json": "203e60079a602e5d375b069dbc4e4e44fea089a10438aa236634ebbf2afbf72b",
+        "build.mpd": "280cdf56621260d28a8d53f8805d862d8908df292818ac7fc57931350718219e",
+        "freeze.json": "45ce5ab1dd7f4783f25cfeb8441dbc03ff42847f384ae41e4b6d79955ffe126f",
+        "audit.jsonl": "397748a14ddfb574fd660d5d912369b510fd9cb5f9bee042021fa02468c81a0f",
+        "script.json": "b590b083abc7f8a9b3c5757a1808241b28493458963137c5546fc07dcd3383a8"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73159,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 414
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 5,
+      "modelRequests": [
+        {
+          "sha256": "892c5f6d5c3cb30193ad2149e16050d3848b2460e618e5c42eb1d2b7e115113c",
+          "bytes": 118542,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:12:06.660Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 14,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 86,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:13:35.881Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 14,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 86,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "birds-at-feeder--combined--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "4f08225378cc2f5d7a2178f58342dafe1a753393804a2351200b9e6a1f96d156",
+        "compilation.json": "488a87a22529aaf6941b1e26d56f1b13a7964be3bdece83b0786edbe59fd99dc",
+        "build.mpd": "4c5262bb7b554d2618885b41c30fe027d23d444b7c023dedd6eee3ec4108b65f",
+        "freeze.json": "876b84e9d0fe9d0b9803a0da501c5de66f273ae9332b66202a19c0ba11c62ff7",
+        "audit.jsonl": "3357d3dc561d6faf958f60fd76b3d89c1e8a7267dd9aee1f783f7d47c1b9b528",
+        "script.json": "d7d8c505de622011089ef745b4859a525ebde9273703e70078604bdcbcea1c85"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91352,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 439
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 6,
+      "modelRequests": [
+        {
+          "sha256": "70ed4f22963bbdf721ba65ea75e50f2e273df37a83c007a1fa37ee69d5bd8fef",
+          "bytes": 138427,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:14:53.487Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 14,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 86,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:16:28.919Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 14,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 86,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "stepped-lookout--combined--2",
+      "status": "model-failure",
+      "failure": "Submission failed benchmark validation",
+      "files": {
+        "submission.txt": "13da13915ea31c07fe2686693f478c56982357b01ec9a54cf8499f498361d7e7",
+        "compilation.json": "bb55b80cc3733eea879a0cc69f7368543e9fce430110e91b97831a620fb4e9d4",
+        "build.mpd": "ccbe06b6497ff2b5c93c58c9e7e0b0260c990006c45539eea49eec0e3aa5f5cd",
+        "freeze.json": "935ebf2ba857fc827a992966ef3bdf413cccea2c37138c72d4b7c9dcbd14d4ab",
+        "audit.jsonl": "f6cc7a5ebdb7f1b6e03567d6aec10577241e160d50a8d0522269c27d9dfe1767",
+        "script.json": "b6678f26769c749866637196a9c196940bb5a3987534df271e4defb346b98eb8"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91320,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 430
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 7,
+      "modelRequests": [
+        {
+          "sha256": "c20a137639b39b33fdcfcd78bef5ffcbc48b86b2ca3ef7a763bfad34583d185c",
+          "bytes": 138395,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:19:05.894Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 15,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 85,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:21:06.002Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 15,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 85,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "canal-landing--combined--1",
+      "status": "model-failure",
+      "failure": "Invalid final response",
+      "files": {
+        "submission.txt": "04fac94066678265656b038688646df644d0f8cb0e0d3805c9f7a43a7103f508",
+        "freeze.json": "f7f3d15b44978763d13663c314b5645d1701a5ccc66bc7f27663db531b90285b",
+        "audit.jsonl": "dde57c3d91a12d8560d30f2a341f2bf73425ce42641c7c662c2d3d5e58ef2525"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91335,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "referenceCoverage": [],
+      "executionPhase": 8,
+      "modelRequests": [
+        {
+          "sha256": "edd9d15e569514668d85b0f38564fdb5603470ae910272abc94d650257e83125",
+          "bytes": 138410,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:22:26.549Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 15,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 85,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:24:38.290Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 15,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 85,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "canal-landing--combined--2",
+      "status": "model-failure",
+      "failure": "Submission failed benchmark validation",
+      "files": {
+        "submission.txt": "3bbd4b687ecd4de3f07052b39e171141b8a135b7ef3f50f28b72937ba363e745",
+        "compilation.json": "898859fcaa7ddf332639e17e88b5b1f51f6f79f4043a3be3d6f7bcde27880907",
+        "build.mpd": "64c4706d96fbc375d04c1622d1183e85ab0404665cc9870c9364c7b2741946b0",
+        "freeze.json": "423b0545e86e37c80ca46dc2aa5b2a73ca6bc5a1a35517e3f093b6f965f4136a",
+        "audit.jsonl": "64b17c4065c70595e815233590b2ed2467b17c1b35af766335edf53276ef8cd1",
+        "script.json": "f8ca6b1041a03ba3366140c776bf512f22d0ba32f8c004d0f7ce97660da7d02c"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91335,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 449
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 9,
+      "modelRequests": [
+        {
+          "sha256": "133c030807c782809a33df9849dfe1a8e838a229c495f45fcaef1cd535dcf3bc",
+          "bytes": 138410,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:26:16.417Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 15,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 85,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:27:34.656Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 16,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 84,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "stepped-lookout--control--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "6aa40dd12a3f3406a338e9035ed6628d1223b7996fab5a8f3a97f23300c210bc",
+        "compilation.json": "ff56523755769de1784b5085d56ac2a2ed498a057040ea09f67ecc73c3b3712d",
+        "build.mpd": "fc4498440f256f25958d52f28fd0163165fe26253ba497adc3dc1904b6568e7d",
+        "freeze.json": "f378d2191020184452db6cdacd09080120c7156656d86e26788aa3e0551dc3bb",
+        "audit.jsonl": "ea7996044741c026bffb960a77e9367d26784c09db310323a75ab10b873b6d2f",
+        "script.json": "b8f0af8bcce4203467afe5bd4b2a6e65129c861fd86c56e369bce5d5aadefd3b"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73187,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 448
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 10,
+      "modelRequests": [
+        {
+          "sha256": "c9a0ca5993464a097a99b4528521d4a23bb100f57d7716e0f84c9db7fedab4bb",
+          "bytes": 118570,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:28:54.486Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 16,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 84,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:29:54.826Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 16,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 84,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "canal-landing--control--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "c0a866e6d1d918e25d857c9da35402b44a7d7af198499d255c52d7515aa40fcf",
+        "compilation.json": "6a5e0534d649d0114429c6fa22298af1b6e748b5436b05b0bb66f676924246df",
+        "build.mpd": "35502d35ea2e8bf3d6e10072afe5e5bce90be672e9aa1a29eb77c9b332a21b31",
+        "freeze.json": "6b742b5e12ef60baecce74e917786e004489918fef7c6d4d034066f656be9acc",
+        "audit.jsonl": "97c228a5ecc19fa20993123238eac6a7b57905c3a91a37fe79b9b1587b5d7316",
+        "script.json": "f9f910b8b4c44fae504092bde0d3ca9eb4adb3dfff5d855569602db8f8f179bb"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73202,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 449
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 11,
+      "modelRequests": [
+        {
+          "sha256": "9ba99ae608ec502e9dbf62afc965c7cbaae87b2c8a4d19cfdcd3fd4f48629d0b",
+          "bytes": 118585,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:31:06.432Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 16,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 84,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:32:37.277Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 16,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 84,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--combined--2",
+      "status": "model-failure",
+      "failure": "Build seed differs from manifest",
+      "files": {
+        "submission.txt": "059c2cfa4562ccadc053111eb8c0970c33af020161ab2f29161cef257dc2637a",
+        "freeze.json": "97bc970189094a7e14412614fba06038a5ae89848ad637fe08c4b9d6c3285a0e",
+        "audit.jsonl": "8ccb800107b224de4eb5c8fd18cdda1598989b06b7460dd70bc20cfbb11840d4"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91292,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "referenceCoverage": [],
+      "executionPhase": 12,
+      "modelRequests": [
+        {
+          "sha256": "a732a791caad181a7bc5c6714667e1f36d00f356f72d367b70062bba90956c0c",
+          "bytes": 138367,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:33:58.321Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 16,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 84,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:35:11.494Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 16,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 84,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "canal-landing--control--2",
+      "status": "model-failure",
+      "failure": "Submission failed benchmark validation",
+      "files": {
+        "submission.txt": "4b23b139b42bb5f4921a940b9ed653386c79e261527bc250c3e94b7f4b0d61b1",
+        "compilation.json": "74c1d0a927e2f3b11770703555da3637fa6504d6cc06ea163a6bdb457636890a",
+        "build.mpd": "812fb1559216a5a32f5c45687f0ed9b40f3dbe68c96f7824d1ac6a01b7c58e75",
+        "freeze.json": "93fe04cf13d4e230fa2b7e8990ecdd0b9013549fa1b43421a349b44be82473d8",
+        "audit.jsonl": "604a0d25f2ad697ebc9a604d3df7c9bfa248d4d67f8a2b0e7ae5b09db4bed58e",
+        "script.json": "9a62bfbbaad52f43b00a90b0d283766ce583ed6f73a4db76a6d7e4731f96a5af"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73202,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 419
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 13,
+      "modelRequests": [
+        {
+          "sha256": "de2e7decd47b047e617bead76f4db2273e25792e46ba7e767b3d78cfc8f76aae",
+          "bytes": 118585,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:36:25.085Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 17,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 83,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:37:24.270Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 17,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 83,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "stepped-lookout--combined--1",
+      "status": "model-failure",
+      "failure": "Submission failed benchmark validation",
+      "files": {
+        "submission.txt": "f91e4cc2972d3cedd6380c89a912cac95b035fcf6a267fdd02ed61af6172ecf9",
+        "compilation.json": "15147c4d7f8b232d8d474fb6c1607cc4b8bf5d8489105c52a5ba6449d703c7a2",
+        "build.mpd": "560a23aa630cba7c714794f490cdc1cf3741e61e72a1a8c5e7af53025634e968",
+        "freeze.json": "58a838dfe82e9efed1e0581f9cd074a935eda7d37ece09538064e4245864f8af",
+        "audit.jsonl": "effa8653cc6c05f105260e5f6c349f00f9b6a72f668e2e669c973a68f56c8ac3",
+        "script.json": "2789f0628e9b51f054c9d5eb4686829ecd1f4e35349322679333a3f5ac1c6701"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 91320,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 419
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [
+            "shape",
+            "connectors"
+          ],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 14,
+      "modelRequests": [
+        {
+          "sha256": "d81c120ee8004356ff07a526613a10a5a199edbd359bb20c9100ec6d27ae107f",
+          "bytes": 138395,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:38:58.622Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 17,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 83,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:40:29.003Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 17,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 83,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "stepped-lookout--control--2",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "3a886ce1b74b5820e82290072b8d37fa7d9f8a9cf60109e4faa95bb9f388d6f1",
+        "compilation.json": "547ec0ae8a4919580da4b38fe1d8bf4c830995a48b05dbf66ef2fbd085ce698b",
+        "build.mpd": "054c6bf3a4772cc9249eb0c3b65784d20fb7a6d87152c7326730e3e775b47575",
+        "freeze.json": "36b1ec532812fa853d793f3bda551f48d4f4e9d288f1567eabd2fb146f8a0d40",
+        "audit.jsonl": "5429c5bcd807e25da44071f5405388abe99a1a7f3292516d5cb2438012c4528b",
+        "script.json": "c334035d0ae64740e6082b2608576f06406988a49e88bbd2425bf9855f35f229"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73187,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 419
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 15,
+      "modelRequests": [
+        {
+          "sha256": "b531284c5a7da48f8369cc7879ba95019334146291e274aa76f4ff9248c23f03",
+          "bytes": 118570,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:41:45.009Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 17,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 83,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:42:52.513Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 17,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 83,
+        "reached": false
+      }
+    },
+    {
+      "caseId": "arched-toll-gate--control--1",
+      "status": "submitted",
+      "failure": null,
+      "files": {
+        "submission.txt": "c53a2107e7d0c135266f0bae3df632274e3f328703477e0c9d2850b098ddb4fc",
+        "compilation.json": "cb169cbec6b6d79df196ed2210d471614020a4076eca762527f57ff266ba44b8",
+        "build.mpd": "aa644f17821c21777f4fb8f072e00b5e5746576f7bb10831fa9eb3922ef7a48e",
+        "freeze.json": "6005f0997852503d698ac4cac561f6bd143e34fac9a4e6fe9994ff1374d1fbcd",
+        "audit.jsonl": "6116ffa970c45bda2305487f3b5e2750e8c325296ef357c39ab7614ee0b22f31",
+        "script.json": "627d53b336ac2420c00bf8e8c1f58a6ad5f18add67a806af5f36bd1995c399d9"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 73159,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 414
+      },
+      "referenceCoverage": [
+        {
+          "part": "3001.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3039.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3659.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "executionPhase": 16,
+      "modelRequests": [
+        {
+          "sha256": "cbfa027eb7fb834b3b6a5bf594cc3753fc70d70268a3f32f84c7c796250d4c46",
+          "bytes": 118542,
+          "model": "gpt-6-luna",
+          "effort": "high",
+          "nativeTools": [],
+          "maxOutputTokens": 16000
+        }
+      ],
+      "quotaBefore": {
+        "checkedAt": "2026-10-13T10:44:25.093Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 17,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 83,
+        "reached": false
+      },
+      "quotaAfter": {
+        "checkedAt": "2026-10-13T10:45:36.721Z",
+        "ordinaryUsageAllowed": true,
+        "windows": [
+          {
+            "usedPercent": 17,
+            "windowDurationMins": 10080,
+            "resetsAt": 1792481675
+          }
+        ],
+        "weeklyRemaining": 83,
+        "reached": false
+      }
+    }
+  ]
+}

@@ -1,5 +1,59 @@
 # Implementation status
 
+## Fresh v2 gallery cohort — 14 October 2026
+
+Completed 18 owner-authorised fresh generations (six briefs × Luna/high, Sol 6.1/high and Astra/medium). Published all 17 compiler-accepted outputs with 51 fixed-view renders to the main gallery, retaining all 83 prior entries and the Fresh E default. Astra’s Star Destroyer hit the compiler heap limit; a frozen-source diagnostic exposed 14 overlap errors, so it remains archived and unpublished. Final quota: 60% remaining. This is a fresh gallery cohort, not evidence of improved visual quality. [Protocol, sources and publication receipt](../fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
+
+## Corrected generation reference — 14 October 2026
+
+Added opt-in `spatial-part-facts/2` for future generation: compiler-consistent dimensions, palette filtering before search limits, partial-match disclosure, corrected arch clearance and explicit automatic pane/wheel expansion metadata. A deterministic audit finds 10 legacy nominal-dimension disagreements across 224 curated parts, zero in v2. Optional exact-count task validity closes the Luna acceptance gap while preserving advisory legacy behavior. Frozen prompts/payloads and prior outcomes are preserved. No new model experiment or publication. See [audit and usage](GENERATION-DATA-AUDIT.md).
+
+## Three-model preview — 13 October 2026
+
+Published an owner-authorised, separate Cloudflare Drop preview of all 64 new Sol/Luna/Astra cases, including failures and the exact-count correction. It contains 220 images, four-view inspection, filters and source/report downloads. Six local viewport checks and live phone filtering pass. No new generation, default change or production/gallery deployment. See [preview and reproduction](SPATIAL-PILOT.md#three-model-static-preview--13-october-2026).
+
+## Luna/Astra screening completed — 13 October 2026
+
+All 32 additional cases ended without infrastructure failures: Luna nine runner submissions/seven failures, Astra fourteen/two. Strict count auditing reclassifies one 14-part Luna submission as task-noncompliant (eight compliant total). Combined facts show a tentative Astra visual benefit (+1.375/24 across four tasks); Luna's +3 covers only two surviving task pairs and accompanies worse compliance. All 116 new images, 23 assessments, sources, exact inputs and failures are archived. Final weekly quota: 78% remaining. No default change. See [comparison and audit correction](SPATIAL-PILOT.md#luna-and-astra-screening--13-october-2026).
+
+## Model screening pilot prepared (13 October 2026)
+
+Opt-in subscription transport accepts declared GPT-6 Luna/high and GPT-6 Astra/medium pairs; Sol6.1/high default payload is preserved. Each additional model has 16 frozen automatic-facts cases (control/combined). Model/effort is checked at both session and outgoing broker boundaries. Fresh sessions, quota gates and no retries remain. Two-arm task-weighted analysis is separate from the four-arm factorial. Generation/evaluation are now complete; the results above supersede this preparation status. No default change.
+
+## Automatic facts pilot generation complete — 13 October 2026
+
+All 32 scheduled Sol6.1/high generation cases ended: 24 submitted, three model failures and five infrastructure failures. No failures were retried. All 26 compiled artifacts use 16 explicit placements and no packed massing. All treatments received their declared facts automatically; no case searched, inspected, checked or repaired. The final generation quota reading was 92% weekly remaining. Post-freeze rendering produced 104 images (including two invalid compiled artifacts); all 24 accepted builds were assessed. Combined facts scored +2.50/24 versus control on the task-weighted comparison, a tentative development signal with four tasks and one automated reviewer, not a general improvement claim. See [results and limitations](SPATIAL-PILOT.md#automatic-facts-pilot--13-october-2026). Sources, exact initial prompts, hashes and failures are retained under `fixtures/spatial-benchmark/studies/automatic-facts-pilot/results/`.
+
+## Automatic facts pilot preparation — 13 October 2026
+
+A new owner-authorised 32-session development pilot compares automatically supplied shape, connector and combined facts against unchanged control inputs for four 16-part inventory briefs. All arms use no candidate feedback. The manifest, pre-generation protocol and evaluator-only witnesses are separate from the completed gallery pilot. Forty-three focused unit/integration checks and a zero-model-call 32-case dry run pass. Experimental outcomes are pending; defaults, gallery and language remain unchanged. See [protocol](../fixtures/spatial-benchmark/studies/automatic-facts-pilot/README.md).
+
+## Complete spatial pilot preview — 12 October 2026
+
+Added a standalone static preview builder and focused browser check. The preview contains all 82 completed builds, 328 frozen-view images and all 30 failed cases, with filters, four-view inspection and source downloads. Calibration captures were added only after generation ended. All six viewport checks pass; an independent visual review confirmed the corrected inspector image proportions. The owner authorised a temporary Cloudflare preview; production, gallery and defaults remain unchanged. See [usage and interpretation](SPATIAL-PILOT.md#complete-static-preview--12-october-2026).
+
+## Completed Sol 6.1 high spatial pilot — 12 October 2026
+
+All 112 scheduled generation cases ended: 40/40 calibration passes and 42 submitted creative builds out of 72 cases, with 19 infrastructure failures and 11 model output-budget failures retained for analysis. The original frozen v2 misclassification remains archived. All 42 submitted builds rendered in four fixed views and received blinded recognition-before-brief assessments; no render/review failures occurred. The [results](SPATIAL-PILOT.md#creative-results) report combined minus control **+0.10/24**, task-bootstrap 95% interval **[-0.50, +0.60]**, using five tasks with all arms represented. This does not establish improvement. Destroyer missingness, unequal surviving repetitions, low retrieval (9/54 treatment sessions), provider interruptions and one automated reviewer limit interpretation.
+
+All 42 submitted builds retain construction warnings (243 records); compiler acceptance is not physical certification. [Every case, source/compiled artifact and assessment](../fixtures/spatial-benchmark/studies/sol-high-pilot/creative-evidence.json), exact filled inputs and execution phases are archived. Native context and 168 rendered PNGs remain private locally. Quota checks continued before/after requests/cases: the final generation/review reading was 39% weekly remaining, with no credits purchased or reset used. Defaults, legacy payloads, gallery, build language and automation capabilities are unchanged. No pushing or publication occurred. The separate feedback study and later roadmap remain deferred.
+
+## Sol 6.1 high spatial pilot checkpoint — 11 October 2026
+
+The owner authorised Sol 6.1/high with quota checks after each run. The opt-in [pilot](SPATIAL-PILOT.md) adds an isolated Codex subscription broker, run/request quota gates and a separate frozen-image evaluator. Forty calibration sessions passed in all four arms (10/10 each), with inspection in 0, 1, 3 and 6 sessions respectively. This ceiling result establishes no accuracy improvement. The 72-case creative comparison is in progress; no visual results are claimed. The independent 36-case feedback comparison remains planned. E, diorama, language, archive and gallery are unchanged; no publishing occurred.
+
+81 unit and 25 integration checks, type checking and formatting pass. The real isolated client is tested with mocked text/image transport; the four-view renderer has a separate smoke check. See [VERIFICATION](VERIFICATION.md) for evidence and remaining limitations.
+
+## Render-blind spatial benchmark infrastructure — 11 October 2026
+
+Opt-in tooling on current `main` f7f7b4b7, isolated worktree/branch. [Contract, usage and limits](SPATIAL-BENCHMARK.md) document the existing observation paths and retain the exploratory interpretation of prior 183/182/175 and 349/343 scores. E, diorama, legacy richer facts, language/editor/export semantics and the published gallery are unchanged.
+
+Implemented: strict versioned manifests; no-feedback, mechanical and legacy count/error conditions; fresh text-only generation state with run-wide budgets and audited denials; Bubblewrap compiler without repository/evaluator/credential mounts or network; filled inputs, exact payloads and implementation hashes/copies; frozen original submission/MPD and separate evaluator staging. At this initial delivery, CLI execution was preflight/dry-run/replay only; the later authorised subscription adapter is documented above.
+
+Typed optional shape/connector/capability facts separate uniform-LDU physical extents, nominal placement, occupancy and connection evidence. The five-part starter palette has independently checked surface extents/contours; other shape details remain unknown or labelled conservative. Stable connector IDs and explicit pagination retrieve full arrays. Calibration has five two-part fixtures, literal evaluator-only witnesses, deliberate invalid variants and an alias condition. Declarative plans isolate fact factors, retrieval exposure and mechanical feedback.
+
+Test/replay correctness evidence is in [VERIFICATION](VERIFICATION.md); no model-quality experiment or physical certification is claimed. Private held-out tasks, completed blinded creative assessment, advanced poses/assistance/provenance, stronger mechanical diagnostics and design-guidance treatments remain separate follow-ups. Automation capabilities are unchanged because this is offline research tooling, not a new editor API.
+
 ## Format-first sizing references — 11 October 2026
 
 A [48-case follow-up](samples/format-size/README.md) compares format-first sizing alone with identical guidance plus the supplied commercial piece-count table. Two clean Sol 6.1 high repetitions cover every original brief and both styles, without targets or richer part facts. Only the Size section changes; generation, tool feedback and default prompts remain unchanged. All 48 builds completed in distinct empty-directory sessions and were reviewed across four views. References score 349/480 versus 343/480, winning six brief/style means, tying two and losing four. The small mixed advantage does not justify default adoption. A portable 96-build preview retains both repetitions and historical context.

@@ -1,0 +1,46 @@
+0 FILE quiet-canal-landing.mpd
+0 Quiet Canal Landing
+0 Name: quiet-canal-landing.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 quiet-canal-landing-01-bridge-abutments.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 quiet-canal-landing-02-arched-footbridge.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 quiet-canal-landing-03-short-quay-landing.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 quiet-canal-landing-04-separate-low-canal-skiff.ldr
+
+0 FILE quiet-canal-landing-01-bridge-abutments.ldr
+0 Bridge abutments
+0 Name: quiet-canal-landing-01-bridge-abutments.ldr
+0 // Build script layer: Bridge abutments
+1 72 0 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 72 0 -48 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 72 80 -24 0 0 0 1 0 1 0 -1 0 0 3001.dat
+1 72 80 -48 40 0 0 1 0 1 0 -1 0 0 3001.dat
+
+0 FILE quiet-canal-landing-02-arched-footbridge.ldr
+0 Arched footbridge
+0 Name: quiet-canal-landing-02-arched-footbridge.ldr
+0 // Build script layer: Arched footbridge
+1 71 40 -72 10 1 0 0 0 1 0 0 0 1 3659.dat
+1 71 40 -72 30 1 0 0 0 1 0 0 0 1 3659.dat
+1 71 -10 -72 20 0 0 1 0 1 0 -1 0 0 3039.dat
+1 71 90 -72 20 0 0 -1 0 1 0 1 0 0 3039.dat
+1 19 20 -80 20 1 0 0 0 1 0 0 0 1 3068b.dat
+1 19 60 -80 20 1 0 0 0 1 0 0 0 1 3068b.dat
+
+0 FILE quiet-canal-landing-03-short-quay-landing.ldr
+0 Short quay landing
+0 Name: quiet-canal-landing-03-short-quay-landing.ldr
+0 // Build script layer: Short quay landing
+1 28 70 -32 -30 1 0 0 0 1 0 0 0 1 3024.dat
+1 28 90 -32 -10 1 0 0 0 1 0 0 0 1 3024.dat
+1 19 80 -40 -20 1 0 0 0 1 0 0 0 1 3068b.dat
+
+0 FILE quiet-canal-landing-04-separate-low-canal-skiff.ldr
+0 Separate low canal skiff
+0 Name: quiet-canal-landing-04-separate-low-canal-skiff.ldr
+0 // Build script layer: Separate low canal skiff
+1 320 40 -24 -90 1 0 0 0 1 0 0 0 1 3039.dat
+1 320 40 -24 -70 -1 0 0 0 1 0 0 0 -1 3039.dat
+1 28 40 -32 -80 1 0 0 0 1 0 0 0 1 3068b.dat

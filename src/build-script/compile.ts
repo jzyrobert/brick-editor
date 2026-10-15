@@ -1,3 +1,4 @@
+import { WINDOW_GLASS as GLASS } from "./part-companions";
 /**
  * Deterministic Build Script compiler: script → LDraw MPD → project, plus a
  * structured report for agents (counts, bounds, part list, resolved part
@@ -247,11 +248,6 @@ function counterpart(ref: string) {
 
 // ---------------------------------------------------------------------------
 
-const GLASS: Record<string, string> = {
-  "60592.dat": "60601.dat",
-  "60593.dat": "60602.dat",
-  "60594.dat": "60603.dat",
-};
 const WINDOWS: Record<string, string> = {
   "1x2x2": "60592.dat",
   "1x2x3": "60593.dat",

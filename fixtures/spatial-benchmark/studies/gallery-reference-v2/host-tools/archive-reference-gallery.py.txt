@@ -1,0 +1,22 @@
+import json,pathlib,shutil,hashlib
+root=pathlib.Path('.local/gallery-reference-v2-runs')
+out=pathlib.Path('fixtures/spatial-benchmark/studies/gallery-reference-v2/results')
+state=json.loads((root/'status.json').read_text())
+assert state['state']=='complete' and state['completed']==18
+out.mkdir()
+for name in ('order.jsonl','status.json','supervisor.ts'):
+ shutil.copy2(root/name,out/name)
+for model,checkpoint in state['checkpoints'].items():
+ source=pathlib.Path(checkpoint); target=out/model;target.mkdir()
+ for name in ('manifest.json','preflight.json','results.json','run-status.json','compiler.mjs.inputs.json'):
+  if (source/name).exists(): shutil.copy2(source/name,target/name)
+ for run in json.loads((source/'results.json').read_text())['results']:
+  dest=target/run['caseId'];dest.mkdir()
+  for name in ('submission.txt','compilation.json','build.mpd','freeze.json','audit.jsonl'):
+   file=source/run['caseId']/name
+   if file.exists():
+    if name in run['files']: assert hashlib.sha256(file.read_bytes()).hexdigest()==run['files'][name]
+    shutil.copy2(file,dest/name)
+  phase=root/f'{model}-phase-{run["executionPhase"]}'
+  if (phase/'quota.jsonl').exists():shutil.copy2(phase/'quota.jsonl',dest/'quota.jsonl')
+print('Archived allowlisted public inputs and frozen results; excluded native sidecars')

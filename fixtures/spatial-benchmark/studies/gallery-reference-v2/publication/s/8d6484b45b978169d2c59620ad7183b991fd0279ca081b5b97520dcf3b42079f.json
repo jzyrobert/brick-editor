@@ -1,0 +1,492 @@
+{
+  "buildScript": 1,
+  "title": "Temple of the Bell and Vermilion Gate",
+  "description": "A Kyoto-inspired temple complex: a broad tiled hall, a rising pagoda crown, a freestanding vermilion gate, a bell pavilion and the stone walls of its precinct.",
+  "palette": {
+    "wood": "dark red",
+    "plaster": "white",
+    "stone": "light bluish grey",
+    "roof": "dark bluish grey",
+    "gold": "yellow"
+  },
+  "sections": [
+    {
+      "name": "Hall",
+      "ops": [
+        {
+          "op": "floor",
+          "at": [
+            -14,
+            0,
+            -12
+          ],
+          "size": [
+            28,
+            24
+          ],
+          "layers": 2,
+          "colour": "light bluish grey",
+          "top": "tile"
+        },
+        {
+          "op": "box",
+          "at": [
+            -14,
+            2,
+            -12
+          ],
+          "size": [
+            28,
+            10,
+            24
+          ],
+          "colour": "light bluish grey",
+          "texture": "masonry",
+          "top": "tile"
+        },
+        {
+          "op": "room",
+          "at": [
+            -12,
+            12,
+            -10
+          ],
+          "size": [
+            24,
+            36,
+            20
+          ],
+          "colour": "white",
+          "texture": "log",
+          "quoins": "dark red",
+          "openings": [
+            {
+              "side": "front",
+              "at": 10,
+              "width": 4,
+              "y": 0,
+              "height": 18,
+              "frame": "dark red",
+              "door": "dark red",
+              "opens": "out"
+            },
+            {
+              "side": "front",
+              "at": 3,
+              "width": 2,
+              "y": 9,
+              "height": 6,
+              "fill": "none"
+            },
+            {
+              "side": "front",
+              "at": 19,
+              "width": 2,
+              "y": 9,
+              "height": 6,
+              "fill": "none"
+            },
+            {
+              "side": "left",
+              "at": 8,
+              "width": 2,
+              "y": 9,
+              "height": 6,
+              "fill": "none"
+            },
+            {
+              "side": "right",
+              "at": 8,
+              "width": 2,
+              "y": 9,
+              "height": 6,
+              "fill": "none"
+            }
+          ]
+        },
+        {
+          "op": "roof",
+          "style": "hip",
+          "at": [
+            -12,
+            48,
+            -10
+          ],
+          "size": [
+            24,
+            20
+          ],
+          "colour": "dark bluish grey",
+          "overhang": 1,
+          "holes": [
+            {
+              "at": [
+                10,
+                8
+              ],
+              "size": [
+                4,
+                4
+              ]
+            }
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            0,
+            48,
+            0
+          ],
+          "size": [
+            4,
+            30,
+            4
+          ],
+          "colour": "dark red",
+          "interior": "solid"
+        },
+        {
+          "op": "room",
+          "at": [
+            -4,
+            78,
+            -4
+          ],
+          "size": [
+            8,
+            18,
+            8
+          ],
+          "colour": "white",
+          "texture": "log",
+          "quoins": "dark red",
+          "openings": [
+            {
+              "side": "front",
+              "at": 3,
+              "width": 2,
+              "y": 3,
+              "height": 6,
+              "fill": "none"
+            }
+          ]
+        },
+        {
+          "op": "roof",
+          "style": "hip",
+          "at": [
+            -4,
+            96,
+            -4
+          ],
+          "size": [
+            8,
+            8
+          ],
+          "colour": "dark red",
+          "overhang": 1,
+          "holes": [
+            {
+              "at": [
+                3,
+                3
+              ],
+              "size": [
+                2,
+                2
+              ]
+            }
+          ]
+        },
+        {
+          "op": "column",
+          "at": [
+            1,
+            111,
+            1
+          ],
+          "height": 18,
+          "diameter": 2,
+          "colour": "yellow"
+        },
+        {
+          "op": "place",
+          "part": "4589.dat",
+          "at": [
+            1,
+            129,
+            1
+          ],
+          "colour": "yellow"
+        }
+      ]
+    },
+    {
+      "name": "Vermilion Gate",
+      "ops": [
+        {
+          "op": "floor",
+          "at": [
+            -11,
+            0,
+            -25
+          ],
+          "size": [
+            22,
+            10
+          ],
+          "layers": 1,
+          "colour": "light bluish grey",
+          "top": "tile"
+        },
+        {
+          "op": "column",
+          "at": [
+            -9,
+            1,
+            -22
+          ],
+          "height": 27,
+          "diameter": 2,
+          "colour": "dark red"
+        },
+        {
+          "op": "column",
+          "at": [
+            7,
+            1,
+            -22
+          ],
+          "height": 27,
+          "diameter": 2,
+          "colour": "dark red"
+        },
+        {
+          "op": "column",
+          "at": [
+            -5,
+            1,
+            -22
+          ],
+          "height": 21,
+          "diameter": 2,
+          "colour": "dark red"
+        },
+        {
+          "op": "column",
+          "at": [
+            3,
+            1,
+            -22
+          ],
+          "height": 21,
+          "diameter": 2,
+          "colour": "dark red"
+        },
+        {
+          "op": "box",
+          "at": [
+            -11,
+            82,
+            -23
+          ],
+          "size": [
+            22,
+            6,
+            4
+          ],
+          "colour": "dark red",
+          "interior": "solid"
+        },
+        {
+          "op": "box",
+          "at": [
+            -13,
+            88,
+            -24
+          ],
+          "size": [
+            26,
+            3,
+            6
+          ],
+          "colour": "dark red",
+          "interior": "solid"
+        },
+        {
+          "op": "roof",
+          "style": "hip",
+          "at": [
+            -13,
+            91,
+            -24
+          ],
+          "size": [
+            26,
+            6
+          ],
+          "colour": "dark bluish grey",
+          "overhang": 1
+        }
+      ]
+    },
+    {
+      "name": "Bell Pavilion",
+      "ops": [
+        {
+          "op": "floor",
+          "at": [
+            19,
+            0,
+            -5
+          ],
+          "size": [
+            12,
+            12
+          ],
+          "layers": 2,
+          "colour": "light bluish grey",
+          "top": "tile"
+        },
+        {
+          "op": "column",
+          "at": [
+            20,
+            2,
+            -4
+          ],
+          "height": 24,
+          "diameter": 2,
+          "colour": "dark red"
+        },
+        {
+          "op": "column",
+          "at": [
+            28,
+            2,
+            -4
+          ],
+          "height": 24,
+          "diameter": 2,
+          "colour": "dark red"
+        },
+        {
+          "op": "column",
+          "at": [
+            20,
+            2,
+            4
+          ],
+          "height": 24,
+          "diameter": 2,
+          "colour": "dark red"
+        },
+        {
+          "op": "column",
+          "at": [
+            28,
+            2,
+            4
+          ],
+          "height": 24,
+          "diameter": 2,
+          "colour": "dark red"
+        },
+        {
+          "op": "box",
+          "at": [
+            19,
+            30,
+            -5
+          ],
+          "size": [
+            12,
+            6,
+            12
+          ],
+          "colour": "dark red",
+          "interior": "solid"
+        },
+        {
+          "op": "roof",
+          "style": "hip",
+          "at": [
+            19,
+            36,
+            -5
+          ],
+          "size": [
+            12,
+            12
+          ],
+          "colour": "dark bluish grey",
+          "overhang": 1
+        },
+        {
+          "op": "place",
+          "part": "u608.dat",
+          "at": [
+            24,
+            24,
+            0
+          ],
+          "colour": "black"
+        }
+      ]
+    },
+    {
+      "name": "Temple Precinct Walls",
+      "ops": [
+        {
+          "op": "wall",
+          "from": [
+            -20,
+            17
+          ],
+          "to": [
+            36,
+            17
+          ],
+          "height": 15,
+          "thickness": 1,
+          "facing": "front",
+          "colour": "light bluish grey",
+          "texture": "masonry"
+        },
+        {
+          "op": "wall",
+          "from": [
+            -20,
+            -30
+          ],
+          "to": [
+            -20,
+            17
+          ],
+          "height": 15,
+          "thickness": 1,
+          "facing": "right",
+          "colour": "light bluish grey",
+          "texture": "masonry"
+        },
+        {
+          "op": "wall",
+          "from": [
+            36,
+            -30
+          ],
+          "to": [
+            36,
+            17
+          ],
+          "height": 15,
+          "thickness": 1,
+          "facing": "left",
+          "colour": "light bluish grey",
+          "texture": "masonry"
+        }
+      ]
+    }
+  ]
+}

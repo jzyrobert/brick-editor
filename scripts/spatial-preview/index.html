@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'"
+    />
+    <title>Render-blind LEGO pilot · Every build</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#builds">Skip to builds</a>
+    <header>
+      <a class="wordmark" href="#">brickeditor <span>research</span></a>
+      <a href="#findings">Read the findings</a>
+    </header>
+    <main>
+      <div class="intro">
+        <h1>Designing without seeing.</h1>
+        <p>
+          Every outcome from the render-blind LEGO pilot. Sol 6.1, high effort ·
+          12 October 2026.
+        </p>
+        <p class="verdict">
+          <strong
+            >Better research tools. No demonstrated visual improvement.</strong
+          >
+          <span class="verdict-detail"
+            >Combined facts changed the task-weighted score by +0.10 out of 24;
+            the uncertainty interval spans −0.50 to +0.60.</span
+          >
+        </p>
+      </div>
+      <nav class="stages" aria-label="Study stage">
+        <button id="creative-tab" aria-pressed="true" data-stage="creative">
+          Creative builds <span>42 / 72</span>
+        </button>
+        <button
+          id="calibration-tab"
+          aria-pressed="false"
+          data-stage="calibration"
+        >
+          Calibration <span>40 / 40</span>
+        </button>
+      </nav>
+      <details id="filter-panel" open>
+        <summary>Filter builds &amp; camera</summary>
+        <div class="filters">
+          <label
+            >Subject<select id="subject">
+              <option value="all">All subjects</option>
+            </select></label
+          >
+          <label
+            >Part facts<select id="condition">
+              <option value="all">All conditions</option>
+              <option value="control">Control</option>
+              <option value="shape">Shape</option>
+              <option value="connections">Connections</option>
+              <option value="combined">Combined</option>
+            </select></label
+          >
+          <label
+            >Camera<select id="view">
+              <option value="0">Isometric</option>
+              <option value="1">Front</option>
+              <option value="2">Reverse isometric</option>
+              <option value="3">Back</option>
+            </select></label
+          >
+          <label class="check"
+            ><input type="checkbox" id="failures" /> Include failed cases</label
+          >
+        </div>
+      </details>
+      <div class="listing-head">
+        <p id="count" role="status">Loading the frozen results…</p>
+        <p id="stage-note">
+          Four fixed views per build. Select a build to inspect it.
+        </p>
+      </div>
+      <div id="builds" tabindex="-1"></div>
+      <section id="findings" class="findings">
+        <h2>What did the changes improve?</h2>
+        <p class="lead">
+          They make the experiment more trustworthy and easier to inspect. This
+          pilot gives us no reliable evidence that the additional part facts
+          produce better designs.
+        </p>
+        <div class="finding-columns">
+          <div>
+            <h3>Useful infrastructure</h3>
+            <p>
+              Enforced text-only generation, isolated workspaces, bounded
+              feedback and budgets, exact input and output records, versioned
+              part facts, and a frozen handoff to an independent evaluation
+              session. These facilities passed their correctness checks and
+              preserved all outcomes.
+            </p>
+            <p>
+              The generating model never received these images or a visual
+              critique. All rendering happened after generation ended.
+            </p>
+          </div>
+          <div>
+            <h3>Design benefit remains unproven</h3>
+            <p>
+              Only 9 of 54 treatment sessions retrieved detailed facts. All 40
+              small calibration tasks passed, including control, so they hit a
+              ceiling. A weak retrieval result cannot establish that the
+              information itself is unhelpful.
+            </p>
+            <p>
+              All 42 submitted creative builds have construction warnings. A
+              compiled model and a high visual score do not establish physical
+              buildability.
+            </p>
+          </div>
+        </div>
+        <h3>The four information conditions</h3>
+        <p>
+          Every arm kept E, the reply example, task constraints, language and
+          legacy count/error feedback. Shape and connector facts were available
+          on demand; baseline footprints and heights remained in all arms. No
+          shortcut assembly evidence was added.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <caption>
+              All 72 creative cases, including failures
+            </caption>
+            <thead>
+              <tr>
+                <th>Condition</th>
+                <th>Submitted</th>
+                <th>Infrastructure failures</th>
+                <th>Model budget failures</th>
+                <th>Retrieved facts</th>
+                <th>Visual mean /24*</th>
+              </tr>
+            </thead>
+            <tbody id="condition-table"></tbody>
+          </table>
+        </div>
+        <p class="note">
+          *Means describe the assessed builds and have unequal task
+          representation. The primary contrast instead gives equal weight to the
+          five tasks with all arms represented: combined minus control +0.10/24,
+          descriptive 95% task-bootstrap interval [−0.50, +0.60]. Destroyer has
+          no assessed shape or combined build and is excluded from that
+          contrast.
+        </p>
+        <h3>How much confidence should we place in this?</h3>
+        <p>
+          There were 19 infrastructure failures and 11 model output-budget
+          failures. The original archive preserves an earlier misclassification
+          of one budget failure. All 30 remain unevaluated visually; none is
+          silently discarded or given an invented score. The 42 submitted builds
+          received 168 fixed-view renders and 84 reviewer requests, with no
+          rendering or review failures.
+        </p>
+        <p>
+          This is one model family, six development subjects, up to three
+          repetitions per condition, and one automated reviewer. Scores are
+          exploratory. They are not directly comparable to previous studies with
+          different scales. The review recorded recognition before revealing the
+          brief; conditions and generated source were hidden throughout.
+        </p>
+        <h3>What is worth doing next?</h3>
+        <p>
+          Use harder calibration tasks, compare automatic fact presentation with
+          retrieval, and test mechanical feedback independently. Broader model
+          comparisons and independent human reviews would strengthen the
+          evidence. The separate 36-case feedback study, expanded poses and new
+          design guidance have not been run. E remains the default.
+        </p>
+        <p>
+          <a href="results.json" download>Download the creative results</a> ·
+          <a href="report.md" download>Download the full study report</a>
+        </p>
+      </section>
+    </main>
+    <footer>
+      <p>
+        82 completed builds · 30 failed cases retained · All 112 scheduled
+        generation cases accounted for.
+      </p>
+      <p>
+        Real LEGO part geometry from the pinned
+        <a href="https://www.ldraw.org/">LDraw library</a>. This preview is a
+        research artifact; it does not certify a physically sound assembly.
+      </p>
+    </footer>
+    <dialog id="inspector" aria-labelledby="detail-title">
+      <div class="dialog-head">
+        <h2 id="detail-title"></h2>
+        <button id="close" autofocus>Close</button>
+      </div>
+      <div id="detail-content"></div>
+      <div class="dialog-nav">
+        <button id="previous">Previous build</button><span id="position"></span
+        ><button id="next">Next build</button>
+      </div>
+    </dialog>
+    <noscript
+      >This preview needs JavaScript to filter and display the frozen results.
+      <a href="results.json">Download the results</a>.</noscript
+    >
+  </body>
+</html>

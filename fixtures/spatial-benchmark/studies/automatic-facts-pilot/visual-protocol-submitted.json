@@ -1,0 +1,58 @@
+{
+  "version": "spatial-visual-assessment/1-submitted-only",
+  "frozenBeforeCandidateRendering": true,
+  "views": ["iso", "front", "iso-back", "back"],
+  "width": 1280,
+  "height": 960,
+  "look": "standard",
+  "backdrop": "blank",
+  "background": "#ffffff",
+  "visibility": "all",
+  "resourceProfile": "desktop",
+  "framing": "viewCamera(bounds.ldu, view, width/height), including every occurrence; no angle selection",
+  "sourceHashes": {
+    "src/build-script/views.ts": "2bf7f88f4a03700a8fe87d8c7551690af902147deb16c6e2062340a46ffe0c52",
+    "scripts/headless.ts": "2d471b484185978477d26e472a8288bf21ae3f77c892e83d20520b9cea4eef77",
+    "scripts/brick-cli.ts": "8e565c7fd45daa7637869894a2193b81a9fd304aba04acdf5eebf432ad8b8e6d",
+    "src/render/adapter.ts": "3c899daf93d775759f4feb11bf4db78445c677e55e08f9370e8b7f2580214d7f",
+    "src/render/look.ts": "da51830248e231d48f3b54cd9be4f0fba73465063b79b8cc42f454cf897f3afa",
+    "src/render/studio-lighting.ts": "48ee93fbf778c755ca4d237f356e4686e4f85536f16291f4752a7d77a199cf25",
+    "src/render/environment.ts": "192ae39b8e7691c73cacc6352e3eba2df3135f059cb77f04f06ee3d0ea033250",
+    "src/catalog/data.json": "7d76f89934f932c4f23f15e4a2024a1ff134dace5e4005442e1bd4bab5325d77",
+    "src/catalog/full-library-lock.json": "18db3ee192d79bd322754ecd265f5c36912eff6a330961e474fb88d43024af89"
+  },
+  "recognitionBeforeBrief": true,
+  "hide": [
+    "generating model",
+    "condition",
+    "source",
+    "title",
+    "design notes",
+    "piece count"
+  ],
+  "axes": [
+    "recognition",
+    "proportions",
+    "composition",
+    "contours",
+    "fidelity",
+    "multi-view consistency"
+  ],
+  "scale": {
+    "min": 0,
+    "max": 4,
+    "anchors": {
+      "0": "absent or severely wrong",
+      "1": "weak, substantial defects",
+      "2": "partly successful, clear defects",
+      "3": "clear and coherent, minor defects",
+      "4": "strong and coherent across views"
+    }
+  },
+  "constructionScoredSeparately": true,
+  "unknownNotFailure": true,
+  "cameraViewsAreNotIndependentSamples": true,
+  "unrenderable": "retain as unevaluated visual output and a generation/construction failure; disclose missingness",
+  "evaluationNotes": "Fresh reviewer session per build. First record unlabelled subject guesses and confidence; then reveal only the exact brief. No results return to generation. One automated reviewer is exploratory and not an independent human panel.",
+  "scoreEligibility": "submitted-only"
+}

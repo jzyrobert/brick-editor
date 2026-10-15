@@ -1,0 +1,958 @@
+{
+  "version": "spatial-infrastructure-verification/1",
+  "baseCommit": "f7f7b4b7fe6a9831a256f2c48dada858f9c90fc8",
+  "modelCalls": 0,
+  "experimentallyEvaluated": false,
+  "tests": {
+    "unit": 74,
+    "integration": 17
+  },
+  "preflights": [
+    {
+      "manifest": "calibration",
+      "scheduled": 5,
+      "manifestSha256": "31a12dbd471c7cce5717ff4c2c894b91886b941f2468f2ea1c88951026690da5",
+      "compilerBundleSha256": "e2487fb8b7f221f7204802b93ae88d417688fcf1f487cced0c2aefc89ad78d2c",
+      "effectiveInputHashes": [
+        {
+          "caseId": "slope-row--combined--1",
+          "sha256": "3ff2422d13961f51b12375a798477c14dd1e90d92e02ce04079426b477ee072c",
+          "bytes": 80861
+        },
+        {
+          "caseId": "arch-opening--combined--1",
+          "sha256": "afc72af3fa62f4e26301b35b2e9acffdfe23f63e0a17deb633fda00b5ec7a76c",
+          "bytes": 81069
+        },
+        {
+          "caseId": "body-contact--combined--1",
+          "sha256": "a7d631c33d2dcfda960dabb1e9e9901089c4039705bb8d4ab699b0397f8bb4a8",
+          "bytes": 77465
+        },
+        {
+          "caseId": "quarter-turn--combined--1",
+          "sha256": "1275fab75cd8dceb45f3390f90d927f045954574b9ec2605950a6788acb0e018",
+          "bytes": 79870
+        },
+        {
+          "caseId": "slope-transfer--combined--1",
+          "sha256": "c59f11d2481cf03072b403eac32f6605071d047d8f557ae87c3fd1426e5a5d2b",
+          "bytes": 80868
+        }
+      ],
+      "isolation": {
+        "root": [
+          "dev",
+          "lib",
+          "proc",
+          "public",
+          "runtime",
+          "scripts",
+          "tmp",
+          "usr"
+        ],
+        "env": ["PATH", "PWD"],
+        "route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "denied": [
+          "/home/ubuntu/brick-editor",
+          "/home/ubuntu/.codex",
+          "/evaluator",
+          "/credentials",
+          "/docs",
+          "/fixtures"
+        ]
+      }
+    },
+    {
+      "manifest": "calibration-alias",
+      "scheduled": 5,
+      "manifestSha256": "88149bf926ff89b1b8b4dea6812bb2f26ce35fcdae46166bc3a5ee32cac19da8",
+      "compilerBundleSha256": "e2487fb8b7f221f7204802b93ae88d417688fcf1f487cced0c2aefc89ad78d2c",
+      "effectiveInputHashes": [
+        {
+          "caseId": "slope-row--combined--1",
+          "sha256": "66d4ebd9522a331272d41b856264a2bdf0b97c00de5cf9952bf376d4165d7763",
+          "bytes": 39217
+        },
+        {
+          "caseId": "arch-opening--combined--1",
+          "sha256": "da0a0c7b09893ad9c3b5f1c01e9792ca57fa6538cf43a1022e28a54d2871a130",
+          "bytes": 39425
+        },
+        {
+          "caseId": "body-contact--combined--1",
+          "sha256": "b7970e7672ee7368e36f623af625e50471923b52a55035a0efafbabe977d5d00",
+          "bytes": 35855
+        },
+        {
+          "caseId": "quarter-turn--combined--1",
+          "sha256": "f5f18a66e37bf996784df444517a1f1f9ba723d17ed7d3ca9f45dbfecc74293c",
+          "bytes": 38194
+        },
+        {
+          "caseId": "slope-transfer--combined--1",
+          "sha256": "118ce476d3805802dbf84b905457d343c3c4497d6452534bcbaca26f04f13870",
+          "bytes": 39224
+        }
+      ],
+      "isolation": {
+        "root": [
+          "dev",
+          "lib",
+          "proc",
+          "public",
+          "runtime",
+          "scripts",
+          "tmp",
+          "usr"
+        ],
+        "env": ["PATH", "PWD"],
+        "route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "denied": [
+          "/home/ubuntu/brick-editor",
+          "/home/ubuntu/.codex",
+          "/evaluator",
+          "/credentials",
+          "/docs",
+          "/fixtures"
+        ]
+      }
+    },
+    {
+      "manifest": "calibration-facts",
+      "scheduled": 20,
+      "manifestSha256": "9e3d17a25d0aa8174fffe5f64f871f3cbdadebc9ae6bc7d1f7b2c9568326b210",
+      "compilerBundleSha256": "e2487fb8b7f221f7204802b93ae88d417688fcf1f487cced0c2aefc89ad78d2c",
+      "effectiveInputHashes": [
+        {
+          "caseId": "slope-row--control--1",
+          "sha256": "ecc2d017aea46a0ecb42e834f9953b04d9abf983f9bda5c5570700dc5e6754c6",
+          "bytes": 72796
+        },
+        {
+          "caseId": "slope-row--shape--1",
+          "sha256": "45b7276d39b92f4bb1224d81992716a465ccf965888ab1ee2aa4f25a92dec406",
+          "bytes": 73347
+        },
+        {
+          "caseId": "slope-row--connections--1",
+          "sha256": "ef9fe740e3bfb94bcd3212d6885f505b5ca6a461803218f1676bcb1702864cc3",
+          "bytes": 73374
+        },
+        {
+          "caseId": "slope-row--combined--1",
+          "sha256": "e03aba19cf8bb1911e092f223a754a8e1748d2c081dc679583cf4987a3f82866",
+          "bytes": 73747
+        },
+        {
+          "caseId": "arch-opening--control--1",
+          "sha256": "31130faaf074a47516f1c71b5013566001278d97aa2a70cb3a6aac0b8eb4cbbc",
+          "bytes": 72872
+        },
+        {
+          "caseId": "arch-opening--shape--1",
+          "sha256": "06f812c1ede9c86403a7e898e822943fe30728dcf6db34ba998a88aed9465c78",
+          "bytes": 73423
+        },
+        {
+          "caseId": "arch-opening--connections--1",
+          "sha256": "5bb39d6917eeef8621157c99beb7c02e2b03ff6894f168dd8f2b286b627a5730",
+          "bytes": 73450
+        },
+        {
+          "caseId": "arch-opening--combined--1",
+          "sha256": "aeee8cb0edfcd6a433c45f83bda6c105a2607524adcf1bce3cea92ae57c7dd32",
+          "bytes": 73823
+        },
+        {
+          "caseId": "body-contact--control--1",
+          "sha256": "1938ad9cc9e7b647421ce1867126f8de47d2ac287279a41364320b43f4eb7d89",
+          "bytes": 72865
+        },
+        {
+          "caseId": "body-contact--shape--1",
+          "sha256": "6ab619706db9595767db0f427ad3235de32314a997a270d8223f09ea45893ec8",
+          "bytes": 73416
+        },
+        {
+          "caseId": "body-contact--connections--1",
+          "sha256": "e477de97001688faabe0d8b5fbb91d53cae1ac939a3b15507df80c59c440386d",
+          "bytes": 73443
+        },
+        {
+          "caseId": "body-contact--combined--1",
+          "sha256": "71478a9410f84a6849d062adfffe08608307084a7369e765a0e756a08d782cab",
+          "bytes": 73816
+        },
+        {
+          "caseId": "quarter-turn--control--1",
+          "sha256": "9c9f1ec831ff3d1154362fc1d8eecb7b696619912c1558489c40765f5c6976d3",
+          "bytes": 72816
+        },
+        {
+          "caseId": "quarter-turn--shape--1",
+          "sha256": "bfebf9764caf5ef4ac7fc476be7efeea89de2b48170ce1ec1f47a178a58efa69",
+          "bytes": 73367
+        },
+        {
+          "caseId": "quarter-turn--connections--1",
+          "sha256": "9b0baa1bae2a8d9958091dd9852f4f24d84c053831bfd57e12962c4168f87ecf",
+          "bytes": 73394
+        },
+        {
+          "caseId": "quarter-turn--combined--1",
+          "sha256": "d99daf68eb453f09d80560f7ed04377a7632bc2679ea708090ba4d6329b4b3dd",
+          "bytes": 73767
+        },
+        {
+          "caseId": "slope-transfer--control--1",
+          "sha256": "13bd4d12c63cbd255372664024c66faea227e9f424af627a38129681bde52ed7",
+          "bytes": 72803
+        },
+        {
+          "caseId": "slope-transfer--shape--1",
+          "sha256": "febf17c1ac0b3aeaefafc8d6ece4b7ed7d3a42863af62095c4fb0d6db722265a",
+          "bytes": 73354
+        },
+        {
+          "caseId": "slope-transfer--connections--1",
+          "sha256": "723a7a8d691e536c2dd46db4cf05a93cee48d6099c26156f7a545640fc1f7a77",
+          "bytes": 73381
+        },
+        {
+          "caseId": "slope-transfer--combined--1",
+          "sha256": "ee879c74c70ea9d991535d2cca8a345dbedaece998dd5f1d68cfcd374dee2a31",
+          "bytes": 73754
+        }
+      ],
+      "isolation": {
+        "root": [
+          "dev",
+          "lib",
+          "proc",
+          "public",
+          "runtime",
+          "scripts",
+          "tmp",
+          "usr"
+        ],
+        "env": ["PATH", "PWD"],
+        "route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "denied": [
+          "/home/ubuntu/brick-editor",
+          "/home/ubuntu/.codex",
+          "/evaluator",
+          "/credentials",
+          "/docs",
+          "/fixtures"
+        ]
+      }
+    },
+    {
+      "manifest": "calibration-exposure",
+      "scheduled": 10,
+      "manifestSha256": "7f3b2de2815924324f2a997054d8260860d0841734688e5f83d6a316a4cedc4f",
+      "compilerBundleSha256": "e2487fb8b7f221f7204802b93ae88d417688fcf1f487cced0c2aefc89ad78d2c",
+      "effectiveInputHashes": [
+        {
+          "caseId": "slope-row--on-demand--1",
+          "sha256": "e03aba19cf8bb1911e092f223a754a8e1748d2c081dc679583cf4987a3f82866",
+          "bytes": 73747
+        },
+        {
+          "caseId": "slope-row--automatic--1",
+          "sha256": "d6b5b9fcb7307f89bea7e9836822054c899970b98d1676beee8e1b3692ab923c",
+          "bytes": 79438
+        },
+        {
+          "caseId": "arch-opening--on-demand--1",
+          "sha256": "aeee8cb0edfcd6a433c45f83bda6c105a2607524adcf1bce3cea92ae57c7dd32",
+          "bytes": 73823
+        },
+        {
+          "caseId": "arch-opening--automatic--1",
+          "sha256": "bcbbf61d4e6256ea0db29ef1d00ed286c278712c9dd192f2ad9c78701cbe8420",
+          "bytes": 79646
+        },
+        {
+          "caseId": "body-contact--on-demand--1",
+          "sha256": "71478a9410f84a6849d062adfffe08608307084a7369e765a0e756a08d782cab",
+          "bytes": 73816
+        },
+        {
+          "caseId": "body-contact--automatic--1",
+          "sha256": "d31fa210cf0ff9eeac3f18d803cea93116bd2ad1eccb51eaa8bbea33209f2e96",
+          "bytes": 76600
+        },
+        {
+          "caseId": "quarter-turn--on-demand--1",
+          "sha256": "d99daf68eb453f09d80560f7ed04377a7632bc2679ea708090ba4d6329b4b3dd",
+          "bytes": 73767
+        },
+        {
+          "caseId": "quarter-turn--automatic--1",
+          "sha256": "1be645852c41c3ce72949536fa77a70ffd58bd2974509a23f245cbc96295fec6",
+          "bytes": 79005
+        },
+        {
+          "caseId": "slope-transfer--on-demand--1",
+          "sha256": "ee879c74c70ea9d991535d2cca8a345dbedaece998dd5f1d68cfcd374dee2a31",
+          "bytes": 73754
+        },
+        {
+          "caseId": "slope-transfer--automatic--1",
+          "sha256": "85af0f78a938df6bf2275106c6c920b50b029eafad4eac098f88cd81fb0f78be",
+          "bytes": 79445
+        }
+      ],
+      "isolation": {
+        "root": [
+          "dev",
+          "lib",
+          "proc",
+          "public",
+          "runtime",
+          "scripts",
+          "tmp",
+          "usr"
+        ],
+        "env": ["PATH", "PWD"],
+        "route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "denied": [
+          "/home/ubuntu/brick-editor",
+          "/home/ubuntu/.codex",
+          "/evaluator",
+          "/credentials",
+          "/docs",
+          "/fixtures"
+        ]
+      }
+    },
+    {
+      "manifest": "facts-factorial",
+      "scheduled": 48,
+      "manifestSha256": "99562dd42fca0592305fbb8be65c3a0f873e378e42ddedc6bbf37126bc2d1034",
+      "compilerBundleSha256": "e2487fb8b7f221f7204802b93ae88d417688fcf1f487cced0c2aefc89ad78d2c",
+      "effectiveInputHashes": [
+        {
+          "caseId": "destroyer--connections--2",
+          "sha256": "4e700dfcbc2f8907f81b10836a12658975246787c7692b1992a0fbd3e54370d7",
+          "bytes": 73674
+        },
+        {
+          "caseId": "ewok--control--2",
+          "sha256": "e3bb9be26f94383a98bb6096ae9a92ec062cb49825aea9d65a93cc3c6bcf39a5",
+          "bytes": 73131
+        },
+        {
+          "caseId": "ewok--combined--1",
+          "sha256": "6a9394d0d29bc6e3e28dc25b593f9e7eae65cf85158187698439aa12dda05a9c",
+          "bytes": 74082
+        },
+        {
+          "caseId": "pelican--connections--2",
+          "sha256": "2a8672ccfd81418fd148f7fe65cb35feac962422cd4bba5dab28848378ed5260",
+          "bytes": 73675
+        },
+        {
+          "caseId": "pelican--connections--1",
+          "sha256": "2a8672ccfd81418fd148f7fe65cb35feac962422cd4bba5dab28848378ed5260",
+          "bytes": 73675
+        },
+        {
+          "caseId": "temple--control--2",
+          "sha256": "b150447d713791bd97680b8cb7199ba1a4417521acd302d4910ff967d6e89268",
+          "bytes": 73099
+        },
+        {
+          "caseId": "temple--connections--1",
+          "sha256": "6d4acea4bea1507c03de596297a5e88b825dfa815c04342442550b1dab10c828",
+          "bytes": 73677
+        },
+        {
+          "caseId": "temple--shape--1",
+          "sha256": "a716ae99dbb354ae9e2a021ab9586a995c669b33cb8e559b2394e68acef2b1be",
+          "bytes": 73650
+        },
+        {
+          "caseId": "ewok--control--1",
+          "sha256": "e3bb9be26f94383a98bb6096ae9a92ec062cb49825aea9d65a93cc3c6bcf39a5",
+          "bytes": 73131
+        },
+        {
+          "caseId": "dragon--combined--2",
+          "sha256": "97cd3a53c0caaffb3dcc2bd665fd6f394f0ee01f42994c177fab641667940f38",
+          "bytes": 74032
+        },
+        {
+          "caseId": "temple--shape--2",
+          "sha256": "a716ae99dbb354ae9e2a021ab9586a995c669b33cb8e559b2394e68acef2b1be",
+          "bytes": 73650
+        },
+        {
+          "caseId": "piplup--shape--2",
+          "sha256": "d951ec113a0bf9f9735680d7c3fa9d60330e61e274188f4794adf1232c4a3d97",
+          "bytes": 73630
+        },
+        {
+          "caseId": "destroyer--control--2",
+          "sha256": "9b17097f93c92f8cf4920ceced811d344236d3e2ef587f02ec1d9efbb91f980a",
+          "bytes": 73096
+        },
+        {
+          "caseId": "pelican--shape--1",
+          "sha256": "5035277d5e9d7a55dc6be7d0e3140fc21fb6c628f8435cc1318db64d90d63ffd",
+          "bytes": 73648
+        },
+        {
+          "caseId": "dragon--shape--1",
+          "sha256": "474f8359f0b56952923b65b2d4a8a8f8845e2f25cf510551fbbf8171cf28e4e0",
+          "bytes": 73632
+        },
+        {
+          "caseId": "piplup--combined--2",
+          "sha256": "28f6e4929578420cba9c0ac0ebd7ae8bf85f29383975b682273fc8c87d233990",
+          "bytes": 74030
+        },
+        {
+          "caseId": "piplup--connections--2",
+          "sha256": "2cabd01997f53ff59671b1ac2de2cac7afed68a3084741830c32e0fafffeb416",
+          "bytes": 73657
+        },
+        {
+          "caseId": "dragon--shape--2",
+          "sha256": "474f8359f0b56952923b65b2d4a8a8f8845e2f25cf510551fbbf8171cf28e4e0",
+          "bytes": 73632
+        },
+        {
+          "caseId": "pelican--shape--2",
+          "sha256": "5035277d5e9d7a55dc6be7d0e3140fc21fb6c628f8435cc1318db64d90d63ffd",
+          "bytes": 73648
+        },
+        {
+          "caseId": "temple--combined--1",
+          "sha256": "8871d8e25c0ba6aae059749cf149624eb383c995e6da7cec50a84b1168c2b0a4",
+          "bytes": 74050
+        },
+        {
+          "caseId": "ewok--shape--1",
+          "sha256": "3a2425248fdd8b5e36772cc7662a87022df5d7c27bf94f32bea02ca075d33980",
+          "bytes": 73682
+        },
+        {
+          "caseId": "piplup--control--2",
+          "sha256": "0c6d25c97e56abaedfb2c0716e2876d92ca6162e0fcc5654eedf986ffd786e5a",
+          "bytes": 73079
+        },
+        {
+          "caseId": "destroyer--shape--1",
+          "sha256": "1e73a3468b7cab4a58d7bd983f982a7027212f4b6b0968dc9edf4484e8d7a206",
+          "bytes": 73647
+        },
+        {
+          "caseId": "dragon--combined--1",
+          "sha256": "97cd3a53c0caaffb3dcc2bd665fd6f394f0ee01f42994c177fab641667940f38",
+          "bytes": 74032
+        },
+        {
+          "caseId": "dragon--control--1",
+          "sha256": "e742ac326ebffdbc055040aa17dc0b7b240cd49e8a92bebd6588ae3e474f7c36",
+          "bytes": 73081
+        },
+        {
+          "caseId": "destroyer--combined--1",
+          "sha256": "f0ee10e6324101807e9f0582a8cd8924f5c3d84129f4ad4728b987b3caada8d0",
+          "bytes": 74047
+        },
+        {
+          "caseId": "piplup--combined--1",
+          "sha256": "28f6e4929578420cba9c0ac0ebd7ae8bf85f29383975b682273fc8c87d233990",
+          "bytes": 74030
+        },
+        {
+          "caseId": "destroyer--shape--2",
+          "sha256": "1e73a3468b7cab4a58d7bd983f982a7027212f4b6b0968dc9edf4484e8d7a206",
+          "bytes": 73647
+        },
+        {
+          "caseId": "destroyer--connections--1",
+          "sha256": "4e700dfcbc2f8907f81b10836a12658975246787c7692b1992a0fbd3e54370d7",
+          "bytes": 73674
+        },
+        {
+          "caseId": "temple--control--1",
+          "sha256": "b150447d713791bd97680b8cb7199ba1a4417521acd302d4910ff967d6e89268",
+          "bytes": 73099
+        },
+        {
+          "caseId": "temple--combined--2",
+          "sha256": "8871d8e25c0ba6aae059749cf149624eb383c995e6da7cec50a84b1168c2b0a4",
+          "bytes": 74050
+        },
+        {
+          "caseId": "pelican--control--1",
+          "sha256": "3411a4d1fab933cd5df46e7b32eb82f8327f2e598c8982654f4acb6ed0dff865",
+          "bytes": 73097
+        },
+        {
+          "caseId": "ewok--combined--2",
+          "sha256": "6a9394d0d29bc6e3e28dc25b593f9e7eae65cf85158187698439aa12dda05a9c",
+          "bytes": 74082
+        },
+        {
+          "caseId": "piplup--shape--1",
+          "sha256": "d951ec113a0bf9f9735680d7c3fa9d60330e61e274188f4794adf1232c4a3d97",
+          "bytes": 73630
+        },
+        {
+          "caseId": "ewok--connections--2",
+          "sha256": "90f4fa09d96e1f4babff8468ef4b3710d3f11a73ee438aa1c9a8801fa5a21621",
+          "bytes": 73709
+        },
+        {
+          "caseId": "pelican--combined--2",
+          "sha256": "38bf32f53606f5d8d6dc51ba780b5cb701bbca24c7a618a8156acb953d5ed3c6",
+          "bytes": 74048
+        },
+        {
+          "caseId": "temple--connections--2",
+          "sha256": "6d4acea4bea1507c03de596297a5e88b825dfa815c04342442550b1dab10c828",
+          "bytes": 73677
+        },
+        {
+          "caseId": "ewok--connections--1",
+          "sha256": "90f4fa09d96e1f4babff8468ef4b3710d3f11a73ee438aa1c9a8801fa5a21621",
+          "bytes": 73709
+        },
+        {
+          "caseId": "ewok--shape--2",
+          "sha256": "3a2425248fdd8b5e36772cc7662a87022df5d7c27bf94f32bea02ca075d33980",
+          "bytes": 73682
+        },
+        {
+          "caseId": "destroyer--combined--2",
+          "sha256": "f0ee10e6324101807e9f0582a8cd8924f5c3d84129f4ad4728b987b3caada8d0",
+          "bytes": 74047
+        },
+        {
+          "caseId": "piplup--control--1",
+          "sha256": "0c6d25c97e56abaedfb2c0716e2876d92ca6162e0fcc5654eedf986ffd786e5a",
+          "bytes": 73079
+        },
+        {
+          "caseId": "dragon--connections--2",
+          "sha256": "b69752d5427bbd629f0df7393076366ed2e6c7b47b106ee4d3a537541e1597b4",
+          "bytes": 73659
+        },
+        {
+          "caseId": "pelican--control--2",
+          "sha256": "3411a4d1fab933cd5df46e7b32eb82f8327f2e598c8982654f4acb6ed0dff865",
+          "bytes": 73097
+        },
+        {
+          "caseId": "dragon--control--2",
+          "sha256": "e742ac326ebffdbc055040aa17dc0b7b240cd49e8a92bebd6588ae3e474f7c36",
+          "bytes": 73081
+        },
+        {
+          "caseId": "dragon--connections--1",
+          "sha256": "b69752d5427bbd629f0df7393076366ed2e6c7b47b106ee4d3a537541e1597b4",
+          "bytes": 73659
+        },
+        {
+          "caseId": "destroyer--control--1",
+          "sha256": "9b17097f93c92f8cf4920ceced811d344236d3e2ef587f02ec1d9efbb91f980a",
+          "bytes": 73096
+        },
+        {
+          "caseId": "piplup--connections--1",
+          "sha256": "2cabd01997f53ff59671b1ac2de2cac7afed68a3084741830c32e0fafffeb416",
+          "bytes": 73657
+        },
+        {
+          "caseId": "pelican--combined--1",
+          "sha256": "38bf32f53606f5d8d6dc51ba780b5cb701bbca24c7a618a8156acb953d5ed3c6",
+          "bytes": 74048
+        }
+      ],
+      "isolation": {
+        "root": [
+          "dev",
+          "lib",
+          "proc",
+          "public",
+          "runtime",
+          "scripts",
+          "tmp",
+          "usr"
+        ],
+        "env": ["PATH", "PWD"],
+        "route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "denied": [
+          "/home/ubuntu/brick-editor",
+          "/home/ubuntu/.codex",
+          "/evaluator",
+          "/credentials",
+          "/docs",
+          "/fixtures"
+        ]
+      }
+    },
+    {
+      "manifest": "feedback",
+      "scheduled": 24,
+      "manifestSha256": "4fd18360508bdeb42bbaf82106a22b5e1b0152d86a9111527dfcf5072ae9cdce",
+      "compilerBundleSha256": "e2487fb8b7f221f7204802b93ae88d417688fcf1f487cced0c2aefc89ad78d2c",
+      "effectiveInputHashes": [
+        {
+          "caseId": "piplup--legacy--2",
+          "sha256": "28f6e4929578420cba9c0ac0ebd7ae8bf85f29383975b682273fc8c87d233990",
+          "bytes": 74030
+        },
+        {
+          "caseId": "dragon--mechanical--2",
+          "sha256": "695750b0061db5ca46baf239e21f5db1bf99fe4943f93a144b932f7c5fe41cc7",
+          "bytes": 74276
+        },
+        {
+          "caseId": "destroyer--mechanical--1",
+          "sha256": "2978b9e5a5b6a2ed67733a63accace7de6ed7ffebe80ffb7e11e86eedec8dd60",
+          "bytes": 74291
+        },
+        {
+          "caseId": "ewok--legacy--2",
+          "sha256": "6a9394d0d29bc6e3e28dc25b593f9e7eae65cf85158187698439aa12dda05a9c",
+          "bytes": 74082
+        },
+        {
+          "caseId": "temple--legacy--2",
+          "sha256": "8871d8e25c0ba6aae059749cf149624eb383c995e6da7cec50a84b1168c2b0a4",
+          "bytes": 74050
+        },
+        {
+          "caseId": "pelican--mechanical--2",
+          "sha256": "70fe517c09a843453585f0a94473cdcf25717c90a2c355e4dae75527367d9dc4",
+          "bytes": 74292
+        },
+        {
+          "caseId": "destroyer--legacy--1",
+          "sha256": "f0ee10e6324101807e9f0582a8cd8924f5c3d84129f4ad4728b987b3caada8d0",
+          "bytes": 74047
+        },
+        {
+          "caseId": "pelican--legacy--1",
+          "sha256": "38bf32f53606f5d8d6dc51ba780b5cb701bbca24c7a618a8156acb953d5ed3c6",
+          "bytes": 74048
+        },
+        {
+          "caseId": "ewok--mechanical--1",
+          "sha256": "2f2a3ec3ec5270992a953284de18f5f0ef6f8b720580671fe4810d678181cad4",
+          "bytes": 74326
+        },
+        {
+          "caseId": "temple--mechanical--2",
+          "sha256": "635e999b5ea847e287409953ba8677314a3201a7aff06affde36efa1d92796bb",
+          "bytes": 74294
+        },
+        {
+          "caseId": "ewok--mechanical--2",
+          "sha256": "2f2a3ec3ec5270992a953284de18f5f0ef6f8b720580671fe4810d678181cad4",
+          "bytes": 74326
+        },
+        {
+          "caseId": "dragon--mechanical--1",
+          "sha256": "695750b0061db5ca46baf239e21f5db1bf99fe4943f93a144b932f7c5fe41cc7",
+          "bytes": 74276
+        },
+        {
+          "caseId": "pelican--legacy--2",
+          "sha256": "38bf32f53606f5d8d6dc51ba780b5cb701bbca24c7a618a8156acb953d5ed3c6",
+          "bytes": 74048
+        },
+        {
+          "caseId": "dragon--legacy--2",
+          "sha256": "97cd3a53c0caaffb3dcc2bd665fd6f394f0ee01f42994c177fab641667940f38",
+          "bytes": 74032
+        },
+        {
+          "caseId": "temple--legacy--1",
+          "sha256": "8871d8e25c0ba6aae059749cf149624eb383c995e6da7cec50a84b1168c2b0a4",
+          "bytes": 74050
+        },
+        {
+          "caseId": "piplup--mechanical--2",
+          "sha256": "8c5ca30ad743dad86ad486833ea34fe8d1b359b291cfce2a699ef1fc5993ac80",
+          "bytes": 74274
+        },
+        {
+          "caseId": "piplup--legacy--1",
+          "sha256": "28f6e4929578420cba9c0ac0ebd7ae8bf85f29383975b682273fc8c87d233990",
+          "bytes": 74030
+        },
+        {
+          "caseId": "destroyer--mechanical--2",
+          "sha256": "2978b9e5a5b6a2ed67733a63accace7de6ed7ffebe80ffb7e11e86eedec8dd60",
+          "bytes": 74291
+        },
+        {
+          "caseId": "ewok--legacy--1",
+          "sha256": "6a9394d0d29bc6e3e28dc25b593f9e7eae65cf85158187698439aa12dda05a9c",
+          "bytes": 74082
+        },
+        {
+          "caseId": "destroyer--legacy--2",
+          "sha256": "f0ee10e6324101807e9f0582a8cd8924f5c3d84129f4ad4728b987b3caada8d0",
+          "bytes": 74047
+        },
+        {
+          "caseId": "dragon--legacy--1",
+          "sha256": "97cd3a53c0caaffb3dcc2bd665fd6f394f0ee01f42994c177fab641667940f38",
+          "bytes": 74032
+        },
+        {
+          "caseId": "temple--mechanical--1",
+          "sha256": "635e999b5ea847e287409953ba8677314a3201a7aff06affde36efa1d92796bb",
+          "bytes": 74294
+        },
+        {
+          "caseId": "piplup--mechanical--1",
+          "sha256": "8c5ca30ad743dad86ad486833ea34fe8d1b359b291cfce2a699ef1fc5993ac80",
+          "bytes": 74274
+        },
+        {
+          "caseId": "pelican--mechanical--1",
+          "sha256": "70fe517c09a843453585f0a94473cdcf25717c90a2c355e4dae75527367d9dc4",
+          "bytes": 74292
+        }
+      ],
+      "isolation": {
+        "root": [
+          "dev",
+          "lib",
+          "proc",
+          "public",
+          "runtime",
+          "scripts",
+          "tmp",
+          "usr"
+        ],
+        "env": ["PATH", "PWD"],
+        "route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "denied": [
+          "/home/ubuntu/brick-editor",
+          "/home/ubuntu/.codex",
+          "/evaluator",
+          "/credentials",
+          "/docs",
+          "/fixtures"
+        ]
+      }
+    }
+  ],
+  "witnessReplays": [
+    {
+      "condition": "alias",
+      "task": "arch-opening",
+      "assessmentSha256": "ef44d90c0148cc35029839bf098721bdad59c56a36c3d76084b4d6d1c5ccbda9",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "condition": "alias",
+      "task": "body-contact",
+      "assessmentSha256": "32203dd3d5acbc94996ab1b127be07fa37658cd2ea695e01eb8e6b54118e795f",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "condition": "alias",
+      "task": "quarter-turn",
+      "assessmentSha256": "942a929acd76f6ba616316a985b9f07373568c970d4d7dc9a622fcb586d971f0",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "condition": "alias",
+      "task": "slope-row",
+      "assessmentSha256": "6435cfcdea85508769feb39bd1c72909835f13c77af0b89b2cc3119653a99042",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "condition": "alias",
+      "task": "slope-transfer",
+      "assessmentSha256": "852e4ad542c6ac95b70f9878e551df41e030bc3667ebf121cfd36412d25e4616",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "condition": "normal",
+      "task": "arch-opening",
+      "assessmentSha256": "ef44d90c0148cc35029839bf098721bdad59c56a36c3d76084b4d6d1c5ccbda9",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "condition": "normal",
+      "task": "body-contact",
+      "assessmentSha256": "32203dd3d5acbc94996ab1b127be07fa37658cd2ea695e01eb8e6b54118e795f",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "condition": "normal",
+      "task": "quarter-turn",
+      "assessmentSha256": "942a929acd76f6ba616316a985b9f07373568c970d4d7dc9a622fcb586d971f0",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "condition": "normal",
+      "task": "slope-row",
+      "assessmentSha256": "6435cfcdea85508769feb39bd1c72909835f13c77af0b89b2cc3119653a99042",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        }
+      ]
+    },
+    {
+      "condition": "normal",
+      "task": "slope-transfer",
+      "assessmentSha256": "852e4ad542c6ac95b70f9878e551df41e030bc3667ebf121cfd36412d25e4616",
+      "statuses": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified"
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Replay fixtures are not model-generation outcomes.",
+    "Dry-run transport probes retain four expected palette failures and one accepted probe.",
+    "No live provider or visual evaluator was executed."
+  ],
+  "localArchive": ".local/spatial-v1-*"
+}

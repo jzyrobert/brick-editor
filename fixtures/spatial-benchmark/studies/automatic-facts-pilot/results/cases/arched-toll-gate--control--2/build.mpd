@@ -1,0 +1,40 @@
+0 FILE red-beacon-toll-entrance.mpd
+0 Red Beacon Toll Entrance
+0 Name: red-beacon-toll-entrance.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 red-beacon-toll-entrance-01-arched-toll-gate.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 red-beacon-toll-entrance-02-entrance-signal.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 red-beacon-toll-entrance-03-guard-hut.ldr
+
+0 FILE red-beacon-toll-entrance-01-arched-toll-gate.ldr
+0 Arched toll gate
+0 Name: red-beacon-toll-entrance-01-arched-toll-gate.ldr
+0 // Build script layer: Arched toll gate
+1 71 20 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 72 20 -48 50 1 0 0 0 1 0 0 0 1 3039.dat
+1 72 20 -56 60 1 0 0 0 1 0 0 0 1 3068b.dat
+1 71 100 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 72 100 -48 50 1 0 0 0 1 0 0 0 1 3039.dat
+1 72 100 -56 60 1 0 0 0 1 0 0 0 1 3068b.dat
+1 71 60 -48 10 1 0 0 0 1 0 0 0 1 3659.dat
+1 71 60 -48 70 1 0 0 0 1 0 0 0 1 3659.dat
+
+0 FILE red-beacon-toll-entrance-02-entrance-signal.ldr
+0 Entrance signal
+0 Name: red-beacon-toll-entrance-02-entrance-signal.ldr
+0 // Build script layer: Entrance signal
+1 4 50 -56 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 4 50 -64 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 4 50 -72 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 4 50 -80 10 1 0 0 0 1 0 0 0 1 3024.dat
+
+0 FILE red-beacon-toll-entrance-03-guard-hut.ldr
+0 Guard hut
+0 Name: red-beacon-toll-entrance-03-guard-hut.ldr
+0 // Build script layer: Guard hut
+1 19 200 -24 40 1 0 0 0 1 0 0 0 1 3001.dat
+1 19 200 -48 40 1 0 0 0 1 0 0 0 1 3001.dat
+1 272 180 -72 50 1 0 0 0 1 0 0 0 1 3039.dat
+1 272 220 -72 50 1 0 0 0 1 0 0 0 1 3039.dat

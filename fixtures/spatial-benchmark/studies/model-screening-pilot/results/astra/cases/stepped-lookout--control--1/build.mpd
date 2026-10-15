@@ -1,0 +1,46 @@
+0 FILE spiral-summit-lookout.mpd
+0 Spiral Summit Lookout
+0 Name: spiral-summit-lookout.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 spiral-summit-lookout-01-ascending-spiral.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 spiral-summit-lookout-02-open-observation-perch.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 spiral-summit-lookout-03-overhanging-sloping-canopy.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 spiral-summit-lookout-04-connected-summit-marker.ldr
+
+0 FILE spiral-summit-lookout-01-ascending-spiral.ldr
+0 Ascending spiral
+0 Name: spiral-summit-lookout-01-ascending-spiral.ldr
+0 // Build script layer: Ascending spiral
+1 71 40 -24 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 28 20 -32 20 1 0 0 0 1 0 0 0 1 3068b.dat
+1 71 60 -48 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 28 60 -56 20 1 0 0 0 1 0 0 0 1 3068b.dat
+1 71 40 -72 60 1 0 0 0 1 0 0 0 1 3001.dat
+1 28 60 -80 60 1 0 0 0 1 0 0 0 1 3068b.dat
+1 71 20 -96 40 0 0 1 0 1 0 -1 0 0 3001.dat
+
+0 FILE spiral-summit-lookout-02-open-observation-perch.ldr
+0 Open observation perch
+0 Name: spiral-summit-lookout-02-open-observation-perch.ldr
+0 // Build script layer: Open observation perch
+1 19 10 -120 40 0 0 1 0 1 0 -1 0 0 3659.dat
+1 19 30 -120 40 0 0 1 0 1 0 -1 0 0 3659.dat
+
+0 FILE spiral-summit-lookout-03-overhanging-sloping-canopy.ldr
+0 Overhanging sloping canopy
+0 Name: spiral-summit-lookout-03-overhanging-sloping-canopy.ldr
+0 // Build script layer: Overhanging sloping canopy
+1 320 10 -144 20 0 0 1 0 1 0 -1 0 0 3039.dat
+1 320 30 -144 20 0 0 -1 0 1 0 1 0 0 3039.dat
+1 320 10 -144 60 0 0 1 0 1 0 -1 0 0 3039.dat
+1 320 30 -144 60 0 0 -1 0 1 0 1 0 0 3039.dat
+
+0 FILE spiral-summit-lookout-04-connected-summit-marker.ldr
+0 Connected summit marker
+0 Name: spiral-summit-lookout-04-connected-summit-marker.ldr
+0 // Build script layer: Connected summit marker
+1 297 10 -152 70 1 0 0 0 1 0 0 0 1 3024.dat
+1 297 10 -160 70 1 0 0 0 1 0 0 0 1 3024.dat
+1 297 20 -168 60 1 0 0 0 1 0 0 0 1 3068b.dat

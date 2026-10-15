@@ -1,0 +1,193 @@
+{
+  "buildScript": 1,
+  "title": "Switchback Signal Lookout",
+  "description": "A compact ascending route curls around to an open arched observation perch. A broad sloping canopy shelters the landing, and its ridge carries a connected signal marker. Exactly 16 inventory parts: four bricks, four slopes, two arches, four small plates and two tiles.",
+  "palette": {
+    "stone": "tan",
+    "shelter": "white",
+    "canopy": "dark red",
+    "tread": "dark bluish grey",
+    "signal": "yellow"
+  },
+  "sections": [
+    {
+      "name": "Ascending switchback",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3001.dat",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3001.dat",
+          "at": [
+            2,
+            3,
+            0
+          ],
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3001.dat",
+          "at": [
+            2,
+            6,
+            1
+          ],
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3001.dat",
+          "at": [
+            0,
+            9,
+            1
+          ],
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3068b.dat",
+          "at": [
+            0,
+            3,
+            0
+          ],
+          "colour": "tread"
+        },
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            4,
+            6,
+            0
+          ],
+          "colour": "tread"
+        },
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            5,
+            6,
+            0
+          ],
+          "colour": "tread"
+        },
+        {
+          "op": "place",
+          "part": "3068b.dat",
+          "at": [
+            4,
+            9,
+            1
+          ],
+          "colour": "tread"
+        }
+      ]
+    },
+    {
+      "name": "Sheltered observation perch",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3659.dat",
+          "at": [
+            0,
+            12,
+            1
+          ],
+          "colour": "shelter"
+        },
+        {
+          "op": "place",
+          "part": "3659.dat",
+          "at": [
+            0,
+            12,
+            2
+          ],
+          "colour": "shelter"
+        },
+        {
+          "op": "place",
+          "part": "3039.dat",
+          "at": [
+            0,
+            15,
+            0
+          ],
+          "colour": "canopy",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3039.dat",
+          "at": [
+            0,
+            15,
+            2
+          ],
+          "colour": "canopy",
+          "turn": 180
+        },
+        {
+          "op": "place",
+          "part": "3039.dat",
+          "at": [
+            2,
+            15,
+            0
+          ],
+          "colour": "canopy",
+          "turn": 0
+        },
+        {
+          "op": "place",
+          "part": "3039.dat",
+          "at": [
+            2,
+            15,
+            2
+          ],
+          "colour": "canopy",
+          "turn": 180
+        }
+      ]
+    },
+    {
+      "name": "Connected ridge signal",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            0,
+            18,
+            1
+          ],
+          "colour": "signal"
+        },
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            0,
+            19,
+            1
+          ],
+          "colour": "red"
+        }
+      ]
+    }
+  ]
+}

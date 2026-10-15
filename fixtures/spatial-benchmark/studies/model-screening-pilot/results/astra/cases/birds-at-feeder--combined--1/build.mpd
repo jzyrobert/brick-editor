@@ -1,0 +1,40 @@
+0 FILE a-polite-peck.mpd
+0 A Polite Peck
+0 Name: a-polite-peck.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 a-polite-peck-01-standing-mallard.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 a-polite-peck-02-crouching-companion.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 a-polite-peck-03-shared-feeding-trough.ldr
+
+0 FILE a-polite-peck-01-standing-mallard.ldr
+0 Standing mallard
+0 Name: a-polite-peck-01-standing-mallard.ldr
+0 // Build script layer: Standing mallard
+1 25 40 -24 10 1 0 0 0 1 0 0 0 1 3659.dat
+1 70 40 -48 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 308 30 -72 20 0 0 1 0 1 0 -1 0 0 3039.dat
+1 14 80 -72 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 288 70 -96 20 0 0 1 0 1 0 -1 0 0 3039.dat
+1 0 70 -104 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 0 70 -104 30 1 0 0 0 1 0 0 0 1 3024.dat
+
+0 FILE a-polite-peck-02-crouching-companion.ldr
+0 Crouching companion
+0 Name: a-polite-peck-02-crouching-companion.ldr
+0 // Build script layer: Crouching companion
+1 15 280 -24 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 15 290 -48 20 0 0 -1 0 1 0 1 0 0 3039.dat
+1 25 240 -48 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 15 250 -72 20 0 0 -1 0 1 0 1 0 0 3039.dat
+1 0 250 -80 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 0 250 -80 30 1 0 0 0 1 0 0 0 1 3024.dat
+
+0 FILE a-polite-peck-03-shared-feeding-trough.ldr
+0 Shared feeding trough
+0 Name: a-polite-peck-03-shared-feeding-trough.ldr
+0 // Build script layer: Shared feeding trough
+1 70 150 -24 20 0 0 1 0 1 0 -1 0 0 3659.dat
+1 19 160 -32 0 1 0 0 0 1 0 0 0 1 3068b.dat
+1 19 160 -32 40 1 0 0 0 1 0 0 0 1 3068b.dat

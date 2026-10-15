@@ -1,0 +1,201 @@
+{
+  "buildScript": 1,
+  "title": "Polite Peckers",
+  "description": "A red bird stretches its head forward while a blue bird dips its bill toward the same seed tray. Three separate, ground-supported assemblies; exactly 16 pieces.",
+  "sections": [
+    {
+      "name": "Two different feeding poses",
+      "ops": [
+        {
+          "op": "group",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "ops": [
+            {
+              "op": "place",
+              "part": "3659.dat",
+              "at": [
+                0,
+                0,
+                0
+              ],
+              "colour": "red"
+            },
+            {
+              "op": "place",
+              "part": "3001.dat",
+              "at": [
+                1,
+                3,
+                0
+              ],
+              "colour": "red"
+            },
+            {
+              "op": "place",
+              "part": "3039.dat",
+              "at": [
+                -1,
+                3,
+                0
+              ],
+              "colour": "dark red",
+              "turn": 90
+            },
+            {
+              "op": "place",
+              "part": "3039.dat",
+              "at": [
+                4,
+                6,
+                0
+              ],
+              "colour": "yellow",
+              "turn": 270
+            },
+            {
+              "op": "place",
+              "part": "3068b.dat",
+              "at": [
+                2,
+                6,
+                0
+              ],
+              "colour": "red"
+            },
+            {
+              "op": "place",
+              "part": "3024.dat",
+              "at": [
+                4,
+                9,
+                0
+              ],
+              "colour": "black"
+            }
+          ]
+        },
+        {
+          "op": "group",
+          "at": [
+            13,
+            0,
+            0
+          ],
+          "ops": [
+            {
+              "op": "place",
+              "part": "3659.dat",
+              "at": [
+                0,
+                0,
+                0
+              ],
+              "colour": "blue"
+            },
+            {
+              "op": "place",
+              "part": "3001.dat",
+              "at": [
+                1,
+                3,
+                0
+              ],
+              "colour": "blue"
+            },
+            {
+              "op": "place",
+              "part": "3039.dat",
+              "at": [
+                3,
+                6,
+                0
+              ],
+              "colour": "dark blue",
+              "turn": 270
+            },
+            {
+              "op": "place",
+              "part": "3039.dat",
+              "at": [
+                -1,
+                3,
+                0
+              ],
+              "colour": "yellow",
+              "turn": 90
+            },
+            {
+              "op": "place",
+              "part": "3068b.dat",
+              "at": [
+                1,
+                6,
+                0
+              ],
+              "colour": "blue"
+            },
+            {
+              "op": "place",
+              "part": "3024.dat",
+              "at": [
+                0,
+                6,
+                0
+              ],
+              "colour": "black"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shared seed tray",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3001.dat",
+          "at": [
+            7,
+            0,
+            0
+          ],
+          "colour": "reddish brown"
+        },
+        {
+          "op": "place",
+          "part": "3068b.dat",
+          "at": [
+            8,
+            3,
+            0
+          ],
+          "colour": "tan"
+        },
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            7,
+            3,
+            0
+          ],
+          "colour": "yellow"
+        },
+        {
+          "op": "place",
+          "part": "3024.dat",
+          "at": [
+            10,
+            3,
+            1
+          ],
+          "colour": "yellow"
+        }
+      ]
+    }
+  ]
+}

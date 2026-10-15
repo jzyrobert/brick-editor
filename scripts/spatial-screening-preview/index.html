@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'"
+    />
+    <title>LEGO spatial pilot · Sol, Luna &amp; Astra</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#builds">Skip to builds</a>
+    <header>
+      <a class="wordmark" href="#">brickeditor <span>research</span></a
+      ><a href="#findings">Read the findings</a>
+    </header>
+    <main>
+      <div class="intro">
+        <h1>Small builds. Three models.</h1>
+        <p>
+          All 64 generation cases from the automatic-facts pilots · 13 October
+          2026.
+        </p>
+        <p class="verdict">
+          <strong>A promising signal, with important failures.</strong
+          ><span class="verdict-detail"
+            >Supplied part facts helped Sol and Astra visually in this small
+            study. Luna's task compliance worsened. No defaults were
+            promoted.</span
+          >
+        </p>
+      </div>
+      <details id="filter-panel" open>
+        <summary>Filter builds &amp; camera</summary>
+        <div class="filters">
+          <label
+            >Model<select id="model">
+              <option value="all">All models</option>
+              <option value="sol">Sol 6.1 · high</option>
+              <option value="luna">Luna · high</option>
+              <option value="astra">Astra · medium</option>
+            </select></label
+          >
+          <label
+            >Subject<select id="subject">
+              <option value="all">All subjects</option>
+            </select></label
+          >
+          <label
+            >Part facts<select id="condition">
+              <option value="all">All conditions</option>
+              <option value="control">Control</option>
+              <option value="shape">Shape</option>
+              <option value="connections">Connections</option>
+              <option value="combined">Combined</option>
+            </select></label
+          >
+          <label
+            >Camera<select id="view">
+              <option value="0">Isometric</option>
+              <option value="1">Front</option>
+              <option value="2">Reverse isometric</option>
+              <option value="3">Back</option>
+            </select></label
+          >
+          <label class="check"
+            ><input id="failures" type="checkbox" checked /> Include failures
+            &amp; violations</label
+          >
+        </div>
+      </details>
+      <div class="listing-head">
+        <p id="count" role="status">Loading frozen results…</p>
+        <p>Four fixed views. Select any case to inspect its evidence.</p>
+      </div>
+      <div id="builds" tabindex="-1"></div>
+      <section class="findings" id="findings">
+        <h2>What did the facts improve?</h2>
+        <p class="lead">
+          The treatment automatically supplies shape and connector facts. The
+          baseline prompt, inventory and build language stay fixed. Models never
+          saw their builds during generation.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Compliant: control → combined</th>
+                <th>Visual change /24</th>
+                <th>Task pairs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sol 6.1 / high</td>
+                <td>5/8 → 6/8</td>
+                <td>+2.50</td>
+                <td>4/4</td>
+              </tr>
+              <tr>
+                <td>Luna / high</td>
+                <td>5/8 → 3/8</td>
+                <td>+3.00, survivors only</td>
+                <td>2/4</td>
+              </tr>
+              <tr>
+                <td>Astra / medium</td>
+                <td>7/8 → 7/8</td>
+                <td>+1.38</td>
+                <td>4/4</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Visual effects average task-level differences, not all individual
+          scores. Luna's canal and lookout combined-facts runs all failed: its
+          +3 is not evidence of an overall improvement. Four development briefs,
+          two repetitions and one automated reviewer make these exploratory
+          results. Different reasoning settings also prevent a pure model-size
+          comparison.
+        </p>
+        <h3>A count correction, preserved openly</h3>
+        <p>
+          One Luna control contains 14 parts instead of the required 16. The
+          runner originally accepted and scored it. This preview labels it
+          noncompliant and excludes its score from compliant summaries, while
+          retaining its original assessment. The runner's advisory target needs
+          separate exact-count enforcement.
+        </p>
+        <h3>Every result stays visible</h3>
+        <p>
+          46 compliant submissions, 12 original model failures, five
+          infrastructure failures and one additional count violation. 55 cases
+          have compiled artifacts, including invalid builds; all 220 frozen
+          images are here. No failed case was repaired or replaced. Emitted
+          construction uses individual placements, not bulk packing. Compiler
+          acceptance does not certify physical stability.
+        </p>
+        <p>
+          Sol ran 32 cases across four conditions. Luna and Astra each ran 16
+          control/combined cases; shape-only and connector-only arms were not
+          run for those models.
+        </p>
+        <p>
+          <a href="report.md" download>Full report</a> ·
+          <a href="sol-results.json" download>Sol results</a> ·
+          <a href="luna-results.json" download>Luna results</a> ·
+          <a href="astra-results.json" download>Astra results</a> ·
+          <a href="exact-count-audit.json" download>Count audit</a>
+        </p>
+      </section>
+    </main>
+    <footer>
+      <p>64 scheduled cases · 46 compliant builds · All failures retained.</p>
+      <p>
+        Geometry from the pinned
+        <a href="https://www.ldraw.org/">LDraw library</a>. A research preview,
+        not physical certification.
+      </p>
+    </footer>
+    <dialog id="inspector" aria-labelledby="detail-title">
+      <div class="dialog-head">
+        <h2 id="detail-title"></h2>
+        <button id="close" autofocus>Close</button>
+      </div>
+      <div id="detail-content"></div>
+      <div class="dialog-nav">
+        <button id="previous">Previous case</button><span id="position"></span
+        ><button id="next">Next case</button>
+      </div>
+    </dialog>
+    <noscript
+      >JavaScript is needed for the gallery.
+      <a href="report.md">Read the report.</a></noscript
+    >
+  </body>
+</html>

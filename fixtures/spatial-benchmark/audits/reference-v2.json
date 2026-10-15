@@ -1,0 +1,4501 @@
+{
+  "version": "spatial-reference-audit/1",
+  "reference": "spatial-part-facts/2",
+  "scope": "curated nominal dimensions versus compiler placement; not physical geometry certification",
+  "sourceHashes": {
+    "prompts/build-agent.md": "39bf8fdf93449a6717f7ed25febf550657f8069892a5339d204791e02936369d",
+    "prompts/brick-build.md": "ad423321197b3434d3b0d3f1e3560a508ff2c6b6b7f2d87126f79b1c1eabec37",
+    "src/catalog/data.json": "7d76f89934f932c4f23f15e4a2024a1ff134dace5e4005442e1bd4bab5325d77",
+    "src/catalog/bounds.json": "94ce2a806750a41b186b81876804d7afb3870881ef8dc9a8eac301fa73c6a877",
+    "src/build-script/part-search.ts": "0ad8d2f391aae48273f78381c100e7e1a150e9ae105a8071aa5ad396e679650b",
+    "src/build-script/part-list.ts": "49ada9cd778d08e5c462ca6b07c4878d833c1db199d70d8cc2f37d00f851408a",
+    "src/catalog/builds/kit.ts": "e76109aa488572d05f149991c3d2d8c0784de34820736159e4860294e39e58d4",
+    "scripts/spatial-benchmark/reference-v2.ts": "5758be4811a655e1f64b5962e3b062480d91165ca0339fa02ab94c0dd4926b8f",
+    "scripts/spatial-reference-audit.ts": "9299568b1786385bce934d8a261808b86902e75fdf9fab155d1d1855c6afb3dd"
+  },
+  "checked": 224,
+  "legacyDisagreements": 10,
+  "correctedDisagreements": 0,
+  "rows": [
+    {
+      "part": "3005.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3004.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3622.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3010.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3009.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3008.dat",
+      "legacySearch": {
+        "w": 8,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 8,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 8,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "6111.dat",
+      "legacySearch": {
+        "w": 10,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 10,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 10,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "6112.dat",
+      "legacySearch": {
+        "w": 12,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 12,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 12,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2465.dat",
+      "legacySearch": {
+        "w": 16,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 16,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 16,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3003.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3002.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3001.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2456.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3007.dat",
+      "legacySearch": {
+        "w": 8,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 8,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 8,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3006.dat",
+      "legacySearch": {
+        "w": 10,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 10,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 10,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2357.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "14716.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2453b.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 15
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 15
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 15
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3245c.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "22886.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2454b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 15
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 15
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 15
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3754.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 1,
+        "h": 15
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 1,
+        "h": 15
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 1,
+        "h": 15
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "30145.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "98283.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "30136.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2877.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3700.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3701.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3024.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3023b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3623.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3710.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3666.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3460.dat",
+      "legacySearch": {
+        "w": 8,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 8,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 8,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4477.dat",
+      "legacySearch": {
+        "w": 10,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 10,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 10,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60479.dat",
+      "legacySearch": {
+        "w": 12,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 12,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 12,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3022.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3021.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3020.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3795.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3034.dat",
+      "legacySearch": {
+        "w": 8,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 8,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 8,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3832.dat",
+      "legacySearch": {
+        "w": 10,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 10,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 10,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2445.dat",
+      "legacySearch": {
+        "w": 12,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 12,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 12,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4282.dat",
+      "legacySearch": {
+        "w": 16,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 16,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 16,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3031.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3032.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3035.dat",
+      "legacySearch": {
+        "w": 8,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 8,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 8,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3030.dat",
+      "legacySearch": {
+        "w": 10,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 10,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 10,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3029.dat",
+      "legacySearch": {
+        "w": 12,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 12,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 12,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3958.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 6,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 6,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 6,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3036.dat",
+      "legacySearch": {
+        "w": 8,
+        "d": 6,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 8,
+        "d": 6,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 8,
+        "d": 6,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3033.dat",
+      "legacySearch": {
+        "w": 10,
+        "d": 6,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 10,
+        "d": 6,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 10,
+        "d": 6,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3028.dat",
+      "legacySearch": {
+        "w": 12,
+        "d": 6,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 12,
+        "d": 6,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 12,
+        "d": 6,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3027.dat",
+      "legacySearch": {
+        "w": 16,
+        "d": 6,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 16,
+        "d": 6,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 16,
+        "d": 6,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "41539.dat",
+      "legacySearch": {
+        "w": 8,
+        "d": 8,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 8,
+        "d": 8,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 8,
+        "d": 8,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "92438.dat",
+      "legacySearch": {
+        "w": 16,
+        "d": 8,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 16,
+        "d": 8,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 16,
+        "d": 8,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2420.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2450.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 3,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 3,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 3,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "51739.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 3,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 3,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 3,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "41769a.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "41770a.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "43722a.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 3,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 3,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 3,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "43723a.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 3,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 3,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 3,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3070b.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3069b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "63864.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2431.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "6636.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4162.dat",
+      "legacySearch": {
+        "w": 8,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 8,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 8,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3068b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "26603.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "87079.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2412b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2555.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 2
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 2
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 2
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3040b.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3039.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3038.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3037.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3044b.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3043.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 5
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3045.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3046.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3048b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 4
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3049b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3665a.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3660b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3676.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4286.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 3,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 3,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 3,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3298.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 3,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 3,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 3,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4161.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 3,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 3,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 3,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3297.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 3,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 3,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 3,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3299.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 2
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 2
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 2
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4287a.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 3,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 3,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 3,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3747b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 3,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 3,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 3,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "54200.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 2
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 2
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 2
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "85984.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 2
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 2
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 2
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60477.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 4,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 4,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 4,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "30363.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 4,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 4,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 4,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60481a.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3678b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4460b.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3684a.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2449.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "11477.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 4
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "15068.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 4
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "24309.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 3,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 3,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 3,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "50950.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 3,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 3,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 3,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "61678.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 4,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 4,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 4,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "93273.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 4,
+        "h": 7
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 4,
+        "h": 4
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 4,
+        "h": 4
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "88930.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 4
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "24201.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 4
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 4
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 4
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "13547.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 4,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 4,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 4,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "6091.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 4
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 4
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 4
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3062b.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3941.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "87081.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 4,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 4,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 4,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3063b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "6141.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4032b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60474.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "30357.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 3,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 3,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 3,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "30565.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "98138.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "14769.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "25269.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4589.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3942c.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3943b.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 4,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 4,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 4,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4490.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3659.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 4
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3455.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "92950.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 1,
+        "h": 7
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 1,
+        "h": 4
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 1,
+        "h": 4
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "6005.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 3,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 3,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 3,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "6182.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3307.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "6183.dat",
+      "legacySearch": {
+        "w": 6,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 6,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 6,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2339.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 5,
+        "h": 12
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 5,
+        "h": 12
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 5,
+        "h": 12
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "14395.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 5,
+        "h": 12
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 5,
+        "h": 12
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 5,
+        "h": 12
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60592.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60601.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60593.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60602.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 8
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 8
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 8
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60594.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60603.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 8
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 8
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 8
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60608.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 8
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 8
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 8
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60607.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 2,
+        "h": 8
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 2,
+        "h": 8
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 2,
+        "h": 8
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60598.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60596.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 18
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 18
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 18
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60616a.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 17
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 17
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 17
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60623.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 17
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 17
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 17
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60599.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 18
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 18
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 18
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60616b.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 17
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 17
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 17
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "30179.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 18
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 18
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 18
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4865b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "87552.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "87544.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4215b.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60581.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 9
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 9
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 9
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3633.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3185.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "30055.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "33303.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3794b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "87580.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "92593.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "33909.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3176.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 3,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 3,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 3,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3709b.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4081b.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 2
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 2
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 2
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4085c.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3839b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "48336.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "60478.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "32028.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "87087.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "47905.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4733.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4070.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "11211.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "30414.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2921.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "99781.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "99780.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "44728.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "99207.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2436b.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3937.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3938.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 2
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 2
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 2
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4275b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4276b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2429.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2430.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3867.dat",
+      "legacySearch": {
+        "w": 16,
+        "d": 16,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 16,
+        "d": 16,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 16,
+        "d": 16,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3857.dat",
+      "legacySearch": {
+        "w": 32,
+        "d": 16,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 32,
+        "d": 16,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 32,
+        "d": 16,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3811.dat",
+      "legacySearch": {
+        "w": 32,
+        "d": 32,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 32,
+        "d": 32,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 32,
+        "d": 32,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4186.dat",
+      "legacySearch": {
+        "w": 48,
+        "d": 48,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 48,
+        "d": 48,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 48,
+        "d": 48,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3741a.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3742.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 0
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4728.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4727.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "24866.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "33291.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "32607.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "6255.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 5
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 5
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 5
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "30176.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2423.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 4,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 4,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 4,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2417.dat",
+      "legacySearch": {
+        "w": 5,
+        "d": 6,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 5,
+        "d": 6,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 5,
+        "d": 6,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2435.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 3,
+        "h": 12
+      },
+      "compilerPlacement": {
+        "w": 3,
+        "d": 3,
+        "h": 12
+      },
+      "correctedSearch": {
+        "w": 3,
+        "d": 3,
+        "h": 12
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3470.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 4,
+        "h": 18
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 4,
+        "h": 18
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 4,
+        "h": 18
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3471.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 4,
+        "h": 20
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 4,
+        "h": 20
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 4,
+        "h": 20
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4740.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3960.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 4,
+        "h": 2
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 4,
+        "h": 2
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 4,
+        "h": 2
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3957a.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 12
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 12
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 12
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4599b.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4345b.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 3,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 3,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 3,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4346.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "2335.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 3,
+        "h": 5
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 3,
+        "h": 5
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 3,
+        "h": 5
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4600.dat",
+      "legacySearch": {
+        "w": 3,
+        "d": 2,
+        "h": 2
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 1
+      },
+      "legacyAgrees": false,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4624.dat",
+      "legacySearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "compilerPlacement": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "correctedSearch": {
+        "w": 1,
+        "d": 1,
+        "h": 3
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3641.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 5
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3788.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 2
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 2
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 2
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3823.dat",
+      "legacySearch": {
+        "w": 4,
+        "d": 2,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 4,
+        "d": 2,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 4,
+        "d": 2,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "4079.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 2,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 2,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 2,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    },
+    {
+      "part": "3829c01.dat",
+      "legacySearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "compilerPlacement": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "correctedSearch": {
+        "w": 2,
+        "d": 1,
+        "h": 6
+      },
+      "legacyAgrees": true,
+      "correctedAgrees": true
+    }
+  ]
+}

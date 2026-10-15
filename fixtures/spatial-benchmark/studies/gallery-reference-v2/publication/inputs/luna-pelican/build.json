@@ -1,0 +1,197 @@
+{
+  "buildScript": 1,
+  "title": "The Pelican’s Penny-Farthing",
+  "description": "A broad-winged pelican balances on a tiny red bicycle, its enormous golden bill and throat pouch leading the way.",
+  "palette": {
+    "feather": "white",
+    "beak": "bright light orange",
+    "pouch": "dark red",
+    "frame": "red",
+    "trim": "black"
+  },
+  "sections": [
+    {
+      "name": "Bicycle",
+      "ops": [
+        {
+          "op": "place",
+          "part": "4719c01",
+          "at": [
+            -3,
+            0,
+            -2
+          ],
+          "turn": 90,
+          "colour": "red"
+        }
+      ]
+    },
+    {
+      "name": "Rider",
+      "ops": [
+        {
+          "op": "box",
+          "at": [
+            -9,
+            24,
+            -7
+          ],
+          "size": [
+            18,
+            "8b",
+            14
+          ],
+          "colour": "feather",
+          "texture": "masonry",
+          "interior": "empty"
+        },
+        {
+          "op": "dome",
+          "at": [
+            -8,
+            48,
+            -6
+          ],
+          "diameter": 16,
+          "colour": "feather"
+        },
+        {
+          "op": "cylinder",
+          "at": [
+            -3,
+            54,
+            -12
+          ],
+          "diameter": 8,
+          "height": "4b",
+          "colour": "feather"
+        },
+        {
+          "op": "dome",
+          "at": [
+            -3,
+            66,
+            -12
+          ],
+          "diameter": 8,
+          "colour": "feather"
+        },
+        {
+          "op": "box",
+          "at": [
+            -7,
+            66,
+            -20
+          ],
+          "size": [
+            8,
+            3,
+            8
+          ],
+          "colour": "beak",
+          "interior": "solid"
+        },
+        {
+          "op": "place",
+          "part": "3037",
+          "at": [
+            -7,
+            69,
+            -24
+          ],
+          "colour": "beak",
+          "turn": 90
+        },
+        {
+          "op": "box",
+          "at": [
+            -6,
+            60,
+            -18
+          ],
+          "size": [
+            6,
+            6,
+            4
+          ],
+          "colour": "pouch",
+          "interior": "solid"
+        },
+        {
+          "op": "place",
+          "part": "98138",
+          "at": [
+            -5,
+            68,
+            -13
+          ],
+          "colour": "black"
+        },
+        {
+          "op": "place",
+          "part": "98138",
+          "at": [
+            1,
+            68,
+            -13
+          ],
+          "colour": "black"
+        },
+        {
+          "op": "box",
+          "at": [
+            -20,
+            36,
+            -5
+          ],
+          "size": [
+            12,
+            3,
+            8
+          ],
+          "colour": "feather",
+          "texture": "masonry",
+          "interior": "empty"
+        },
+        {
+          "op": "box",
+          "at": [
+            8,
+            36,
+            -5
+          ],
+          "size": [
+            12,
+            3,
+            8
+          ],
+          "colour": "feather",
+          "texture": "masonry",
+          "interior": "empty"
+        },
+        {
+          "op": "column",
+          "at": [
+            -2,
+            9,
+            -1
+          ],
+          "height": 5,
+          "diameter": 1,
+          "colour": "dark orange"
+        },
+        {
+          "op": "column",
+          "at": [
+            2,
+            9,
+            -1
+          ],
+          "height": 5,
+          "diameter": 1,
+          "colour": "dark orange"
+        }
+      ]
+    }
+  ]
+}

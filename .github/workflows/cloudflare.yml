@@ -113,6 +113,20 @@ jobs:
           node-version: 22.14.0
           cache: npm
       - run: npm ci
+      - name: Install isolated benchmark test runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          # This disposable runner must allow the namespaces tested by bwrap.
+          # Candidate compilation still unshares network, filesystem and environment.
+          if [ -f /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          npm install --prefix "$RUNNER_TEMP/brick-codex" --no-save @openai/codex@0.162.1
+          binary="$RUNNER_TEMP/brick-codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex"
+          "$binary" --version
+          echo "BRICK_CODEX_BINARY=$binary" >> "$GITHUB_ENV"
+          bwrap --unshare-all --ro-bind / / /bin/true
       # The headless CLI integration tests drive Chromium too.
       - name: Playwright version
         id: playwright

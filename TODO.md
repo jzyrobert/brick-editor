@@ -30,6 +30,17 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 - [ ] Send actionable construction warnings to generating models; distinguish coherent freestanding modules from loose shell pieces, and support reviewed angled/sideways assemblies. Zero-error study builds still have substantial warnings.
 - [x] Filter gallery builds by prompt generation and starting conditions, with fresh E featured by default and text-only history available. [Gallery generations](docs/GALLERY.md#prompt-generations) retains original, A/B/C and E/F revisions/fresh cohorts.
 
+## Spatial benchmark research
+
+- [ ] Measure isolated compiler heap requirements and declare memory/resource exhaustion semantics explicitly before the next gallery-scale benchmark. The v2 gallery Astra Star Destroyer exhausted 384 MiB; identical-source post-run compilation at 1024 MiB exposed 14 overlap errors. Preserve this failed outcome; do not silently raise budgets or repair evaluated candidates. [Evidence](fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
+
+- [x] Add an opt-in exact-count size policy and enforce it before visual eligibility. See [corrected reference audit](docs/GENERATION-DATA-AUDIT.md). The post-run audit found a 14-part Luna control marked submitted despite an exact-16 brief; preserve legacy advisory target behavior and all frozen outcomes ([audit](fixtures/spatial-benchmark/studies/model-screening-pilot/results/exact-count-audit.json)).
+
+- [ ] Run the separately declared 36-case mechanical-feedback comparison only with further study authorisation; hold metadata/language/style fixed ([completed initial pilot](docs/SPATIAL-PILOT.md)).
+- [ ] Improve non-ceiling calibration, evaluate temporary aliases and compare on-demand retrieval with automatic facts within identical tasks/feedback. The separate automatic-facts development pilot has a tentative positive shape signal; confirm with more tasks and independent reviewers. Luna/high and Astra/medium screening is complete: tentative Astra visual gain, Luna compliance regression; confirm on new tasks with independent review.
+- [ ] Add privately witnessed held-out creative tasks, another model family and independent human assessments. Resolve provider interruption/capacity missingness before generalising the 42/72 submitted creative builds.
+- [ ] Expand structured occurrence/interface diagnostics and coverage independently; pilot proper axis-aligned poses/offsets and explicit connector alignment assistance before functional/sideways tasks. Keep design metadata/guidance, inventory formats and physical stability/assembly audits separate.
+
 ## Rendering and performance
 
 - [ ] Warm first-use Realistic/Photo raster shaders asynchronously with a defined visible fallback; the [11 October audit](docs/RENDER-PERFORMANCE-AUDIT.md) still records substantial synchronous program-link waits despite reduced steady-frame work.
@@ -147,6 +158,13 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 - [x] Add bounded source hierarchy/STEP scheduling for the Shark head and jaw, finite paired clip/handle details, exact custom-part closure and measured four-view PDF rows ([v16 evidence](docs/reports/instruction-generation/source-guided-articulation.md)); whole Shark improves1→2/5 in desk review.
 - [ ] Further automatic instruction transfers: executable Crane mounting/handling, remaining Shark body/tail finite receivers and constructive jaw foundations, wheel/rail readiness, additional articulated hinges and vehicle accessory clips, compact supplied-figure alternatives and bounded publication chapters. Deduplicate mechanism uncertainty notes and sparse marker-legend continuations. V15 preserves final-source control-stick CAD intersections; whole Crane2/5, Shark2/5 and Train3/5 leave broader critic acceptance open ([latest review](docs/reports/instruction-generation/source-guided-articulation-critic.md)).
 
+## Spatial benchmark follow-ups
+
+- [x] Audit the isolated Codex subscription adapter and record owner authorisation for Sol 6.1/high with per-run quota checks; freeze camera/reviewer configuration. Forty calibration runs are evaluated; creative generation continues ([SPATIAL-PILOT](docs/SPATIAL-PILOT.md)).
+- [ ] Finish the 72-case blinded creative fact comparison within the quota reserve; evaluate mechanical feedback independently and add automatic-versus-demand inspection only as separate conditions.
+- [ ] Private held-out creative tasks and broader verified-palette coverage; physical shortcut counting, occurrence/interface diagnostics, assembly-language poses/offsets and explicit attachment-assistance comparisons. Keep E, diorama and archived studies unchanged until evidence supports promotion.
+- [ ] Audit collision containment/arch hollow-end-support gaps; surface occupancy remains conservative and does not certify physical support or assembly order.
+
 ## Build scripts
 
 From [AGENT-BUILDING](docs/AGENT-BUILDING.md) and the [design-language study](docs/DESIGN-LANGUAGE.md):
@@ -178,3 +196,5 @@ From [GALLERY-PLAN](docs/GALLERY-PLAN.md); the backend of phase 1 (publish scrip
 ## UI and docs
 
 - [ ] Migrate legacy panel-content styles (slate tones, 11 px help text) to the [DESIGN.md](DESIGN.md) scale.
+
+- [ ] Extend physical shape and independent geometry coverage beyond the five starter parts; nominal agreement for all 224 curated parts is not physical certification ([generation audit](docs/GENERATION-DATA-AUDIT.md)).

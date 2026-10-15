@@ -1,5 +1,7 @@
 # Gallery and interactive models
 
+The **E · corrected part references** cohort adds 17 fresh builds from Luna/high, Sol 6.1/high and Astra/medium using opt-in v2 generation references (14 October 2026). Select it under **Prompt generation**. The previous 83 entries and Fresh E default are preserved. One of 18 scheduled outputs failed and remains archived rather than repaired or replaced. [Sources, outcomes and publication checks](../fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
+
 Gallery and Play are the primary modes. The cream workshop shell gives model
 images most of the browsing space; Build, Instructions, Photo and Project are
 available through **Tools** for the same open document.

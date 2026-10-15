@@ -1,0 +1,40 @@
+0 FILE a-shared-supper.mpd
+0 A Shared Supper
+0 Name: a-shared-supper.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 a-shared-supper-01-bluebird-raised-head.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 a-shared-supper-02-cardinal-lowered-head-and-crest.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 a-shared-supper-03-shared-feeder.ldr
+
+0 FILE a-shared-supper-01-bluebird-raised-head.ldr
+0 Bluebird — raised head
+0 Name: a-shared-supper-01-bluebird-raised-head.ldr
+0 // Build script layer: Bluebird — raised head
+1 25 10 -8 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 25 70 -8 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 1 40 -32 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 1 30 -56 20 0 0 1 0 1 0 -1 0 0 3039.dat
+1 1 50 -40 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 322 50 -64 20 0 0 -1 0 1 0 1 0 0 3039.dat
+1 14 80 -40 20 1 0 0 0 1 0 0 0 1 3068b.dat
+
+0 FILE a-shared-supper-02-cardinal-lowered-head-and-crest.ldr
+0 Cardinal — lowered head and crest
+0 Name: a-shared-supper-02-cardinal-lowered-head-and-crest.ldr
+0 // Build script layer: Cardinal — lowered head and crest
+1 72 210 -8 10 1 0 0 0 1 0 0 0 1 3024.dat
+1 72 270 -8 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 4 240 -32 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 320 270 -56 20 0 0 -1 0 1 0 1 0 0 3039.dat
+1 4 250 -56 20 0 0 1 0 1 0 -1 0 0 3039.dat
+1 4 250 -64 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 25 200 -40 20 1 0 0 0 1 0 0 0 1 3068b.dat
+
+0 FILE a-shared-supper-03-shared-feeder.ldr
+0 Shared feeder
+0 Name: a-shared-supper-03-shared-feeder.ldr
+0 // Build script layer: Shared feeder
+1 70 140 -24 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 19 140 -32 20 1 0 0 0 1 0 0 0 1 3068b.dat

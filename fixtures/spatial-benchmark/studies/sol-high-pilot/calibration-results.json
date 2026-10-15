@@ -1,0 +1,1469 @@
+{
+  "version": "calibration-study/1",
+  "generatingModel": {
+    "id": "gpt-6.1-sol",
+    "effort": "high",
+    "sampling": {
+      "temperature": null,
+      "topP": null,
+      "seed": null
+    }
+  },
+  "runCount": 40,
+  "modelInputsHadImages": false,
+  "noCandidateFeedback": true,
+  "evaluatorFix": "Relationships match pose multisets rather than operation order; original ordered-v1 scores are retained. Direct-placement tasks do not independently test verbal predictions.",
+  "evaluatorSha256": "347c6fd2142a27e1097ec1e9323ca931019ef4fe1925ccc68840909b97421110",
+  "conditions": [
+    {
+      "id": "control",
+      "n": 10,
+      "passed": 10,
+      "inspectionRuns": 0,
+      "totalInfoCalls": 0
+    },
+    {
+      "id": "shape",
+      "n": 10,
+      "passed": 10,
+      "inspectionRuns": 1,
+      "totalInfoCalls": 1
+    },
+    {
+      "id": "connections",
+      "n": 10,
+      "passed": 10,
+      "inspectionRuns": 3,
+      "totalInfoCalls": 3
+    },
+    {
+      "id": "combined",
+      "n": 10,
+      "passed": 10,
+      "inspectionRuns": 6,
+      "totalInfoCalls": 6
+    }
+  ],
+  "results": [
+    {
+      "caseId": "arch-opening--shape--2",
+      "task": "arch-opening",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73423,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-transfer--connections--1",
+      "task": "slope-transfer",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 75128,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-row--shape--1",
+      "task": "slope-row",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73347,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "arch-opening--connections--2",
+      "task": "arch-opening",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73450,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "arch-opening--control--2",
+      "task": "arch-opening",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72872,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-transfer--control--1",
+      "task": "slope-transfer",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72803,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "body-contact--control--1",
+      "task": "body-contact",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72865,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-row--combined--2",
+      "task": "slope-row",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 77084,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "body-contact--control--2",
+      "task": "body-contact",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72865,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "body-contact--shape--2",
+      "task": "body-contact",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73416,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "quarter-turn--control--1",
+      "task": "quarter-turn",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72816,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 8,
+          "observed": 8,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified",
+          "expected": [40, 52, 80],
+          "observed": [40, 52, 80]
+        }
+      ]
+    },
+    {
+      "caseId": "arch-opening--combined--1",
+      "task": "arch-opening",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73823,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "quarter-turn--shape--2",
+      "task": "quarter-turn",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73367,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 8,
+          "observed": 8,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified",
+          "expected": [40, 52, 80],
+          "observed": [40, 52, 80]
+        }
+      ]
+    },
+    {
+      "caseId": "slope-transfer--control--2",
+      "task": "slope-transfer",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72803,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "body-contact--connections--2",
+      "task": "body-contact",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73443,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "quarter-turn--shape--1",
+      "task": "quarter-turn",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73367,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 8,
+          "observed": 8,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified",
+          "expected": [40, 52, 80],
+          "observed": [40, 52, 80]
+        }
+      ]
+    },
+    {
+      "caseId": "body-contact--combined--1",
+      "task": "body-contact",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73816,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-row--connections--2",
+      "task": "slope-row",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 75121,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-transfer--connections--2",
+      "task": "slope-transfer",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 75128,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "quarter-turn--combined--1",
+      "task": "quarter-turn",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 75511,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 8,
+          "observed": 8,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified",
+          "expected": [40, 52, 80],
+          "observed": [40, 52, 80]
+        }
+      ]
+    },
+    {
+      "caseId": "body-contact--connections--1",
+      "task": "body-contact",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73443,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "arch-opening--connections--1",
+      "task": "arch-opening",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73450,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-row--control--2",
+      "task": "slope-row",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72796,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-row--control--1",
+      "task": "slope-row",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72796,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-row--connections--1",
+      "task": "slope-row",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73374,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "quarter-turn--combined--2",
+      "task": "quarter-turn",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 75511,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 8,
+          "observed": 8,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified",
+          "expected": [40, 52, 80],
+          "observed": [40, 52, 80]
+        }
+      ]
+    },
+    {
+      "caseId": "arch-opening--control--1",
+      "task": "arch-opening",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72872,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-row--shape--2",
+      "task": "slope-row",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73347,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "arch-opening--combined--2",
+      "task": "arch-opening",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73823,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-transfer--shape--1",
+      "task": "slope-transfer",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73354,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-transfer--shape--2",
+      "task": "slope-transfer",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 75214,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "body-contact--combined--2",
+      "task": "body-contact",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73816,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-transfer--combined--2",
+      "task": "slope-transfer",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 77091,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "quarter-turn--connections--2",
+      "task": "quarter-turn",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73394,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 8,
+          "observed": 8,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified",
+          "expected": [40, 52, 80],
+          "observed": [40, 52, 80]
+        }
+      ]
+    },
+    {
+      "caseId": "slope-transfer--combined--1",
+      "task": "slope-transfer",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 77091,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "quarter-turn--control--2",
+      "task": "quarter-turn",
+      "condition": "control",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 72816,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 8,
+          "observed": 8,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified",
+          "expected": [40, 52, 80],
+          "observed": [40, 52, 80]
+        }
+      ]
+    },
+    {
+      "caseId": "quarter-turn--connections--1",
+      "task": "quarter-turn",
+      "condition": "connections",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73394,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 8,
+          "observed": 8,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        },
+        {
+          "property": "physical-envelope",
+          "status": "verified",
+          "expected": [40, 52, 80],
+          "observed": [40, 52, 80]
+        }
+      ]
+    },
+    {
+      "caseId": "body-contact--shape--1",
+      "task": "body-contact",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73416,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "arch-opening--shape--1",
+      "task": "arch-opening",
+      "condition": "shape",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 0,
+      "searchCalls": 0,
+      "referenceBytes": 73423,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 0,
+          "observed": 0,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    },
+    {
+      "caseId": "slope-row--combined--1",
+      "task": "slope-row",
+      "condition": "combined",
+      "pass": true,
+      "originalOrderedPass": true,
+      "infoCalls": 1,
+      "searchCalls": 0,
+      "referenceBytes": 77084,
+      "checks": 0,
+      "repairs": 0,
+      "compilerAccepted": true,
+      "evaluatedProperties": [
+        {
+          "property": "specified-poses",
+          "status": "verified"
+        },
+        {
+          "property": "supported-contact-count",
+          "status": "verified",
+          "expected": 1,
+          "observed": 1,
+          "interpretation": "No contact detected is not proof of incompatible parts."
+        },
+        {
+          "property": "surface-occupancy-intersection",
+          "status": "verified",
+          "observed": 0,
+          "certainty": "surface boxes; physical solid intersection unverified"
+        }
+      ]
+    }
+  ],
+  "preflight": {
+    "baseCommit": "3acc8640ff19d473df3818af21e97e00cc38fdd5",
+    "manifestSha256": "82c59db09fea27fc64e3807fb8414849be5466c0f8b8c931b690a8ba928bd713",
+    "compilerBundleSha256": "e2487fb8b7f221f7204802b93ae88d417688fcf1f487cced0c2aefc89ad78d2c",
+    "sourceHashes": {
+      "scripts/spatial-benchmark-live.ts": "59b0576b4a07c76456de8a0c1051d88beb8e524fea4a432927da84e366c382da",
+      "scripts/spatial-benchmark/codex-channel.ts": "a1fb4b6e20d2a4680b0a349e85a083253355f4ce4a6039f38e56514489bed142",
+      "scripts/spatial-benchmark/codex-quota.ts": "6983c0024ea7c0dea94607e41cf8ca7bd6ed1bba0d468c0bde04080bff794c27",
+      "scripts/spatial-benchmark/codex-bridge.mjs": "965741912b7d49947368eba4baed0053b14a1c921e8f1b8b96607504c2c73869"
+    },
+    "hashes": {
+      "prompts/build-agent.md": "39bf8fdf93449a6717f7ed25febf550657f8069892a5339d204791e02936369d",
+      "prompts/brick-build.md": "ad423321197b3434d3b0d3f1e3560a508ff2c6b6b7f2d87126f79b1c1eabec37",
+      "prompts/build-agent-diorama.md": "63eadf606a208d165e8095f43789df617b70137bb2293a889daf4888e1d2ad6b",
+      "prompts/brick-build-diorama.md": "2d728a55ca06d642fb146ce1fdd5baf025270b511da9e445172fbc033c9652af",
+      "scripts/one-shot-build.ts": "b94814566f7f02ae838254f348ba8577e06d544c84770521da86f5d489b4c26c",
+      "scripts/agent-part-facts.ts": "9fa0baeb6aae13a29adf5e8480f8453773f70055dc2892562f252e6c4362160f",
+      "scripts/brick-build.ts": "f6087d2054b7f0cd6a54dcbf10a3f859447761a1b7a5ef8a353f310746149f67",
+      "scripts/full-library-node.ts": "2a13817bd82f2b249147112245dd7494a7306e767649056d1026fd98afd5ee4c",
+      "src/build-script/part-list.ts": "49ada9cd778d08e5c462ca6b07c4878d833c1db199d70d8cc2f37d00f851408a",
+      "src/build-script/part-search.ts": "9253726d740d1e711616044c441c4d15a3fa81b0bb4ccc81576cb55b512eb656",
+      "src/build-script/spec.ts": "580a40a4cc6acf029a121fed26f46892a0b16c7499ee8f80ac152169d2199115",
+      "src/build-script/compile.ts": "c757095005f6f75feb4090f0bc6e99fea2de134735071ebd01a3ffcf23c00797",
+      "src/build-script/pack.ts": "3f6e1247b3b5c4e560012f9b5a74e707ff6de69a5054307e0862a976612b619e",
+      "src/catalog/data.json": "7d76f89934f932c4f23f15e4a2024a1ff134dace5e4005442e1bd4bab5325d77",
+      "src/catalog/bounds.json": "94ce2a806750a41b186b81876804d7afb3870881ef8dc9a8eac301fa73c6a877",
+      "src/catalog/connectors.json": "082b0aa40901a849d5c35071bd47fce0802183f9db973b0b7620f1a0a9c9ae69",
+      "src/catalog/full-library-lock.json": "18db3ee192d79bd322754ecd265f5c36912eff6a330961e474fb88d43024af89",
+      "src/catalog/full-connectors-lock.json": "2d49834746a0c6545f3ce67f1da30f4d3dceda4afa06137eb9e9d89dd5bcea85",
+      "src/catalog/color-availability.json": "c9fbb143aa186f13ec108ea9540c8122c1ab5ed85e39857664428df65df2b3b0",
+      "package.json": "6df89bf369fde0de74abe3fa564e90db549d155d14296018c3afbb738c78156e",
+      "package-lock.json": "2499ea7817c2f7b2202c43f6365ec688ba8e225ad5f6b78288d9a82dcfe3f7d7",
+      "scripts/spatial-benchmark.ts": "06d61ab0373e57f266e0c642bdcb83d67a3ec3090b88ae1ed4da8ca693ae00f8",
+      "scripts/spatial-benchmark/manifest.ts": "3cc963c4fc26ed2752dc0fa1554dea656fb19fc0aa6db7c0fc1a67c4f7e8f940",
+      "scripts/spatial-benchmark/part-reference.ts": "83627eb7151630aea45aeb65d67ebea6bafe8d4e9a1f01641e862963a261b125",
+      "scripts/spatial-benchmark/session.ts": "03ace723b9d8653f849c13a72a39299fcffbb3dc78d8e7533c5241be43fa1ef4",
+      "scripts/spatial-benchmark/sandbox.ts": "91ef1e018241b862c83d17a27c43865840dfd5856ef1d1b2d0b0fa8d78a7f11a",
+      "scripts/spatial-benchmark/compile-worker.ts": "cbee95c0240d1934f60bd75ade6a8a6d8d26196caf0a8b60779be93eb7c3024b",
+      "scripts/spatial-benchmark/calibration-evaluator.ts": "685587a76ff58ea0c56ec277621307a9fd7af7593b11a83339c1731d5bc0027b",
+      "fixtures/spatial-benchmark/evaluator/witnesses.json": "7bfe6e110d6f5ff6c9a73fe41488c90403a7d0a667b560ced9534ee68454d025"
+    },
+    "runOrder": [
+      "arch-opening--shape--2",
+      "slope-transfer--connections--1",
+      "slope-row--shape--1",
+      "arch-opening--connections--2",
+      "arch-opening--control--2",
+      "slope-transfer--control--1",
+      "body-contact--control--1",
+      "slope-row--combined--2",
+      "body-contact--control--2",
+      "body-contact--shape--2",
+      "quarter-turn--control--1",
+      "arch-opening--combined--1",
+      "quarter-turn--shape--2",
+      "slope-transfer--control--2",
+      "body-contact--connections--2",
+      "quarter-turn--shape--1",
+      "body-contact--combined--1",
+      "slope-row--connections--2",
+      "slope-transfer--connections--2",
+      "quarter-turn--combined--1",
+      "body-contact--connections--1",
+      "arch-opening--connections--1",
+      "slope-row--control--2",
+      "slope-row--control--1",
+      "slope-row--connections--1",
+      "quarter-turn--combined--2",
+      "arch-opening--control--1",
+      "slope-row--shape--2",
+      "arch-opening--combined--2",
+      "slope-transfer--shape--1",
+      "slope-transfer--shape--2",
+      "body-contact--combined--2",
+      "slope-transfer--combined--2",
+      "quarter-turn--connections--2",
+      "slope-transfer--combined--1",
+      "quarter-turn--control--2",
+      "quarter-turn--connections--1",
+      "body-contact--shape--1",
+      "arch-opening--shape--1",
+      "slope-row--combined--1"
+    ],
+    "transport": "codex-text-broker/2"
+  },
+  "quota": {
+    "initialWeeklyRemainingPercent": 51,
+    "finalWeeklyRemainingPercent": 50,
+    "accountActivityIsNotExperimentOnly": true,
+    "noCreditPurchases": true,
+    "noEarnedResets": true
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "version": "spatial-continuation-protocol/1",
+  "date": "2026-10-12",
+  "priorAttempted": 7,
+  "priorSubmitted": 6,
+  "unexecutedCases": 65,
+  "failedCaseNotRetried": "ewok--shape--3",
+  "providerEvidence": {
+    "event": "response.incomplete",
+    "reason": "max_output_tokens",
+    "inputTokens": 30186,
+    "outputTokens": 16000,
+    "reasoningTokens": 16000
+  },
+  "originalFrozenStatusRetained": "infrastructure-failure",
+  "analysisCategory": "model-output-token-budget",
+  "unchanged": [
+    "effective filled prompts",
+    "fact fields/guides",
+    "language",
+    "compiler/library",
+    "model/effort",
+    "sampling settings",
+    "all budgets",
+    "mechanical feedback",
+    "original remaining case order"
+  ],
+  "changes": [
+    "typed output-token-budget failure classification",
+    "host-only selection of previously unexecuted cases",
+    "guarded transport version 4; prior executed version 2 retained"
+  ],
+  "noNativeThreadResumptionAcrossCases": true,
+  "noVisualEvaluationBeforeContinuation": true,
+  "automaticInfrastructureRetries": 0,
+  "sourceHashes": {
+    "scripts/spatial-benchmark-live.ts": "35feaf0a73c910801f64518c583dc1065be28cb3fe8677cc1bc13642c30b373d",
+    "scripts/spatial-benchmark/codex-channel.ts": "b106eac1776a70ec764e8e40ec05bd24e123490feb217af63a16b39f3f9ad3e4",
+    "scripts/spatial-benchmark/model-failure.ts": "76833a08fc054d9b5cdeeb45a03b640abf1f2c25b5cbac05d011dc7d2dc83208",
+    "scripts/spatial-benchmark/session.ts": "ab6e281450e8b0de218a4e312705f43dc50c85c728641d2ebed9e1c3c15fef9e"
+  }
+}

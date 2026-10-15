@@ -1,0 +1,197 @@
+{
+  "buildScript": 1,
+  "title": "Ridgewalk Lookout",
+  "description": "A sixteen-part miniature: three smooth ascending treads reach a wider observation landing, twin open arches shelter the perch, and a rising red canopy carries a connected golden summit marker.",
+  "palette": {
+    "stone": "dark bluish grey",
+    "tread": "tan",
+    "arch": "tan",
+    "canopy": "dark red",
+    "marker": "pearl gold"
+  },
+  "sections": [
+    {
+      "name": "Ascending route",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "turn": 90,
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3068b",
+          "at": [
+            0,
+            3,
+            0
+          ],
+          "colour": "tread"
+        },
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            0,
+            3,
+            2
+          ],
+          "turn": 90,
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3068b",
+          "at": [
+            0,
+            6,
+            2
+          ],
+          "colour": "tread"
+        },
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            0,
+            6,
+            4
+          ],
+          "turn": 90,
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3068b",
+          "at": [
+            0,
+            9,
+            4
+          ],
+          "colour": "tread"
+        }
+      ]
+    },
+    {
+      "name": "Observation perch",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3001",
+          "at": [
+            0,
+            9,
+            6
+          ],
+          "colour": "stone"
+        },
+        {
+          "op": "place",
+          "part": "3659",
+          "at": [
+            0,
+            12,
+            6
+          ],
+          "colour": "arch"
+        },
+        {
+          "op": "place",
+          "part": "3659",
+          "at": [
+            0,
+            12,
+            7
+          ],
+          "colour": "arch"
+        }
+      ]
+    },
+    {
+      "name": "Sloping canopy",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            0,
+            15,
+            6
+          ],
+          "colour": "canopy"
+        },
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            2,
+            15,
+            6
+          ],
+          "colour": "canopy"
+        },
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            0,
+            18,
+            7
+          ],
+          "colour": "canopy"
+        },
+        {
+          "op": "place",
+          "part": "3039",
+          "at": [
+            2,
+            18,
+            7
+          ],
+          "colour": "canopy"
+        }
+      ]
+    },
+    {
+      "name": "Supported summit marker",
+      "ops": [
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            3,
+            21,
+            8
+          ],
+          "colour": "marker"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            3,
+            22,
+            8
+          ],
+          "colour": "marker"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            3,
+            23,
+            8
+          ],
+          "colour": "marker"
+        }
+      ]
+    }
+  ]
+}

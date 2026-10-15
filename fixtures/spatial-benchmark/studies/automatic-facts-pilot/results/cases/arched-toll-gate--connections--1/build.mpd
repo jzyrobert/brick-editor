@@ -1,0 +1,34 @@
+0 FILE beacon-toll-entrance.mpd
+0 Beacon Toll Entrance
+0 Name: beacon-toll-entrance.mpd
+0 Author: Brick Editor build script
+0 // Compiled from a Brick Editor build script (docs/AGENT-BUILDING.md).
+0 // x/z studs, y plates; front faces -Z; y = 0 is the ground.
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 beacon-toll-entrance-01-arched-toll-passage.ldr
+1 16 0 0 0 1 0 0 0 1 0 0 0 1 beacon-toll-entrance-02-glazed-guard-hut.ldr
+
+0 FILE beacon-toll-entrance-01-arched-toll-passage.ldr
+0 Arched toll passage
+0 Name: beacon-toll-entrance-01-arched-toll-passage.ldr
+0 // Build script layer: Arched toll passage
+1 71 0 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 71 80 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 71 40 -48 30 1 0 0 0 1 0 0 0 1 3659.dat
+1 71 40 -48 50 1 0 0 0 1 0 0 0 1 3659.dat
+1 14 40 -56 40 1 0 0 0 1 0 0 0 1 3068b.dat
+1 14 70 -56 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 0 70 -64 30 1 0 0 0 1 0 0 0 1 3024.dat
+1 4 70 -72 30 1 0 0 0 1 0 0 0 1 3024.dat
+
+0 FILE beacon-toll-entrance-02-glazed-guard-hut.ldr
+0 Glazed guard hut
+0 Name: beacon-toll-entrance-02-glazed-guard-hut.ldr
+0 // Build script layer: Glazed guard hut
+1 19 160 -24 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 43 160 -48 40 0 0 1 0 1 0 -1 0 0 3001.dat
+1 320 150 -72 20 0 0 1 0 1 0 -1 0 0 3039.dat
+1 320 170 -72 20 0 0 -1 0 1 0 1 0 0 3039.dat
+1 320 150 -72 60 0 0 1 0 1 0 -1 0 0 3039.dat
+1 320 170 -72 60 0 0 -1 0 1 0 1 0 0 3039.dat
+1 72 170 -80 70 1 0 0 0 1 0 0 0 1 3024.dat
+1 72 170 -88 70 1 0 0 0 1 0 0 0 1 3024.dat
