@@ -6,13 +6,17 @@ import type { TextChannel } from "./session";
 import { ModelBudgetFailure } from "./model-failure";
 
 // Native Claude Code CLI transport for the render-blind harness. Unlike the
-// Codex broker it cannot see or rewrite the HTTP payload: the host manages
-// Claude authentication, so the client keeps its own system prompt (a
-// recorded confound). Tools are turned off, safe mode and an empty MCP
-// configuration are enforced, the client starts in an empty directory with
-// this session's identity scrubbed from its environment, and every streamed
-// event is checked for tool use before the reply is returned.
-export const CLAUDE_TRANSPORT_VERSION = "claude-native-cli/1";
+// Codex broker it cannot see or rewrite the HTTP payload, because the host
+// manages Claude authentication. Claude Code's own system prompt is replaced
+// by a neutral one: with tools off, the default prompt's tool-call guidance
+// made models prefix protocol JSON with invented <invoke> markup, which the
+// session counts as protocol violations (version 1). Tools are turned off,
+// safe mode and an empty MCP configuration are enforced, the client starts in
+// an empty directory with this session's identity scrubbed from its
+// environment, and every streamed event is checked for tool use before the
+// reply is returned.
+export const CLAUDE_TRANSPORT_VERSION = "claude-native-cli/2";
+export const CLAUDE_SYSTEM_PROMPT = "You are a helpful assistant.";
 export type ClaudeModel = { id: string; effort: string };
 export function validateClaudeModel(model: ClaudeModel) {
   if (
@@ -53,6 +57,8 @@ export function claudeArgs(model: ClaudeModel, thread?: string) {
     "--safe-mode",
     "--strict-mcp-config",
     "--disable-slash-commands",
+    "--system-prompt",
+    CLAUDE_SYSTEM_PROMPT,
     "--output-format",
     "stream-json",
     "--verbose",
@@ -89,7 +95,7 @@ export async function claudeChannel(options: {
       scrubbedEnv: CLAUDE_SCRUBBED_ENV,
       tools: [],
       cwd: "empty generation directory",
-      systemPrompt: "Claude Code native (not replaced)",
+      systemPrompt: CLAUDE_SYSTEM_PROMPT,
     }),
   );
   let thread: string | undefined,
