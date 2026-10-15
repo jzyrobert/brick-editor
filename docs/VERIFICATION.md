@@ -1,5 +1,11 @@
 # Verification — 27 September 2026
 
+## Benchmark CI portability — 15 October 2026
+
+The first PR #20 run exposed missing Bubblewrap and a VM-specific Codex binary path in integration CI. The integration job now installs Bubblewrap and pinned Codex 0.162.1, probes namespace creation and sets the host-only `BRICK_CODEX_BINARY` override; the existing local default and recorded binary hashing remain. Ubuntu's unprivileged-user-namespace restriction is disabled only on the disposable integration runner so the actual sandbox tests can execute. No credentials or paid requests are needed: the upstream transport is mocked.
+
+An unchanged cache unit test also raced asynchronous hashing/persistence; it now waits for all three cache writes before asserting a hit. The original isolated rerun passed, and the revised cache plus spatial-benchmark/live/codex suites pass all 29 tests locally. Log: `.local/guidance-ci-fix-tests.log`. Full PR CI remains the merge gate.
+
 ## Fresh v2 gallery publication — 14 October 2026
 
 28 focused tests pass across gallery-publish, gallery-index, gallery-bundle and spatial-reference-v2. Type checking (`npx tsc -b`), repository formatting and `git diff --check` pass. All 17 gallery recompilations match their frozen MPD hashes. All 102 uploaded assets match public byte lengths and SHA-256 hashes; the 100-row live database and published index exactly match the reviewed bundle, preserving 83 old entries and the Fresh E default. The live gallery shows 17 new cards with loaded images and no horizontal page overflow at six desktop/phone sizes. No renderer/editor behavior changed.

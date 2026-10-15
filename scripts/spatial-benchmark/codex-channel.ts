@@ -323,7 +323,8 @@ export async function codexChannel(options: {
     server.listen(socket, resolve);
   });
   const binary = resolve(
-    "/home/ubuntu/.codex/packages/standalone/current/bin/codex",
+    process.env.BRICK_CODEX_BINARY ??
+      "/home/ubuntu/.codex/packages/standalone/current/bin/codex",
   );
   const runtime = dirname(process.execPath);
   await writeFile(
