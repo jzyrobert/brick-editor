@@ -3,7 +3,8 @@
 // GenerationSession, budgets, facts and isolated compiler, through the native
 // Claude CLI channel (scripts/spatial-benchmark/claude-channel.ts). There is
 // no quota reader for Claude; every scheduled case runs once, failures are
-// retained and never retried.
+// retained and never retried. --cases runs only the named scheduled cases,
+// for cases a host interruption left without an outcome; each is recorded.
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -21,11 +22,13 @@ export async function main(argv: string[]) {
   const flags = new Map<string, string>();
   for (let i = 0; i < argv.length; i += 2) {
     if (
-      !["--manifest", "--out"].includes(argv[i]) ||
+      !["--manifest", "--out", "--cases"].includes(argv[i]) ||
       !argv[i + 1] ||
       flags.has(argv[i])
     )
-      throw new Error("Claude live mode takes --manifest and --out");
+      throw new Error(
+        "Claude live mode takes --manifest, --out and optional --cases",
+      );
     flags.set(argv[i], argv[i + 1]);
   }
   if (!flags.has("--manifest") || !flags.has("--out"))
@@ -35,7 +38,12 @@ export async function main(argv: string[]) {
   );
   validateClaudeModel(m.model);
   const out = resolve(flags.get("--out")!);
-  const { cases, worker, record } = await preflight(m, out);
+  const { cases: scheduled, worker, record } = await preflight(m, out);
+  const only = flags.get("--cases")?.split(",");
+  for (const id of only ?? [])
+    if (!scheduled.some((c) => c.id === id))
+      throw new Error(`Not a scheduled case: ${id}`);
+  const cases = only ? scheduled.filter((c) => only.includes(c.id)) : scheduled;
   const sourceNames = [
     "scripts/spatial-benchmark-live-claude.ts",
     "scripts/spatial-benchmark/claude-channel.ts",
@@ -60,6 +68,7 @@ export async function main(argv: string[]) {
         sourceHashes,
         scheduled: cases.length,
         runOrder: cases.map((c) => c.id),
+        selectedCases: only ?? null,
       },
       null,
       2,
