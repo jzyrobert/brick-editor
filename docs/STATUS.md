@@ -1,5 +1,9 @@
 # Implementation status
 
+## Claude v2 gallery cohort — 16 October 2026
+
+Ran the corrected-reference gallery cohort locally on Claude: six briefs × Haiku 5.5/high, Sonnet 5.5/high, Opus 5.5/high and Fable 5.1/medium, with the OpenAI cohort's manifests changed only in model and effort. A new native Claude CLI channel (`claude-native-cli`, neutral system prompt, tools off) and runner drive the same GenerationSession, facts, feedback and isolated compiler. Published all 21 accepted outputs with 63 renders into `e-reference-v2-20261014`, whose description now covers both families; 100 earlier entries and the Fresh E default are unchanged. Haiku's temple (output budget) and Opus's pelican and Ewok (model failures) are archived. A first attempt on Claude Code's default system prompt was aborted because invented tool markup cost repairs. Not a controlled comparison with the Codex-broker builds. [Runs and outcomes](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md).
+
 ## Fresh v2 gallery cohort — 14 October 2026
 
 Completed 18 owner-authorised fresh generations (six briefs × Luna/high, Sol 6.1/high and Astra/medium). Published all 17 compiler-accepted outputs with 51 fixed-view renders to the main gallery, retaining all 83 prior entries and the Fresh E default. Astra’s Star Destroyer hit the compiler heap limit; a frozen-source diagnostic exposed 14 overlap errors, so it remains archived and unpublished. Final quota: 60% remaining. This is a fresh gallery cohort, not evidence of improved visual quality. [Protocol, sources and publication receipt](../fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).

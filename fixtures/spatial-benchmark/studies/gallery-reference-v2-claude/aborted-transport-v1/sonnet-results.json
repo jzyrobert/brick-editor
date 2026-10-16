@@ -1,0 +1,28 @@
+{
+  "version": "claude-native-cli/1",
+  "planned": 6,
+  "completed": 1,
+  "results": [
+    {
+      "caseId": "pelican--reference-v2--1",
+      "referenceCoverage": [],
+      "state": "frozen",
+      "status": "model-failure",
+      "files": {
+        "submission.txt": "98c0c994d1389d96ce1a49896f8e227844dd74bd4a7b655830e4e797b5b2efc4"
+      },
+      "used": {
+        "turns": 5,
+        "searchCalls": 5,
+        "infoCalls": 0,
+        "referenceBytes": 174881,
+        "checks": 1,
+        "repairs": 2,
+        "compileMs": 430
+      },
+      "failure": "Run-wide repairs budget exhausted",
+      "seconds": 659
+    }
+  ],
+  "experimentallyEvaluated": false
+}

@@ -32,6 +32,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Spatial benchmark research
 
+- [ ] Give Claude runs a payload-level broker like the Codex one if host-managed authentication allows it; the [Claude v2 cohort](fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md) uses the native CLI with a neutral system prompt, so Claude Code's internal retries and housekeeping calls remain outside the channel.
 - [ ] Measure isolated compiler heap requirements and declare memory/resource exhaustion semantics explicitly before the next gallery-scale benchmark. The v2 gallery Astra Star Destroyer exhausted 384 MiB; identical-source post-run compilation at 1024 MiB exposed 14 overlap errors. Preserve this failed outcome; do not silently raise budgets or repair evaluated candidates. [Evidence](fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
 
 - [x] Add an opt-in exact-count size policy and enforce it before visual eligibility. See [corrected reference audit](docs/GENERATION-DATA-AUDIT.md). The post-run audit found a 14-part Luna control marked submitted despite an exact-16 brief; preserve legacy advisory target behavior and all frozen outcomes ([audit](fixtures/spatial-benchmark/studies/model-screening-pilot/results/exact-count-audit.json)).
