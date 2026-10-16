@@ -1,5 +1,9 @@
 # Verification — 27 September 2026
 
+## Claude v2 retry publication — 16 October 2026
+
+Retry preflights match the original Haiku and Opus inputs, manifests and compiler bundle. The accepted Opus Ewok recompiled to its frozen MPD hash (`d54ddfd013de`); its three renders, MPD, script and report return 200. The live index has 122 unique builds, the 121 earlier entries match the pre-publication snapshot, and Fresh E remains the default.
+
 ## Claude v2 gallery publication — 16 October 2026
 
 Type checking (`npx tsc -b`) and formatting pass. The Claude channel resumed a fresh session in a smoke test; cohort preflights reproduce the archived Luna prompts and compiler bundle byte for byte. All 21 publication compilations match their frozen MPD hashes; 63 renders were made; all 126 new public files return 200. The live index has 121 unique builds: the 100 earlier entries are byte-identical to the pre-publication snapshot, the 21 new ones carry `e-reference-v2-20261014`, and Fresh E remains the default. All 24 outcomes are archived, including the aborted transport-1 attempt and the partial audits of the two cases a container restart interrupted. See [runs, outcomes and commands](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md).

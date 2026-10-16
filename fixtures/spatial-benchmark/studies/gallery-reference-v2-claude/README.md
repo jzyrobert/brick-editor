@@ -48,6 +48,18 @@ Claude Code's own internal retries and its small housekeeping model calls are ou
 
 Haiku's 117-part pelican is thin but compiler-accepted, so it is published under the same rule as every other accepted output. Opus's pelican used its three checks and then asked for a fourth; its Ewok used both repairs without clearing overlaps and then replied in prose.
 
+## Retry of failed cases — 16 October 2026
+
+At the owner's request, each of the three failed cases ran once more from a fresh start with the same manifest, inputs and compiler, on transport 3 at `main` commit `81a13e0f` (`results/haiku-retry/`, `results/opus-retry/`, `retry/`). This is a deliberate exception to the cohort's no-retry rule, recorded as such; the original failures remain archived.
+
+| Brief   | Model            | Retry outcome                                                   | Parts | Warnings | Seconds | Cost (USD) | Build                                                   |
+| ------- | ---------------- | --------------------------------------------------------------- | ----: | -------: | ------: | ---------: | ------------------------------------------------------- |
+| temple  | Haiku 5.5 (high) | Model failure: output-token budget exhausted on the first reply |     — |        — |     659 |       0.12 | —                                                       |
+| pelican | Opus 5.5 (high)  | Model failure: run-wide checks budget exhausted                 |     — |        — |     928 |      12.76 | —                                                       |
+| ewok    | Opus 5.5 (high)  | Accepted                                                        |  2649 |        2 |    1064 |      18.39 | [Open](https://bricks.robertj.in/?gallery=d54ddfd013de) |
+
+Opus's Ewok ("Endor Explorer 497-E") recompiled to its frozen MPD hash and is published in the same generation as `gallery-reference-v2-claude-opus-ewok-retry`. The generation description now reports 22 of 24 Claude builds and names the retry. The live index has 122 unique builds; the 121 earlier entries are unchanged and Fresh E remains the default.
+
 ## Evidence and reproduction
 
 - **Implemented:** native Claude channel and runner, `--cases` for interrupted cases, four manifests, and an additive gallery publication into the existing v2 generation.
