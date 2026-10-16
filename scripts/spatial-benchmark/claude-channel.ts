@@ -15,7 +15,7 @@ import { ModelBudgetFailure } from "./model-failure";
 // an empty directory with this session's identity scrubbed from its
 // environment, and every streamed event is checked for tool use before the
 // reply is returned.
-export const CLAUDE_TRANSPORT_VERSION = "claude-native-cli/2";
+export const CLAUDE_TRANSPORT_VERSION = "claude-native-cli/3";
 export const CLAUDE_SYSTEM_PROMPT = "You are a helpful assistant.";
 export type ClaudeModel = { id: string; effort: string };
 export function validateClaudeModel(model: ClaudeModel) {
@@ -150,6 +150,7 @@ export async function claudeChannel(options: {
           result?: string;
           is_error?: boolean;
           stop_reason?: string;
+          api_error?: string;
           session_id?: string;
           modelUsage?: Record<string, unknown>;
         }
@@ -166,7 +167,13 @@ export async function claudeChannel(options: {
       if (e.type === "result") result = e;
     }
     if (!result || code !== 0 || result.is_error) {
-      if (result?.stop_reason === "max_tokens")
+      // The CLI reports an exhausted output cap as an API error after its
+      // own retries, not as a stop reason (version 2 misfiled it as an
+      // infrastructure failure).
+      if (
+        result?.stop_reason === "max_tokens" ||
+        result?.api_error === "max_output_tokens"
+      )
         throw new ModelBudgetFailure(
           "Declared output-token budget exhausted before a final answer",
         );
