@@ -1,11 +1,17 @@
 # Gallery and interactive models
 
-The published Gemini cohort adds nine accepted builds from Gemini 3.8 Flash/high
-and Gemini 4 Argon/high to **E · corrected part references** (17 October 2026).
-Three of twelve cases failed within their declared model limits and remain
-archived. The verified main-only publication brings the gallery to 133 total
-entries, all 124 earlier entries and the Fresh E default preserved.
-[Runs, native CLI conditions and publication record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md).
+The Gemini cohort contains eleven accepted builds from Gemini 3.8 Flash/high
+and Gemini 4 Argon/high in **E · corrected part references** (17 October 2026).
+The first publication added nine builds. After correcting runner assistance
+limits to match the prompt, the owner's fresh Flash Star Destroyer and Ewok
+retries both passed and were published. Argon's dragon resumed its original
+conversation but failed final schema validation after both repairs. The original
+attempts and continuation remain archived.
+
+The verified main-only follow-up brings the gallery to **135 entries**, preserving
+all 133 earlier entries and the Fresh E default.
+[Initial cohort](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md),
+[corrected-limit follow-up and publication receipt](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy-retries/README.md).
 
 The **E · corrected part references** cohort adds 17 fresh builds from Luna/high, Sol 6.1/high and Astra/medium using opt-in v2 generation references (14 October 2026). Select it under **Prompt generation**. The previous 83 entries and Fresh E default are preserved. One of 18 scheduled outputs failed and remains archived rather than repaired or replaced. [Sources, outcomes and publication checks](../fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
 

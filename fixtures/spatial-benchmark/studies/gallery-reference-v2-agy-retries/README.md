@@ -39,7 +39,7 @@ Final observed quota at 2026-10-17T08:38:42.996Z: **13% Argon weekly, 97% Gemini
 Quota is checked before and after every run, with the adaptive estimate and five-point
 reserve. The original Argon phase's cost is included in the continuation record.
 
-Prepared an additive bundle of **2 builds**, **12 assets** and **135 total gallery entries**, preserving all 133 earlier builds and the Fresh E default. Publication is pending main validation.
+Published **2 additional builds**, bringing the gallery to **135**. All 133 earlier builds and the Fresh E default are preserved. The main-only workflow passed and all 12 public assets match their reviewed bytes and SHA-256 hashes. See [the publication receipt](publication-receipt.json).
 
 - [Archive manifest](archive-manifest.json): exact frozen artifacts, inputs, host audits, response metadata, quota and original/archive hashes. Native event streams, stderr, compiler bundles, temporary roots and credentials stay local; unrelated model-pool quota TSV rows are omitted.
 - [Argon continuation](results/argon-dragon/results.json), [Flash retries](results/flash-retries/results.json), and [the initial model-free replay check](results/argon-replay-preflight/results.json).

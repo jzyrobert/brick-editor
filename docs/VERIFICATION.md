@@ -4,13 +4,14 @@
 
 Both Flash retries recompile to their frozen MPD hashes, and all six standard
 final views render and were inspected without generation feedback. The archive
-verifies 84 files across three records, including the initial local-only replay
-check. Filled prompts match their original inputs byte for byte. The additive
-bundle verifies 135 entries and 12 assets; SQLite replay reproduces its exact
-index from the 133-entry baseline, preserving earlier builds and the Fresh E
-default. All 54 focused transport/gallery/live-runner tests, type checking and
-full formatting checks pass. Publication is pending
-main validation and the protected workflow.
+verifies 84 committed files across three records, including the initial local-only
+replay check. Filled prompts match their original inputs byte for byte. SQLite
+replay reproduces the exact 135-entry index from the 133-entry baseline. All 54
+focused transport/gallery/live-runner tests, type checking and formatting pass.
+PR and main CI passed before the [main-only publication](https://github.com/jzyrobert/brick-editor/actions/runs/39020017963). Public verification at
+2026-10-17T09:10:54.960Z matched the full reviewed index and all 12
+new assets' byte counts and SHA-256 hashes, with every earlier build and the
+Fresh E default preserved.
 [Run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy-retries/README.md).
 
 ## Prompt assistance limits — 17 October 2026

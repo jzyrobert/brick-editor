@@ -212,7 +212,9 @@ and requires exact database/index equality before publishing the new index.
 
 Push the reviewed source and assets through the repository's branch/PR checks.
 After all main validation jobs pass, dispatch the **Publish reviewed gallery
-generations** workflow with `collection=gemini-agy`. It uses the GitHub Actions
+generations** workflow with `collection=gemini-agy` for the original cohort or
+`collection=gemini-agy-retries` for the corrected-limit follow-up. Each selection
+uses its separately reviewed, frozen bundle. It uses the GitHub Actions
 secret `CLOUDFLARE_GALLERY_API_TOKEN` (falling back to the existing token).
 The token requires D1 Edit and Workers R2 Storage Edit on the gallery's account.
 Enter it directly in GitHub's secrets settings, never in prompts, source or
@@ -224,4 +226,5 @@ batch needs a fresh reviewed bundle path and workflow selection; reapplying this
 bundle after publication is refused by the live-baseline check.
 
 See [the run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md)
+and [the corrected-limit follow-up](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy-retries/README.md)
 for actual outcomes, transport revisions and publication status.

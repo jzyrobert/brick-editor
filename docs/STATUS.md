@@ -6,9 +6,10 @@ Both owner-requested fresh Flash retries passed: Star Destroyer (4,050 parts)
 and Ewok Classic Space (2,748 parts), with one warning each. Argon's dragon
 resumed its original conversation beyond the old inspection and turn caps, but
 its final source still failed schema validation after both repairs. All prior
-failures remain unchanged. Two accepted builds and six inspected final views
-are prepared for an additive 133-to-135 gallery publication, pending main
-validation and the protected Cloudflare workflow. Final generation quota was
+failures remain unchanged. Both accepted builds and their six final views are
+published: 135 gallery entries, with all 133 earlier entries and the Fresh E
+default preserved. The [main-only publication](https://github.com/jzyrobert/brick-editor/actions/runs/39020017963) passed; every new public
+asset matches the reviewed bytes and SHA-256 hash. Final generation quota was
 13% Argon weekly, 97% Gemini weekly and 97% Gemini five-hour.
 [Run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy-retries/README.md).
 
@@ -21,7 +22,7 @@ undisclosed allowance in this profile. Historical benchmark contracts are
 preserved. Recovery can switch contracts at a pending inspection after verifying
 the original transcript, retaining earlier denials, checks, time and quota.
 The owner requested continuation of Argon's dragon and fresh retries of Flash's
-Star Destroyer and Ewok; those outcomes will be recorded separately. See
+Star Destroyer and Ewok; those outcomes are now recorded in the follow-up above. See
 [the procedure](AGY-GENERATION.md).
 
 ## Antigravity gallery generation — 17 October 2026
