@@ -1,5 +1,17 @@
 # Implementation status
 
+## Antigravity gallery generation — 17 October 2026
+
+Added a native agy transport and serial quota-gated schedule for Gemini 3.8
+Flash/high and Gemini 4 Argon/high on the six corrected-reference gallery briefs.
+Windows hosts compile in the existing Linux namespace through WSL; no host-VM
+fallback is allowed. A Flash pilot accepted and rendered successfully. The
+Gemini cohort is in progress, with an aborted native transport attempt retained.
+Additive version-3 gallery bundles preserve existing builds and the featured
+generation; the main-only publishing workflow accepts a separate gallery token
+stored in GitHub Actions. [Procedure](AGY-GENERATION.md) and
+[run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md).
+
 ## Final-answer notice and last two Claude builds — 17 October 2026
 
 A check requested beyond the budget now gets one final-answer notice instead of ending the run; `GenerationSession.run` and the Claude runner (`--continue-from`) can continue a frozen case in its own native session. Haiku's temple, rerun with the unannounced 32,768-token output cap raised to 128,000, and Opus's pelican, continued with the notice, were both accepted and published, so all 24 Claude briefs have a build (124 gallery builds). [Runs](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md#uncapped-haiku-temple-and-continued-opus-pelican--17-october-2026).

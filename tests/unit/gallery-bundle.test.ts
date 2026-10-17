@@ -23,7 +23,11 @@ function editedBundle() {
   for (const file of ["manifest.json", "index.json", "publish.sql"])
     copyFileSync(join(bundle, file), join(dir, file));
   for (const folder of ["b", "s", "p", "r"])
-    symlinkSync(join(bundle, folder), join(dir, folder), "dir");
+    symlinkSync(
+      join(bundle, folder),
+      join(dir, folder),
+      process.platform === "win32" ? "junction" : "dir",
+    );
   return dir;
 }
 afterEach(() =>
@@ -90,7 +94,11 @@ function editedGenerations() {
   for (const file of ["manifest.json", "index.json", "publish.sql"])
     copyFileSync(join(generationsBundle, file), join(dir, file));
   for (const folder of ["b", "s", "p", "r"])
-    symlinkSync(join(generationsBundle, folder), join(dir, folder), "dir");
+    symlinkSync(
+      join(generationsBundle, folder),
+      join(dir, folder),
+      process.platform === "win32" ? "junction" : "dir",
+    );
   return dir;
 }
 function changeIndex(dir: string, edit: (index: any) => void) {

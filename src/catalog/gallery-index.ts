@@ -134,6 +134,10 @@ export function galleryAgentId(runner: string, model: string, effort?: string) {
 
 const MODEL_NAMES: [RegExp, (m: RegExpMatchArray) => string][] = [
   [
+    /^gemini-(\d+(?:\.\d+)?)-(flash|argon)-(?:low|medium|high)$/,
+    (m) => `Gemini ${m[1]} ${cap(m[2])}`,
+  ],
+  [
     /^claude-([a-z]+)-(\d+)-(\d+)$/,
     (m) => `Claude ${cap(m[1])} ${m[2]}.${m[3]}`,
   ],

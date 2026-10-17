@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { build } from "esbuild";
-import { writeFile, readFile } from "node:fs/promises";
+import { writeFile, readFile, unlink } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { CompileReport } from "../../src/build-script/compile";
@@ -39,8 +40,22 @@ export async function bundleCompiler(out: string) {
   return hash(code);
 }
 /** Failure to establish isolation is fatal. Never fall back to a host VM. */
+/** Windows hosts use the default WSL distribution's Linux namespace. No host
+ * compiler fallback: WSL must provide Node >=22 and bubblewrap. */
+export function linuxPath(path: string) {
+  if (process.platform !== "win32") return path;
+  if (!/^[A-Za-z]:[\\/]/.test(path))
+    throw new Error("WSL isolation requires an absolute drive path");
+  return `/mnt/${path[0].toLowerCase()}/${path.slice(3).replaceAll("\\", "/")}`;
+}
+function isolationCommand() {
+  return process.platform === "win32"
+    ? { command: "wsl.exe", prefix: ["--exec", "bwrap"], env: process.env }
+    : { command: "bwrap", prefix: [], env: { PATH: "/usr/bin:/bin" } };
+}
 function isolationArgs(worker: string) {
-  const runtime = dirname(process.execPath);
+  const runtime =
+    process.platform === "win32" ? "/usr/bin" : dirname(process.execPath);
   return [
     "--unshare-all",
     "--die-with-parent",
@@ -55,6 +70,10 @@ function isolationArgs(worker: string) {
     "--ro-bind",
     "/usr/lib",
     "/usr/lib",
+    // Debian/Ubuntu Node packages externalize builtins into this directory.
+    "--ro-bind-try",
+    "/usr/share/nodejs",
+    "/usr/share/nodejs",
     "--ro-bind",
     "/lib",
     "/lib",
@@ -71,10 +90,10 @@ function isolationArgs(worker: string) {
     "--dir",
     "/scripts",
     "--ro-bind",
-    worker,
+    linuxPath(worker),
     "/scripts/worker.mjs",
     "--ro-bind",
-    join(ROOT, "public/libraries"),
+    linuxPath(join(ROOT, "public/libraries")),
     "/public/libraries",
     "--chdir",
     "/tmp",
@@ -91,65 +110,87 @@ export async function isolatedCompile(
   timeoutMs: number,
   maxBytes: number,
 ): Promise<Compilation> {
+  // WSL's stdin forwarding can keep a pipe open after Windows closes it.
+  // Bind only this request file into the same isolated namespace instead.
+  const requestFile =
+    process.platform === "win32"
+      ? join(dirname(worker), `.compile-${randomUUID()}.json`)
+      : undefined;
+  const payload = JSON.stringify({
+    ...input,
+    codeTimeoutMs: Math.min(10000, timeoutMs),
+  });
+  if (requestFile) await writeFile(requestFile, payload, { flag: "wx" });
   const args = [
     ...isolationArgs(worker),
+    ...(requestFile
+      ? ["--ro-bind", linuxPath(requestFile), "/input.json"]
+      : []),
     "/runtime/node",
     "--max-old-space-size=384",
     "/scripts/worker.mjs",
+    ...(requestFile ? ["/input.json"] : []),
   ];
-  return new Promise((resolve, reject) => {
-    const child = spawn("bwrap", args, {
-      env: { PATH: "/usr/bin:/bin" },
-      stdio: ["pipe", "pipe", "pipe"],
-      detached: true,
+  try {
+    return await new Promise<Compilation>((resolve, reject) => {
+      const launcher = isolationCommand();
+      const child = spawn(launcher.command, [...launcher.prefix, ...args], {
+        env: launcher.env,
+        stdio: [requestFile ? "ignore" : "pipe", "pipe", "pipe"],
+        detached: process.platform !== "win32",
+      });
+      let output = "",
+        error = "",
+        size = 0,
+        stopped = "";
+      const stop = (reason: string) => {
+        stopped = reason;
+        try {
+          process.kill(-child.pid!, "SIGKILL");
+        } catch {
+          child.kill("SIGKILL");
+        }
+      };
+      const timer = setTimeout(
+        () => stop("Compiler compute budget exceeded"),
+        timeoutMs,
+      );
+      child.on("error", (e) => {
+        clearTimeout(timer);
+        reject(e);
+      });
+      child.stdout!.on("data", (b: Buffer) => {
+        size += b.length;
+        if (size > maxBytes) stop("Compiler output budget exceeded");
+        else output += b.toString();
+      });
+      child.stderr!.on("data", (b: Buffer) => {
+        if (error.length < 4000)
+          error += b.toString().slice(0, 4000 - error.length);
+      });
+      child.stdin?.on("error", () => {});
+      child.stdin?.end(payload);
+      child.on("close", (code) => {
+        clearTimeout(timer);
+        if (stopped) return resolve({ failure: stopped });
+        if (code !== 0)
+          return reject(
+            new Error(`Compiler isolation/process failure (${code}): ${error}`),
+          );
+        try {
+          resolve(JSON.parse(output));
+        } catch {
+          reject(
+            new Error(
+              `Compiler returned invalid host protocol: ${JSON.stringify(output.slice(0, 300))}; ${error}`,
+            ),
+          );
+        }
+      });
     });
-    let output = "",
-      error = "",
-      size = 0,
-      stopped = "";
-    const stop = (reason: string) => {
-      stopped = reason;
-      try {
-        process.kill(-child.pid!, "SIGKILL");
-      } catch {
-        child.kill("SIGKILL");
-      }
-    };
-    const timer = setTimeout(
-      () => stop("Compiler compute budget exceeded"),
-      timeoutMs,
-    );
-    child.on("error", (e) => {
-      clearTimeout(timer);
-      reject(e);
-    });
-    child.stdout.on("data", (b: Buffer) => {
-      size += b.length;
-      if (size > maxBytes) stop("Compiler output budget exceeded");
-      else output += b.toString();
-    });
-    child.stderr.on("data", (b: Buffer) => {
-      if (error.length < 4000)
-        error += b.toString().slice(0, 4000 - error.length);
-    });
-    child.stdin.on("error", () => {});
-    child.stdin.end(
-      JSON.stringify({ ...input, codeTimeoutMs: Math.min(10000, timeoutMs) }),
-    );
-    child.on("close", (code) => {
-      clearTimeout(timer);
-      if (stopped) return resolve({ failure: stopped });
-      if (code !== 0)
-        return reject(
-          new Error(`Compiler isolation/process failure (${code}): ${error}`),
-        );
-      try {
-        resolve(JSON.parse(output));
-      } catch {
-        reject(new Error("Compiler returned invalid host protocol"));
-      }
-    });
-  });
+  } finally {
+    if (requestFile) await unlink(requestFile);
+  }
 }
 export async function verifyFile(file: string, expected: string) {
   if (hash(await readFile(file)) !== expected)
@@ -162,10 +203,17 @@ export async function isolationProbe(
 ): Promise<{ root: string[]; env: string[]; route: string; denied: string[] }> {
   const code = `const fs=require("node:fs");const paths=["/home/ubuntu/brick-editor","/home/ubuntu/.codex","/evaluator","/credentials","/docs","/fixtures"];process.stdout.write(JSON.stringify({root:fs.readdirSync("/"),env:Object.keys(process.env),route:fs.readFileSync("/proc/net/route","utf8"),denied:paths.filter(p=>!fs.existsSync(p))}));`;
   return new Promise((resolve, reject) => {
+    const launcher = isolationCommand();
     const child = spawn(
-      "bwrap",
-      [...isolationArgs(worker), "/runtime/node", "-e", code],
-      { env: { PATH: "/usr/bin:/bin" }, stdio: ["ignore", "pipe", "pipe"] },
+      launcher.command,
+      [
+        ...launcher.prefix,
+        ...isolationArgs(worker),
+        "/runtime/node",
+        "-e",
+        code,
+      ],
+      { env: launcher.env, stdio: ["ignore", "pipe", "pipe"] },
     );
     let out = "",
       err = "";

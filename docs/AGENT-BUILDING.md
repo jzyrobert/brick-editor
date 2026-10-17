@@ -285,6 +285,12 @@ The prompt states the target as guidance that the build is judged on. The wrappe
 
 ## One-shot runs
 
+For Gemini gallery generation through the authenticated Antigravity CLI, use
+[the agy procedure](AGY-GENERATION.md). It runs the existing corrected-reference
+gallery manifests through the same text-only session/compiler protocol, tests
+Flash first, checks shared and Argon quota after each run, and prepares additive
+publication bundles from frozen accepted sources.
+
 To test how far a model gets by reasoning alone, the MineBench way, `npm run oneshot` sends the prompt once and takes a brick.build call from the reply:
 
 ```sh
