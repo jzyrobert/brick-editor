@@ -1,5 +1,25 @@
 # Verification — 27 September 2026
 
+## Antigravity transport and Windows compiler — 17 October 2026
+
+The WSL model-free compiler probe passes all six gallery cases. The seventeen
+spatial session/compiler integration tests pass on Windows through WSL, including
+namespace isolation, text feedback, freezing and final-answer notices. Focused
+transport/quota and gallery tests cover wrong-model/tool rejection, native
+response selection, missing quota, shared/separate limits, adaptive reserve and
+preservation of existing published entries/default generation. Existing gallery
+test fixtures now normalize platform separators and use Windows junctions for
+temporary directory links. Type checking and 40 focused transport/quota/gallery
+tests pass, including completed-response recovery, undeclared-route rejection
+and the unchanged run-wide repair bound. Exact filled prompts match the earlier
+Luna preflight. All nine accepted builds recompile to their frozen MPD hashes;
+27 standard final views were rendered and inspected without generation feedback.
+The archive verifies 445 files across 20 selected/earlier run records and the
+original pilot transport snapshots. Bundle verification checks 133 builds and
+54 new assets; SQLite replay gives exact SQL/index equality with all 124 prior
+entries and the default preserved. Remote publication is pending main validation;
+see the [run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md).
+
 ## Final-answer notice and continuation — 17 October 2026
 
 Type checking and formatting pass. The spatial-benchmark integration suite passes 16 tests, including the new final-notice and continuation cases; the four spatial-codex tests need the pinned Codex binary CI installs and fail identically on unmodified `main` locally. The continued Opus pelican resumed native session `324257f3…` with one new message. Both new builds recompiled to their frozen hashes; their twelve public files return 200; the live index has 124 unique builds with the 122 earlier entries unchanged and Fresh E the default. [Runs](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md#uncapped-haiku-temple-and-continued-opus-pelican--17-october-2026).

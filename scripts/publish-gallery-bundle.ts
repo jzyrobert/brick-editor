@@ -19,7 +19,8 @@ import {
 import { INDEX_QUERY } from "./gallery-publish";
 
 type Manifest = {
-  v?: 2;
+  v?: 2 | 3;
+  beforeIndexSha256?: string;
   defaultGeneration?: string;
   generations?: { id: string; builds: number }[];
   indexSha256?: string;
@@ -47,6 +48,39 @@ export function verifyLiveIndex(actual: GalleryIndex, reviewed: GalleryIndex) {
     throw new Error("Live gallery metadata differs from the reviewed index");
 }
 
+/** Additions may change the reviewed cohort description, while preserving
+ * every existing build, prompt, agent and the featured generation. */
+export function verifyAdditiveIndex(before: GalleryIndex, after: GalleryIndex) {
+  if (before.files !== after.files)
+    throw new Error("Gallery asset origin changed");
+  for (const key of ["builds", "prompts", "agents"] as const)
+    for (const old of before[key])
+      if (
+        !isDeepStrictEqual(
+          old,
+          after[key].find((v) => v.id === old.id),
+        )
+      )
+        throw new Error(`Existing ${key} entry changed: ${old.id}`);
+  const defaults = (i: GalleryIndex) =>
+    i.generations?.filter((g) => g.default).map((g) => g.id);
+  if (!isDeepStrictEqual(defaults(before), defaults(after)))
+    throw new Error(
+      "Additive publication must preserve the default generation",
+    );
+  for (const old of before.generations ?? []) {
+    const current = after.generations?.find((g) => g.id === old.id);
+    const expected =
+      old.id === "e-reference-v2-20261014"
+        ? { ...old, description: current?.description }
+        : old;
+    if (!isDeepStrictEqual(expected, current))
+      throw new Error(`Existing generation changed: ${old.id}`);
+  }
+  if (after.builds.length <= before.builds.length)
+    throw new Error("Additive publication has no new builds");
+}
+
 export function verifyBundle(dir: string) {
   const manifest: Manifest = JSON.parse(
     readFileSync(join(dir, "manifest.json"), "utf8"),
@@ -54,7 +88,20 @@ export function verifyBundle(dir: string) {
   const index = decodeGalleryIndex(
     JSON.parse(readFileSync(join(dir, "index.json"), "utf8")),
   );
-  const history = manifest.v === 2;
+  const history = manifest.v === 2 || manifest.v === 3;
+  if (manifest.v === 3) {
+    const bytes = readFileSync(join(dir, "before-index.json"));
+    const before = decodeGalleryIndex(JSON.parse(bytes.toString()));
+    if (
+      hash(bytes) !== manifest.beforeIndexSha256 ||
+      !same(
+        before.builds.map((b) => b.id),
+        manifest.before,
+      )
+    )
+      throw new Error("Additive baseline checksum/roster changed");
+    verifyAdditiveIndex(before, index);
+  }
   if (history) {
     if (
       hash(readFileSync(join(dir, "index.json"))) !== manifest.indexSha256 ||
@@ -95,15 +142,16 @@ export function verifyBundle(dir: string) {
     ];
     const prompts = new Set(current.map((b) => b.prompt));
     if (
-      prompts.size !== 6 ||
-      current.length !== 18 ||
-      [...prompts].some(
-        (id) =>
-          !same(
-            current.filter((b) => b.prompt === id).map((b) => b.agent),
-            expected,
-          ),
-      )
+      manifest.v === 2 &&
+      (prompts.size !== 6 ||
+        current.length !== 18 ||
+        [...prompts].some(
+          (id) =>
+            !same(
+              current.filter((b) => b.prompt === id).map((b) => b.agent),
+              expected,
+            ),
+        ))
     )
       throw new Error(
         "Latest E must include three high-effort models for every brief",
@@ -112,7 +160,11 @@ export function verifyBundle(dir: string) {
       throw new Error("Missing text-only input provenance");
     for (const input of manifest.inputs) {
       if (
-        !/^docs\/samples\/lego-style-study\/[a-z0-9/-]+$/.test(input.folder) ||
+        !(
+          manifest.v === 3
+            ? /^fixtures\/spatial-benchmark\/studies\/gallery-reference-v2-agy\/publication\/inputs\/[a-z0-9-]+$/
+            : /^docs\/samples\/lego-style-study\/[a-z0-9/-]+$/
+        ).test(input.folder) ||
         input.images !== 0 ||
         !generations.some((g) => g.id === input.generation) ||
         hash(readFileSync(resolve(input.folder, "prompt.md"))) !==
@@ -177,6 +229,7 @@ export function verifyBundle(dir: string) {
       throw new Error(`File checksum changed: ${f.key}`);
   }
   for (const b of index.builds) {
+    if (manifest.v === 3 && manifest.before.includes(b.id)) continue;
     const keys = [
       `b/${b.mpd}.mpd.gz`,
       `s/${b.script}.json`,
@@ -261,6 +314,25 @@ export async function main(args: string[]) {
     throw new Error(
       "Visible gallery changed since review; refusing to hide other builds",
     );
+  if (manifest.v === 3 && same(current, manifest.before)) {
+    const beforeRows: GalleryRow[] = JSON.parse(
+      command([
+        "d1",
+        "execute",
+        "brick-gallery",
+        "--remote",
+        "--json",
+        "--command",
+        INDEX_QUERY,
+      ]),
+    ).at(-1).results;
+    verifyLiveIndex(
+      galleryIndexFromRows(beforeRows, reviewed.files, new Date()),
+      decodeGalleryIndex(
+        JSON.parse(readFileSync(join(dir, "before-index.json"), "utf8")),
+      ),
+    );
+  }
   const queue = [...manifest.files];
   await Promise.all(
     Array.from({ length: 4 }, async () => {

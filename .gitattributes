@@ -18,3 +18,8 @@ docs/samples/format-size/*/prompt.md -text whitespace=-blank-at-eof
 
 # Preserve the supplied sizing summary byte-for-byte, including Markdown hard breaks.
 docs/samples/format-size/supplied-piece-count-summary.md -text whitespace=-blank-at-eol
+
+# Frozen generation evidence and content-addressed gallery assets keep exact bytes.
+fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/results/** -text -whitespace
+fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/host-tools/** -text -whitespace
+fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/publication/** -text -whitespace

@@ -1,0 +1,217 @@
+{"tool": "brick.build", "input": {"code": "script({\n...`
+Wait! Was there any whitespace, or was it raw JSON?
+It was raw JSON.
+Wait, let's look at the JSON string in my previous turn:
+Did it have any syntax error in JSON?
+Let's check the code string:
+`"script({\n title: \"Imperial I-class Star Destroyer 'Devastator'\",\n palette: {\n ...`
+Wait! Look closely at the code string in my previous turn:
+Wait! Was there an unescaped newline or unescaped quote?
+In my previous turn:
+`section("Upper Wedge Hull", [`
+`...upperHullSlices,`
+`...upperDeckSlopes,`
+`...upperDeckArmor,`
+`...bowDetails,`
+`]);`
+Wait! Look at how `upperDeckArmor` was generated:
+`-Math.round(hw * 0.5)`
+Wait! What about the quotes inside `code`?
+All quotes inside `code` were `\"`.
+Wait, what about newlines?
+In my previous turn:
+Did the model emit literal newlines inside the JSON string `"\n"`?
+WAIT!
+IN JSON STRINGS:
+If a model outputs a literal newline character (ASCII 10, byte 0x0A) inside a JSON string `"... \n ..."`:
+IN STRICT JSON SPECIFICATION (RFC 8259, Section 9):
+"Unescaped control characters (U+0000 through U+001F) are not allowed inside a string!"
+A literal newline inside a JSON string is an INVALID JSON SYNTAX ERROR!
+If `json.loads()` runs in Python on a string with literal newlines inside a quoted string, Python raises:
+`json.decoder.JSONDecodeError: Invalid control character at: line X column Y`!
+AND when that error is caught by the harness:
+The harness says:
+`Invalid protocol. Return only a declared JSON request or the final brick.build call.`!
+
+LOOK AT THAT!
+When I outputted the code in the previous turn, the code string contained LITERAL NEWLINES!
+Because I wrote:
+`"code": "script({\n  title: ...`
+where between the lines of code were literal line breaks (Enter), NOT the two characters `\` and `n`!
+In JSON, inside `"code": "..."`, EVERY newline MUST BE `\n` (the two characters backslash and n), NEVER a literal newline!
+If there is a literal newline, `json.loads(text)` crashes immediately!
+AND if the harness does:
+```python
+try:
+  data = json.loads(response_text)
+except Exception:
+  return "Invalid protocol. Return only a declared JSON request or the final brick.build call."
+```
+THAT EXPLAINS EVERYTHING!
+Look at the error message:
+`Invalid protocol. Return only a declared JSON request or the final brick.build call.`
+It caught the JSON parse exception!
+Because `json.loads()` threw an exception on the literal newlines!
+
+Wait, let's also check:
+Could we first use `check_build` to test our code and verify the part count and that there are zero errors?
+"Before you answer you may compile a draft up to 3 times: reply with ONLY `{"check_build": {"code": "…", "seed": 1}}` (the same input as your brick.build call). It runs and compiles exactly as your answer would and comes back with the part count against the target, the count of each section and every error (overlaps, colours a part is not made in, invalid ops, code errors) with the code line that made it. A check is not your answer: after checking, reply with the brick.build call."
+
+YES!
+"Return only a declared JSON request or the final brick.build call."
+`check_build` IS a declared JSON request!
+And testing with `check_build` will give us:
+- The exact part count against the target (5,000)!
+- The count of each section!
+- Every error (overlaps, colors a part is not made in, invalid ops, code errors) with the code line that made it!
+AND then we can fix any errors or adjust the part count perfectly, and then reply with the final `brick.build` call!
+
+Wait! Let's ensure that in our JSON output:
+1. It is valid, strict JSON.
+2. Inside the `"code"` string, there are NO literal newlines! Every line break is escaped as `\n` (or write the code with `\n`, or compact single line where appropriate, with escaped quotes `\"` and escaped `\\`).
+3. No comments or markdown around it: only the JSON object `{...}`.
+
+Let's test this right now with `check_build`!
+Let's carefully verify the format of `check_build`:
+`{"check_build": {"code": "...", "seed": 1}}`
+
+Let's double-check all parts and operations in our code before sending `check_build`:
+In `superstructureOps`:
+`box({ at: [-9, 25, -2], size: [19, 3, 26], colour: "hull", top: "tile" })`
+Wait, let's check:
+`top: "tile"` on `box`:
+Does `size: [19, 3, 26]` include the top?
+"size includes the lid, its top 2 plates, so the top is at.y + h."
+`top: "tile"` makes the top layer tiles instead of plates.
+
+Wait, let's check `place` parts in our code:
+In Section 1:
+- `54200` (Cheese slope) - available in `black`? Yes, all common colours.
+- `2412b` (Tile 1x2 Grille) - available in `dark bluish grey` (`standAccent`)? Yes!
+- `3069b` (Tile 1x2) - available in `light bluish grey`? Yes!
+In Section 2:
+- `3660b` (Inverted Slope 45° 2x2) - footprint is 2x2, height is 3 plates.
+  At `turn: 90`: footprint is x=2, z=2, y=3.
+  Wait! At `turn: 90` or `turn: 270`, does `3660b` (2x2) swap?
+  Wait, 2x2 is symmetric in footprint (2x2)!
+  At `turn: 90`: it overhangs toward `-X`!
+  At `turn: 270`: it overhangs toward `+X`!
+  Wait, what is its footprint?
+  xStuds: 2, zStuds: 2.
+  So if we step `z += 2`, each covers 2 studs in Z!
+  At `z = -44, -42, -40, ...`:
+  From `z` to `z + 2`, each covers `z` and `z + 1`!
+  What is its X coordinate?
+  For port: `at: [-hw, 17, z]`. Footprint covers `[-hw, -hw + 1]`.
+  Wait! If `hw` changes with `z`, let's make sure:
+  If `hw` at `z = -44` is 1, it covers `x = [-1, 0]`.
+  Wait, does the lower hull box cover `[-hw, hw]`? Yes!
+  And parts take their cells out of massing, so no error with massing!
+- `cylinder`:
+  `cylinder({ at: [-3, 14, 8], diameter: 6, height: 3, colour: "hull" })`
+- `3960` (Dish 4x4 Inverted):
+  Footprint: x=4, z=4, height=2.
+  At `at: [-2, 12, 9]`, covers x = `[-2, 1]`, z = `[9, 12]`, y = `[12, 13]`.
+- `14769` (Round Tile 2x2):
+  Footprint: x=2, z=2, height=1.
+  At `at: [-1, 11, 10]`, covers x = `[-1, 0]`, z = `[10, 11]`, y = 11.
+  No overlap with `3960` (y=11 vs y=12..13).
+In Section 3 (Tantive IV):
+- Suspended at `y = 9..12`, `z = -8..0`, `x = -2..1`.
+  Does it overlap anything?
+  Stand forward pylon is at `z = -18..-15`, aft pylon at `z = 14..17`.
+  Hangar cavity is at `z = -8..4`, `y = 17..20`.
+  The Tantive IV is at `y = 9..12`, below the hangar, between the pylons!
+  Completely clear of the stand and hull!
+In Section 4 (Trench):
+- `box` at `y = 20..21`.
+- Greebles at `y = 20`.
+  Wait! At `z = -42, -40, ...`:
+  Parts placed at `[-hw, 20, z]` and `[hw, 20, z]`:
+  Wait! For `place({ part: "2412b", at: [-hw, 20, z], ... turn: 90 })`:
+  Footprint of 2412b is 2x1 at turn 0 (x=2, z=1).
+  At `turn: 90`, footprint is x=1, z=2!
+  So at `at: [-hw, 20, z]`, it covers `x = -hw`, `z = [z, z + 1]`, `y = 20`!
+  Height of 2412b is 1 plate.
+  At `z += 2`, the next part starts at `z + 2`!
+  Zero overlap along Z!
+  What about Starboard?
+  At `at: [hw, 20, z]`:
+  Covers `x = hw`, `z = [z, z + 1]`.
+  Zero overlap!
+In Section 5 (Upper Hull):
+- Outer slopes `3039` (Slope 45° 2x2):
+  At `turn: 90`: footprint is x=2, z=2, height=3 plates.
+  Descends toward `-X`.
+  At `at: [-hw, 22, z]`, covers `x = [-hw, -hw + 1]`, `z = [z, z + 1]`, `y = 22..24`.
+  For Starboard:
+  At `turn: 270`: footprint is x=2, z=2, height=3 plates.
+  Descends toward `+X`.
+  At `at: [hw - 1, 22, z]`, covers `x = [hw - 1, hw]`, `z = [z, z + 1]`, `y = 22..24`.
+  Stepping `z += 2`, each covers `z` and `z + 1`. Zero overlap!
+- Upper deck armor tiles:
+  Let's check coordinates:
+  `place({ part: "87079", at: [-hw + 3, 23, z], ... turn: 0 })`
+  Footprint of `87079` (Tile 2x4) at turn 0: x=4, z=2, height=1.
+  Covers `x = [-hw + 3, -hw + 6]`, `z = [z, z + 1]`, `y = 23`.
+  `place({ part: "2412b", at: [-hw + 3, 23, z + 2], ... turn: 0 })`
+  Covers `x = [-hw + 3, -hw + 4]`, `z = z + 2`, `y = 23`.
+  `place({ part: "3068b", at: [-Math.round(hw * 0.5), 24, z], ... turn: 0 })`
+  Covers `y = 24`.
+  Different y, different x, different z! No overlap!
+In Section 6 (Superstructure & Turbolasers):
+- Turrets at `z = 2, 7, 12, 17`:
+  Port: `place({ part: "4032b", at: [-11, 28, tz], colour: "hullDark", turn: 0 })`
+  Footprint of 4032b is 2x2, height 1 plate (`y = 28`).
+  Covers `x = [-11, -10]`, `z = [tz, tz + 1]`.
+  Next turret is at `tz + 5`. Gap of 3 studs.
+  At `y = 29`:
+  `place({ part: "3024", at: [-11, 29, tz], colour: "hull", turn: 0 })`
+  `place({ part: "3024", at: [-10, 29, tz], colour: "hull", turn: 0 })`
+  Twin barrels at `tz - 1`:
+  `place({ part: "4599b", at: [-11, 29, tz - 1], colour: "hullDark", turn: 0 })`
+  `place({ part: "4599b", at: [-10, 29, tz - 1], colour: "hullDark", turn: 0 })`
+  Footprint of tap `4599b` is 1x1, height 3 plates.
+  Covers `x = -11`, `z = tz - 1`, `y = 29..31`.
+  Gap between barrels (`tz - 1`) and the previous turret (`tz - 5`) is `tz - 1 - (tz - 5 + 1) = 3` studs!
+  Zero overlap!
+In Section 7 (Bridge Tower):
+- Bridge brow: `at: [-8, 40, 10]`, `size: [17, 3, 7]`.
+  `y = 40..42`.
+- Viewport grilles: `at: [-7, 41, 9]`, `turn: 0`.
+  Wait! `size: [17, 3, 7]` at `z = 10` covers `z = 10..16`.
+  Viewport grilles at `z = 9` are in FRONT of the bridge brow at `z = 9`.
+  Footprint of 2412b at turn 0: x=2, z=1, y=1.
+  Covers `z = 9`, `y = 41`.
+  Does not overlap with bridge brow at `z = 10`!
+- Bridge roof brow: `at: [-8, 43, 9]`, `size: [17, 1, 8]`.
+  `y = 43`.
+- Shield domes at `y = 44..49`:
+  Port: `x = -7..-5`, `z = 12..14`.
+  Starboard: `x = 6..8`, `z = 12..14`.
+  Central mast: `x = -2..1`, `z = 12..14`.
+  Completely separate in X!
+In Section 8 (Transom & Engines):
+- Bulkhead at `z = 24`, `size: [47, 9, 2]`. Covers `z = 24..25`.
+- Engines sit at `z = 26..28`.
+  Port lower: `at: [-12, 17, 26]`, diameter 4.
+  `place({ part: "60474", at: [-12, 17, 27], ... })`
+  Wait! Footprint of `60474` (Round Plate 4x4) is 4x4 in X and Z, and 1 plate in Y!
+  If `at: [-12, 17, 27]`, it covers `x = [-12, -9]`, `z = [27, 30]`, `y = 17`.
+  And `place({ part: "14769", at: [-11, 18, 28], ... })`
+  Footprint of `14769` (Round Tile 2x2) is 2x2 in X and Z, 1 plate in Y!
+  If `at: [-11, 18, 28]`, it covers `x = [-11, -10]`, `z = [28, 29]`, `y = 18`!
+  `y = 17` and `y = 18` do not overlap in Y!
+  And starboard lower:
+  `cylinder at [9, 17, 26]`, `60474 at [9, 17, 27]`, `14769 at [10, 18, 28]`.
+  Upper center:
+  `cylinder at [-2, 21, 26]`, `60474 at [-2, 21, 27]`, `14769 at [-1, 22, 28]`.
+  Secondary engines:
+  `cylinder at [-18, 17, 26]`, diameter 2, height 3 (y = 17..19).
+  `place({ part: "14769", at: [-18, 18, 27], ... })`: footprint 2x2, y = 18, z = 27..28.
+  All engine parts have non-overlapping coordinates!
+
+Let's test this entire build with `check_build`!
+Remember:
+`{"check_build": {"code": "...", "seed": 1}}`
+Let's make sure that inside the JSON string, all newlines are `\n` and all quotes are `\"`, so the JSON parses cleanly without any syntax errors!{"check_build": {"code": "script({\n  title: \"Imperial I-class Star Destroyer 'Devastator'\",\n  palette: {\n    hull: \"light bluish grey\",\n    hullDark: \"dark bluish grey\",\n    trench: \"dark bluish grey\",\n    glow: \"trans light blue\",\n    interior: \"dark bluish grey\",\n    stand: \"black\",\n    standAccent: \"dark bluish grey\",\n    plaque: \"pearl gold\",\n    corvette: \"white\",\n    corvetteAccent: \"dark red\",\n    corvetteGlow: \"trans yellow\",\n  },\n  defaults: {\n    interiorColour: \"dark bluish grey\",\n  },\n});\n\nsection(\"Display Stand\", [\n  box({\n    at: [-15, 0, -22],\n    size: [31, 2, 44],\n    colour: \"stand\",\n    top: \"tile\",\n  }),\n  ...[-15, 15].map((x) =>\n    repeat({\n      count: 22,\n      step: [0, 0, 2],\n      ops: [\n        place({\n          part: \"54200\",\n          at: [x, 2, -22],\n          colour: \"stand\",\n          turn: x < 0 ? 90 : 270,\n        }),\n      ],\n    })\n  ),\n  box({\n    at: [-2, 2, -18],\n    size: [5, 14, 4],\n    colour: \"stand\",\n    interior: \"solid\",\n  }),\n  repeat({\n    count: 4,\n    step: [0, 3, 0],\n    ops: [\n      place({ part: \"2412b\", at: [-3, 4, -17], colour: \"standAccent\", turn: 90 }),\n      place({ part: \"2412b\", at: [3, 4, -17], colour: \"standAccent\", turn: 90 }),\n    ],\n  }),\n  box({\n    at: [-2, 2, 14],\n    size: [5, 16, 4],\n    colour: \"stand\",\n    interior: \"solid\",\n  }),\n  repeat({\n    count: 4,\n    step: [0, 3, 0],\n    ops: [\n      place({ part: \"2412b\", at: [-3, 4, 15], colour: \"standAccent\", turn: 90 }),\n      place({ part: \"2412b\", at: [3, 4, 15], colour: \"standAccent\", turn: 90 }),\n    ],\n  }),\n  box({\n    at: [-8, 2, -21],\n    size: [17, 2, 4],\n    colour: \"stand\",\n    top: \"tile\",\n  }),\n  box({\n    at: [-7, 4, -20],\n    size: [15, 1, 3],\n    colour: \"stand\",\n    top: \"tile\",\n  }),\n  place({ part: \"2412b\", at: [-6, 5, -20], colour: \"plaque\", turn: 0 }),\n  place({ part: \"2412b\", at: [-4, 5, -20], colour: \"plaque\", turn: 0 }),\n  place({ part: \"2412b\", at: [2, 5, -20], colour: \"plaque\", turn: 0 }),\n  place({ part: \"2412b\", at: [4, 5, -20], colour: \"plaque\", turn: 0 }),\n  place({ part: \"3069b\", at: [-1, 5, -20], colour: \"hull\", turn: 0 }),\n  place({ part: \"3069b\", at: [-1, 5, -19], colour: \"hull\", turn: 0 }),\n]);\n\nconst getHw = (z) => Math.max(1, Math.round(((z + 46) / 70) * 23));\n\nconst lowerHullSlices = [];\nfor (let z = -46; z <= 23; z++) {\n  const hw = getHw(z);\n  if (z >= -8 && z <= 4) {\n    const leftWidth = hw - 6;\n    if (leftWidth > 0) {\n      lowerHullSlices.push(\n        box({\n          at: [-hw, 17, z],\n          size: [leftWidth, 3, 1],\n          colour: \"hull\",\n        }),\n        box({\n          at: [7, 17, z],\n          size: [leftWidth, 3, 1],\n          colour: \"hull\",\n        })\n      );\n    }\n  } else {\n    lowerHullSlices.push(\n      box({\n        at: [-hw, 17, z],\n        size: [2 * hw + 1, 3, 1],\n        colour: \"hull\",\n      })\n    );\n  }\n}\n\nconst lowerInvertedSlopes = [];\nfor (let z = -44; z <= 22; z += 2) {\n  const hw = getHw(z);\n  lowerInvertedSlopes.push(\n    place({\n      part: \"3660b\",\n      at: [-hw, 17, z],\n      colour: \"hull\",\n      turn: 90,\n    }),\n    place({\n      part: \"3660b\",\n      at: [hw - 1, 17, z],\n      colour: \"hull\",\n      turn: 270,\n    })\n  );\n}\n\nconst mainHangarOps = [\n  box({\n    at: [-6, 17, -8],\n    size: [13, 3, 13],\n    colour: \"interior\",\n    open: [\"top\"],\n  }),\n  repeat({\n    count: 5,\n    step: [0, 0, 2],\n    ops: [\n      place({ part: \"2412b\", at: [-5, 17, -7], colour: \"hullDark\", turn: 90 }),\n      place({ part: \"2412b\", at: [4, 17, -7], colour: \"hullDark\", turn: 90 }),\n    ],\n  }),\n  cylinder({\n    at: [-3, 14, 8],\n    diameter: 6,\n    height: 3,\n    colour: \"hull\",\n  }),\n  place({\n    part: \"3960\",\n    at: [-2, 12, 9],\n    colour: \"hull\",\n    turn: 0,\n  }),\n  place({\n    part: \"14769\",\n    at: [-1, 11, 10],\n    colour: \"hullDark\",\n    turn: 0,\n  }),\n];\n\nsection(\"Ventral Hull\", [\n  ...lowerHullSlices,\n  ...lowerInvertedSlopes,\n  ...mainHangarOps,\n]);\n\nsection(\"Tantive IV\", [\n  repeat({\n    count: 3,\n    step: [0, 0, 3],\n    ops: [\n      place({ part: \"3024\", at: [-1, 14, -5], colour: \"glow\", turn: 0 }),\n      place({ part: \"3024\", at: [0, 14, -5], colour: \"glow\", turn: 0 }),\n    ],\n  }),\n  place({ part: \"3023b\", at: [-1, 10, -8], colour: \"corvette\", turn: 0 }),\n  place({ part: \"3024\", at: [-2, 10, -7], colour: \"corvette\", turn: 0 }),\n  place({ part: \"3024\", at: [1, 10, -7], colour: \"corvette\", turn: 0 }),\n  place({ part: \"3023b\", at: [-1, 10, -7], colour: \"corvetteAccent\", turn: 0 }),\n  repeat({\n    count: 4,\n    step: [0, 0, 1],\n    ops: [\n      place({ part: \"3023b\", at: [-1, 10, -6], colour: \"corvette\", turn: 0 }),\n    ],\n  }),\n  place({ part: \"6141\", at: [-2, 10, -5], colour: \"corvette\", turn: 0 }),\n  place({ part: \"6141\", at: [1, 10, -5], colour: \"corvette\", turn: 0 }),\n  place({ part: \"6141\", at: [-2, 10, -3], colour: \"corvette\", turn: 0 }),\n  place({ part: \"6141\", at: [1, 10, -3], colour: \"corvette\", turn: 0 }),\n  place({ part: \"98138\", at: [-1, 11, -4], colour: \"corvette\", turn: 0 }),\n  box({\n    at: [-2, 9, -2],\n    size: [4, 3, 2],\n    colour: \"corvette\",\n    interior: \"solid\",\n  }),\n  place({ part: \"6141\", at: [-2, 9, 0], colour: \"corvetteGlow\", turn: 0 }),\n  place({ part: \"6141\", at: [-1, 9, 0], colour: \"corvetteGlow\", turn: 0 }),\n  place({ part: \"6141\", at: [0, 9, 0], colour: \"corvetteGlow\", turn: 0 }),\n  place({ part: \"6141\", at: [1, 9, 0], colour: \"corvetteGlow\", turn: 0 }),\n  place({ part: \"6141\", at: [-2, 11, 0], colour: \"corvetteGlow\", turn: 0 }),\n  place({ part: \"6141\", at: [-1, 11, 0], colour: \"corvetteGlow\", turn: 0 }),\n  place({ part: \"6141\", at: [0, 11, 0], colour: \"corvetteGlow\", turn: 0 }),\n  place({ part: \"6141\", at: [1, 11, 0], colour: \"corvetteGlow\", turn: 0 }),\n  place({ part: \"6141\", at: [-1, 10, 0], colour: \"corvetteGlow\", turn: 0 }),\n  place({ part: \"6141\", at: [0, 10, 0], colour: \"corvetteGlow\", turn: 0 }),\n]);\n\nconst trenchOps = [];\nfor (let z = -44; z <= 23; z++) {\n  const hw = getHw(z);\n  trenchOps.push(\n    box({\n      at: [-hw, 20, z],\n      size: [1, 2, 1],\n      colour: \"trench\",\n    }),\n    box({\n      at: [hw, 20, z],\n      size: [1, 2, 1],\n      colour: \"trench\",\n    })\n  );\n}\n\nfor (let z = -42; z <= 22; z += 2) {\n  const hw = getHw(z);\n  const style = Math.abs(z) % 4;\n  if (style === 0) {\n    trenchOps.push(\n      place({ part: \"2412b\", at: [-hw, 20, z], colour: \"trench\", turn: 90 }),\n      place({ part: \"2412b\", at: [hw, 20, z], colour: \"trench\", turn: 90 })\n    );\n  } else if (style === 1) {\n    trenchOps.push(\n      place({ part: \"3794b\", at: [-hw, 20, z], colour: \"hullDark\", turn: 90 }),\n      place({ part: \"3794b\", at: [hw, 20, z], colour: \"hullDark\", turn: 90 })\n    );\n  } else if (style === 2) {\n    trenchOps.push(\n      place({ part: \"54200\", at: [-hw, 20, z], colour: \"hull\", turn: 90 }),\n      place({ part: \"54200\", at: [hw, 20, z], colour: \"hull\", turn: 270 })\n    );\n  } else {\n    trenchOps.push(\n      place({ part: \"4070\", at: [-hw, 20, z], colour: \"trench\", turn: 90 }),\n      place({ part: \"4070\", at: [hw, 20, z], colour: \"trench\", turn: 270 })\n    );\n  }\n}\n\nsection(\"Equatorial Trench\", trenchOps);\n\nconst upperHullSlices = [];\nfor (let z = -46; z <= 23; z++) {\n  const hw = getHw(z);\n  upperHullSlices.push(\n    box({\n      at: [-hw, 22, z],\n      size: [2 * hw + 1, 1, 1],\n      colour: \"hull\",\n    }),\n    box({\n      at: [Math.round(-hw * 0.7), 23, z],\n      size: [2 * Math.round(hw * 0.7) + 1, 1, 1],\n      colour: \"hull\",\n    }),\n    box({\n      at: [Math.round(-hw * 0.35), 24, z],\n      size: [2 * Math.round(hw * 0.35) + 1, 1, 1],\n      colour: \"hull\",\n    })\n  );\n}\n\nconst upperDeckSlopes = [];\nfor (let z = -44; z <= 22; z += 2) {\n  const hw = getHw(z);\n  upperDeckSlopes.push(\n    place({\n      part: \"3039\",\n      at: [-hw, 22, z],\n      colour: \"hull\",\n      turn: 90,\n    }),\n    place({\n      part: \"3039\",\n      at: [hw - 1, 22, z],\n      colour: \"hull\",\n      turn: 270,\n    })\n  );\n}\n\nconst upperDeckArmor = [];\nfor (let z = -38; z <= 18; z += 4) {\n  const hw = getHw(z);\n  if (hw >= 6) {\n    upperDeckArmor.push(\n      place({ part: \"87079\", at: [-hw + 3, 23, z], colour: \"hull\", turn: 0 }),\n      place({ part: \"2412b\", at: [-hw + 3, 23, z + 2], colour: \"hullDark\", turn: 0 }),\n      place({ part: \"3068b\", at: [-Math.round(hw * 0.5), 24, z], colour: \"hull\", turn: 0 })\n    );\n    upperDeckArmor.push(\n      place({ part: \"87079\", at: [hw - 6, 23, z], colour: \"hull\", turn: 0 }),\n      place({ part: \"2412b\", at: [hw - 5, 23, z + 2], colour: \"hullDark\", turn: 0 }),\n      place({ part: \"3068b\", at: [Math.round(hw * 0.5) - 1, 24, z], colour: \"hull\", turn: 0 })\n    );\n  }\n}\n\nconst bowDetails = [\n  box({ at: [-1, 25, -42], size: [3, 1, 2], colour: \"hullDark\", top: \"tile\" }),\n  place({ part: \"2412b\", at: [-1, 26, -41], colour: \"trench\", turn: 0 }),\n];\n\nsection(\"Upper Wedge Hull\", [\n  ...upperHullSlices,\n  ...upperDeckSlopes,\n  ...upperDeckArmor,\n  ...bowDetails,\n]);\n\nconst superstructureOps = [\n  box({\n    at: [-9, 25, -2],\n    size: [19, 3, 26],\n    colour: \"hull\",\n    top: \"tile\",\n  }),\n  box({\n    at: [-4, 25, -5],\n    size: [9, 3, 3],\n    colour: \"hull\",\n    top: \"tile\",\n  }),\n  box({\n    at: [-7, 28, 3],\n    size: [15, 3, 20],\n    colour: \"hull\",\n    top: \"tile\",\n  }),\n  box({\n    at: [-5, 31, 7],\n    size: [11, 3, 15],\n    colour: \"hull\",\n    top: \"tile\",\n  }),\n  repeat({\n    count: 4,\n    step: [0, 0, 3],\n    ops: [\n      place({ part: \"2412b\", at: [-4, 34, 8], colour: \"hullDark\", turn: 0 }),\n      place({ part: \"2412b\", at: [3, 34, 8], colour: \"hullDark\", turn: 0 }),\n    ],\n  }),\n];\n\nconst turbolasers = [];\nconst turretZ = [2, 7, 12, 17];\nturretZ.forEach((tz) => {\n  turbolasers.push(\n    place({ part: \"4032b\", at: [-11, 28, tz], colour: \"hullDark\", turn: 0 }),\n    place({ part: \"3024\", at: [-11, 29, tz], colour: \"hull\", turn: 0 }),\n    place({ part: \"3024\", at: [-10, 29, tz], colour: \"hull\", turn: 0 }),\n    place({ part: \"4599b\", at: [-11, 29, tz - 1], colour: \"hullDark\", turn: 0 }),\n    place({ part: \"4599b\", at: [-10, 29, tz - 1], colour: \"hullDark\", turn: 0 })\n  );\n  turbolasers.push(\n    place({ part: \"4032b\", at: [10, 28, tz], colour: \"hullDark\", turn: 0 }),\n    place({ part: \"3024\", at: [10, 29, tz], colour: \"hull\", turn: 0 }),\n    place({ part: \"3024\", at: [11, 29, tz], colour: \"hull\", turn: 0 }),\n    place({ part: \"4599b\", at: [10, 29, tz - 1], colour: \"hullDark\", turn: 0 }),\n    place({ part: \"4599b\", at: [11, 29, tz - 1], colour: \"hullDark\", turn: 0 })\n  );\n});\n\nsection(\"Superstructure & Turbolasers\", [\n  ...superstructureOps,\n  ...turbolasers,\n]);\n\nconst bridgeOps = [\n  box({\n    at: [-3, 34, 12],\n    size: [7, 6, 7],\n    colour: \"hull\",\n    interior: \"solid\",\n  }),\n  repeat({\n    count: 3,\n    step: [2, 0, 0],\n    ops: [\n      place({ part: \"3665a\", at: [-3, 37, 11], colour: \"hull\", turn: 0 }),\n    ],\n  }),\n  box({\n    at: [-8, 40, 10],\n    size: [17, 3, 7],\n    colour: \"hull\",\n    interior: \"solid\",\n  }),\n  repeat({\n    count: 7,\n    step: [2, 0, 0],\n    ops: [\n      place({ part: \"2412b\", at: [-7, 41, 9], colour: \"hullDark\", turn: 0 }),\n    ],\n  }),\n  box({\n    at: [-8, 43, 9],\n    size: [17, 1, 8],\n    colour: \"hull\",\n    top: \"tile\",\n  }),\n  place({ part: \"3941\", at: [-7, 44, 12], colour: \"hull\", turn: 0 }),\n  place({ part: \"4740\", at: [-7, 47, 12], colour: \"hullDark\", turn: 0 }),\n  place({ part: \"98138\", at: [-6, 48, 13], colour: \"hull\", turn: 0 }),\n  place({ part: \"4589\", at: [-6, 49, 13], colour: \"hull\", turn: 0 }),\n  place({ part: \"3941\", at: [6, 44, 12], colour: \"hull\", turn: 0 }),\n  place({ part: \"4740\", at: [6, 47, 12], colour: \"hullDark\", turn: 0 }),\n  place({ part: \"98138\", at: [6, 48, 13], colour: \"hull\", turn: 0 }),\n  place({ part: \"4589\", at: [6, 49, 13], colour: \"hull\", turn: 0 }),\n  box({\n    at: [-1, 44, 12],\n    size: [3, 4, 3],\n    colour: \"hull\",\n    interior: \"solid\",\n  }),\n  place({ part: \"3710\", at: [-2, 48, 13], colour: \"hullDark\", turn: 0 }),\n  place({ part: \"3957a\", at: [0, 48, 13], colour: \"hullDark\", turn: 0 }),\n  place({ part: \"4740\", at: [-2, 49, 13], colour: \"hullDark\", turn: 0 }),\n  place({ part: \"4740\", at: [1, 49, 13], colour: \"hullDark\", turn: 0 }),\n];\n\nsection(\"Command Bridge\", bridgeOps);\n\nconst transomOps = [\n  box({\n    at: [-23, 16, 24],\n    size: [47, 9, 2],\n    colour: \"hullDark\",\n    interior: \"solid\",\n  }),\n  ...[-20, -15, 14, 19].map((x) =>\n    repeat({\n      count: 2,\n      step: [0, 3, 0],\n      ops: [\n        place({ part: \"2412b\", at: [x, 18, 26], colour: \"trench\", turn: 0 }),\n      ],\n    })\n  ),\n  cylinder({\n    at: [-12, 17, 26],\n    diameter: 4,\n    height: 3,\n    colour: \"hull\",\n  }),\n  place({ part: \"60474\", at: [-12, 17, 27], colour: \"glow\", turn: 0 }),\n  place({ part: \"14769\", at: [-11, 18, 28], colour: \"glow\", turn: 0 }),\n  cylinder({\n    at: [9, 17, 26],\n    diameter: 4,\n    height: 3,\n    colour: \"hull\",\n  }),\n  place({ part: \"60474\", at: [9, 17, 27], colour: \"glow\", turn: 0 }),\n  place({ part: \"14769\", at: [10, 18, 28], colour: \"glow\", turn: 0 }),\n  cylinder({\n    at: [-2, 21, 26],\n    diameter: 4,\n    height: 3,\n    colour: \"hull\",\n  }),\n  place({ part: \"60474\", at: [-2, 21, 27], colour: \"glow\", turn: 0 }),\n  place({ part: \"14769\", at: [-1, 22, 28], colour: \"glow\", turn: 0 }),\n  cylinder({\n    at: [-18, 17, 26],\n    diameter: 2,\n    height: 3,\n    colour: \"hullDark\",\n  }),\n  place({ part: \"14769\", at: [-18, 18, 27], colour: \"glow\", turn: 0 }),\n  cylinder({\n    at: [17, 17, 26],\n    diameter: 2,\n    height: 3,\n    colour: \"hullDark\",\n  }),\n  place({ part: \"14769\", at: [17, 18, 27], colour: \"glow\", turn: 0 }),\n  cylinder({\n    at: [-6, 21, 26],\n    diameter: 2,\n    height: 3,\n    colour: \"hullDark\",\n  }),\n  place({ part: \"14769\", at: [-6, 22, 27], colour: \"glow\", turn: 0 }),\n  cylinder({\n    at: [5, 21, 26],\n    diameter: 2,\n    height: 3,\n    colour: \"hullDark\",\n  }),\n  place({ part: \"14769\", at: [5, 22, 27], colour: \"glow\", turn: 0 }),\n];\n\nsection(\"Aft Transom & Engines\", transomOps);\n", "seed": 1}}

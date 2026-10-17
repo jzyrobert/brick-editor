@@ -1,0 +1,139 @@
+[
+  {
+    "probe": "agy-schema-smoke/gemini-3.8-flash-high",
+    "model": {
+      "id": "gemini-3.8-flash-high",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "result": {
+      "first": "{\"parts_search\":[{\"query\":\"wheel\"}]}\n{\"parts_search\":[{\"query\":\"wheel\"}]}\n{\"parts_search\":[{\"query\":\"wheel\"}]}\n{\"parts_search\":[{\"query\":\"wheel\"}]}",
+      "second": "{\"part_info\":{\"part_ids\":[\"4489a.dat\"],\"fields\":[\"shape\"]}}"
+    },
+    "quota": {
+      "at": "2026-10-17T03:24:53.389Z",
+      "raw": "Gemini Models\tWeekly Limit Remaining\t99%\t2026-10-24T03:13:58Z\nGemini Models\tFive Hour Limit Remaining\t98%\t2026-10-17T08:13:58Z\nGemini 4 Argon\tGemini 4 Argon Weekly Limit\t99%\t2026-10-24T03:21:19Z\n",
+      "geminiWeekly": 99,
+      "geminiFiveHour": 98,
+      "argonWeekly": 99
+    }
+  },
+  {
+    "probe": "agy-schema-smoke/gemini-4-argon-high",
+    "model": {
+      "id": "gemini-4-argon-high",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "result": {
+      "first": "{\"parts_search\":[{\"query\":\"wheel\"}]}\n{\"parts_search\":[{\"query\":\"wheel\"}]}\n{\"parts_search\":[{\"query\":\"wheel\"}]}\n{\"parts_search\":[{\"query\":\"wheel\"}]}",
+      "second": "{\"part_info\":{\"part_ids\":[\"4489a.dat\"],\"fields\":[\"shape\"]}}"
+    },
+    "quota": {
+      "at": "2026-10-17T03:25:35.683Z",
+      "raw": "Gemini Models\tWeekly Limit Remaining\t99%\t2026-10-24T03:13:58Z\nGemini Models\tFive Hour Limit Remaining\t98%\t2026-10-17T08:13:58Z\nGemini 4 Argon\tGemini 4 Argon Weekly Limit\t99%\t2026-10-24T03:21:19Z\n",
+      "geminiWeekly": 99,
+      "geminiFiveHour": 98,
+      "argonWeekly": 99
+    }
+  },
+  {
+    "probe": "agy-v2-smoke/gemini-3.8-flash-high",
+    "model": {
+      "id": "gemini-3.8-flash-high",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "result": {
+      "error": "Error: Native tool or subagent attempt violates blind generation"
+    },
+    "quota": {
+      "at": "2026-10-17T03:27:02.300Z",
+      "raw": "Gemini Models\tWeekly Limit Remaining\t99%\t2026-10-24T03:13:58Z\nGemini Models\tFive Hour Limit Remaining\t98%\t2026-10-17T08:13:58Z\nGemini 4 Argon\tGemini 4 Argon Weekly Limit\t99%\t2026-10-24T03:21:19Z\n",
+      "geminiWeekly": 99,
+      "geminiFiveHour": 98,
+      "argonWeekly": 99
+    }
+  },
+  {
+    "probe": "agy-v2-smoke/gemini-4-argon-high",
+    "model": {
+      "id": "gemini-4-argon-high",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "result": {
+      "first": "{\"parts_search\":[{\"query\":\"wheel\"}]}",
+      "second": "{\"part_info\":{\"part_ids\":[\"4489a.dat\"],\"fields\":[\"shape\"]}}"
+    },
+    "quota": {
+      "at": "2026-10-17T03:27:42.250Z",
+      "raw": "Gemini Models\tWeekly Limit Remaining\t99%\t2026-10-24T03:13:58Z\nGemini Models\tFive Hour Limit Remaining\t98%\t2026-10-17T08:13:58Z\nGemini 4 Argon\tGemini 4 Argon Weekly Limit\t99%\t2026-10-24T03:21:19Z\n",
+      "geminiWeekly": 99,
+      "geminiFiveHour": 98,
+      "argonWeekly": 99
+    }
+  },
+  {
+    "probe": "agy-plain-v2-smoke/gemini-3.8-flash-high",
+    "model": {
+      "id": "gemini-3.8-flash-high",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "result": {
+      "first": "{\"parts_search\":[{\"query\":\"wheel\"}]}",
+      "second": "{\"part_info\":{\"part_ids\":[\"4489a.dat\"],\"fields\":[\"shape\"]}}"
+    },
+    "quota": {
+      "at": "2026-10-17T03:28:34.897Z",
+      "raw": "Gemini Models\tWeekly Limit Remaining\t99%\t2026-10-24T03:13:58Z\nGemini Models\tFive Hour Limit Remaining\t98%\t2026-10-17T08:13:58Z\nGemini 4 Argon\tGemini 4 Argon Weekly Limit\t99%\t2026-10-24T03:21:19Z\n",
+      "geminiWeekly": 99,
+      "geminiFiveHour": 98,
+      "argonWeekly": 99
+    }
+  },
+  {
+    "probe": "agy-plain-v2-smoke/gemini-4-argon-high",
+    "model": {
+      "id": "gemini-4-argon-high",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "result": {
+      "first": "{\"parts_search\":[{\"query\":\"wheel\"}]}",
+      "second": "{\"part_info\":{\"part_ids\":[\"4489a.dat\"],\"fields\":[\"shape\"]}}"
+    },
+    "quota": {
+      "at": "2026-10-17T03:28:58.135Z",
+      "raw": "Gemini Models\tWeekly Limit Remaining\t99%\t2026-10-24T03:13:58Z\nGemini Models\tFive Hour Limit Remaining\t98%\t2026-10-17T08:13:58Z\nGemini 4 Argon\tGemini 4 Argon Weekly Limit\t99%\t2026-10-24T03:21:19Z\n",
+      "geminiWeekly": 99,
+      "geminiFiveHour": 98,
+      "argonWeekly": 99
+    }
+  }
+]

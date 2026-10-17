@@ -13,7 +13,7 @@ import {
 } from "../full-library-node";
 
 try {
-  const input = JSON.parse(readFileSync(0, "utf8"));
+  const input = JSON.parse(readFileSync(process.argv[2] ?? 0, "utf8"));
   registerColorAvailability(colours as ColorAvailabilityPack);
   registerFullLibraryFromDisk();
   const program = runBrickBuild(input.code, {

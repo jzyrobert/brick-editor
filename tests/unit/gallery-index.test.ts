@@ -66,6 +66,12 @@ test("prompt and agent ids are plain, stable slugs", () => {
   );
   expect(galleryAgentName("gpt-6.1-sol", "low")).toBe("GPT-6.1-Sol (low)");
   expect(galleryAgentName("mystery")).toBe("mystery");
+  expect(galleryAgentName("gemini-3.8-flash-high", "high")).toBe(
+    "Gemini 3.8 Flash (high)",
+  );
+  expect(galleryAgentName("gemini-4-argon-high", "high")).toBe(
+    "Gemini 4 Argon (high)",
+  );
 });
 
 test("generation metadata round-trips and unknown generations cannot appear as latest", async () => {

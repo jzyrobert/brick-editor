@@ -53,7 +53,7 @@ const files: Record<string, string> = {
     accepted: true,
   }),
 };
-const read = (p: string) => files[p];
+const read = (p: string) => files[p.replaceAll("\\", "/")];
 const list = () => ["xhigh", "low", "high", "max-runner-bug", "views"];
 
 test("one-shot folders give accepted efforts with derived prompt and agent ids", () => {
@@ -125,9 +125,14 @@ test("a run with its prompt in the effort folder still publishes", () => {
     "run/high/prompt.md": files["run/prompt.md"],
   };
   delete nested["run/prompt.md"];
-  const { candidates } = oneShotCandidates("run", (p) => nested[p], list, {
-    only: ["high"],
-  });
+  const { candidates } = oneShotCandidates(
+    "run",
+    (p) => nested[p.replaceAll("\\", "/")],
+    list,
+    {
+      only: ["high"],
+    },
+  );
   expect(candidates.map((c) => c.brief)).toEqual([
     "a japanese buddhist temple",
   ]);
