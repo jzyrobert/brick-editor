@@ -7,7 +7,7 @@ import { json, hash } from "./part-reference";
 import type { TextChannel } from "./session";
 import { ModelBudgetFailure } from "./model-failure";
 
-export const AGY_TRANSPORT_VERSION = "agy-native-cli/7";
+export const AGY_TRANSPORT_VERSION = "agy-native-cli/8";
 export const AGY_SYSTEM_PROMPT =
   "You are a helpful assistant participating in a text-only JSON protocol. Return exactly one JSON object as ordinary response text. Never invoke native tools or functions. parts_search, part_info, check_build and brick.build are JSON messages handled by the external caller, not native function calls.";
 export type AgyModel = { id: string; effort: string };
@@ -44,17 +44,39 @@ export type AgyEvent = {
 };
 export const EMPTY_FUNCTION_ERROR =
   /^Your previous response contained an improperly formatted function call(?:: Malformed function call: Failed to parse function call: Function call is empty - no input to parse\.)?\r?\nPlease retry with a properly formatted function call\r?\nRetries remaining: \d+$/;
+export const AGY_STREAM_INTERRUPTION =
+  "The stream was interrupted. Please continue the task you were working on.";
+function completeProtocolObject(text: string) {
+  try {
+    const value = JSON.parse(text);
+    if (!value || typeof value !== "object" || Array.isArray(value))
+      return false;
+    const keys = Object.keys(value).sort().join(",");
+    return (
+      ["parts_search", "part_info", "check_build"].includes(keys) ||
+      (keys === "input,tool" &&
+        ["brick.build", "check_build", "parts_search", "part_info"].includes(
+          value.tool,
+        ))
+    );
+  } catch {
+    return false;
+  }
+}
 /** The CLI can report its empty-function parsing artifact after a complete
  * assistant response. Preserve that text, including malformed JSON or prose,
  * for the host's ordinary bounded protocol repair, just as for SUCCESS text.
  * Only DONE responses qualify; partial streams and unknown errors stay fatal.
+ * The exact stream-interruption diagnostic also preserves a complete protocol object.
  * Every tool attempt and per-provider-response token budget is checked first. */
 export function selectAgyReply(result: AgyEvent["result"], completed?: string) {
   const recover =
     result?.status === "ERROR" &&
-    EMPTY_FUNCTION_ERROR.test(result.error ?? "") &&
     typeof completed === "string" &&
-    completed.trim().length > 0;
+    completed.trim().length > 0 &&
+    (EMPTY_FUNCTION_ERROR.test(result.error ?? "") ||
+      (result.error === AGY_STREAM_INTERRUPTION &&
+        completeProtocolObject(completed)));
   if (
     (!recover && result?.status !== "SUCCESS") ||
     typeof result?.response !== "string"
@@ -223,6 +245,9 @@ export async function agyChannel(options: {
     previousOutput = 0;
   const responseSteps = new Map<number, string>();
   let lastCompleted: string | undefined;
+  let lastCompletedStep = -1,
+    latestResponseStep = -1,
+    latestResponseDone = false;
   let nativeResponseSha256 = "";
   let nativeRecoveredError: string | null = null;
   let resultConversationId: string | undefined;
@@ -269,6 +294,8 @@ export async function agyChannel(options: {
         step?.step_type === "agent_response" &&
         typeof step.step_index === "number"
       ) {
+        latestResponseStep = step.step_index;
+        latestResponseDone = step.state === "DONE";
         const text =
           (responseSteps.get(step.step_index) ?? "") + (step.text_delta ?? "");
         responseSteps.set(step.step_index, text);
@@ -284,7 +311,10 @@ export async function agyChannel(options: {
             step.usage!.output_tokens!,
           );
         }
-        if (step.state === "DONE" && text.trim()) lastCompleted = text;
+        if (step.state === "DONE" && text.trim()) {
+          lastCompleted = text;
+          lastCompletedStep = step.step_index;
+        }
       }
       if (e.event === "init") {
         if (options.thread && e.conversation_id !== options.thread)
@@ -295,6 +325,10 @@ export async function agyChannel(options: {
       if (e.event !== "result") return;
       if (!pending) throw new Error("Unsolicited native result");
       const result = e.result;
+      if (!latestResponseDone || lastCompletedStep !== latestResponseStep)
+        throw new Error(
+          "Native result lacks a completed latest assistant response",
+        );
       if (options.thread && result?.conversation_id !== options.thread)
         throw new Error("agy changed the resumed conversation ID");
       resultConversationId = result?.conversation_id;
@@ -352,6 +386,8 @@ export async function agyChannel(options: {
     ++turn;
     responseSteps.clear();
     lastCompleted = undefined;
+    lastCompletedStep = latestResponseStep = -1;
+    latestResponseDone = false;
     maxNativeResponseTokens = 0;
     const abort = () => fail(new Error("agy deadline exceeded"));
     request.signal.addEventListener("abort", abort, { once: true });

@@ -103,6 +103,16 @@ completed assistant response, an unknown error, a native tool/subagent attempt
 or an output-budget violation still fails. Versions 3–6 imposed the narrower
 content checks described above; their earlier outcomes remain archived.
 
+Transport 8 also recognizes the exact observed stream-interruption diagnostic,
+but only when the latest assistant response is DONE and contains one complete
+declared-protocol JSON object. Replay verifies native-result counts and event
+positions against the external audit, so text from an earlier turn or an
+incomplete later response cannot be substituted. The saved reply is delivered
+unchanged; the interrupted provider request is not repeated. Only ordinary
+subsequent host feedback can continue that original conversation. All prior
+budgets, time and quota costs remain accounted for, and the interrupted outcome
+stays archived. Other stream/network errors remain fatal.
+
 ## Quota and stopping
 
 `agy -p /usage` reads account quota without a model call. Each case records it
@@ -116,6 +126,12 @@ The batch stops after three consecutive infrastructure failures. It does not
 purchase credits or wait for quota resets. A model with insufficient quota is
 skipped while eligible cases from the other model continue. Every shared and
 model-specific counter is compared separately when measuring consumption.
+
+The gallery driver applies its full-history estimate before launching each
+single-case runner. That runner takes another fresh reading and records its
+own local gate, whose estimate starts at the minimum for its one-case history.
+Both readings remain in the archive; the driver's schedule records the
+cross-case adaptive gate.
 
 An existing completed case can be reused only within the same schedule after
 its manifest, case ID and frozen file hashes are verified. An incomplete
@@ -147,6 +163,10 @@ repairs and turns are reconstructed by replay rather than reset. The earlier
 outcome remains archived and the recovery is labelled explicitly. Completed
 lower-cap records remain reusable when only this unenforceable host guard is
 raised; model, prompt, task and assistance changes are refused.
+
+Replay recompiles saved drafts and measures their compiler time again; its
+reported compiler milliseconds are replay measurements. Cumulative active
+seconds retain the original phase as well as the continuation.
 
 ## Freeze, render and publish
 

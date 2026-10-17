@@ -54,7 +54,8 @@ or a controlled comparison across transports.
   The native-high profile was then adapted to a 128,000-token host guard,
   because `agy` cannot configure the former 32K server limit. This does not
   change the native request, the filled prompts or the other assistance
-  budgets, and does not purchase credits. Flash and Argon both passed a
+  budgets, and does not purchase credits. The owner explicitly approved native
+  high thinking with this 128,000-token acceptance limit. Flash and Argon both passed a
   same-conversation resume smoke test. Recoveries replay saved responses with
   exact request/compiler checks before continuing only the original model
   conversation; the time already spent is retained.
@@ -72,8 +73,6 @@ or a controlled comparison across transports.
   later preflights mark the provider call count unknown because CLI housekeeping
   and internal retries are not fully observable.
 
-## Quota policy
-
 Argon's first temple attempt on transport 5 returned two complete protocol
 objects in a single native assistant step after the known parser diagnostic.
 The initial failed outcome is retained. Transport 6 passes the entire text
@@ -89,6 +88,15 @@ which rejects undeclared routes and spends the existing repair budget on
 malformed replies. Unknown errors, incomplete native streams, native tools and
 output-budget violations still fail. Earlier outcomes are preserved; any
 continuation uses only its own native conversation and remaining budgets.
+
+## Quota policy
+
+Argon's Ewok returned its exact stream-interruption diagnostic after a complete
+draft-check response had already reached DONE. Transport 8 verifies that the
+saved JSON belongs to the interrupted external turn before delivering it
+unchanged to the host. Its provider request is not repeated; only the normal
+compiler feedback can continue the same native conversation with remaining
+budgets. The earlier interruption remains archived.
 
 Initial quota was 100% Gemini weekly, 100% Gemini five-hour and 100% Argon
 weekly. After the Flash pilot it was 100% / 98% / 100%; after the aborted

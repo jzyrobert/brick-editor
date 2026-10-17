@@ -10,6 +10,7 @@ import {
   selectAgyReply,
   checkAgyOutputBudget,
   normalizeAgyEnvelope,
+  AGY_STREAM_INTERRUPTION,
 } from "../../scripts/spatial-benchmark/agy-channel";
 import {
   parseAgyQuota,
@@ -53,6 +54,20 @@ it("preserves completed lower-cap cases while refusing changes to generation inp
 });
 const emptyFunctionError =
   "Your previous response contained an improperly formatted function call: Malformed function call: Failed to parse function call: Function call is empty - no input to parse.\nPlease retry with a properly formatted function call\nRetries remaining: 3";
+it("recovers a completed protocol object after only the exact stream-interruption diagnostic", () => {
+  const text = '{"check_build":{"code":"x","seed":1}}';
+  const r = { status: "ERROR", error: AGY_STREAM_INTERRUPTION, response: text };
+  expect(selectAgyReply(r, text)).toBe(text);
+  for (const invalid of [
+    '{"check_build":',
+    "prose",
+    '{"tool":"read_file","input":{}}',
+  ])
+    expect(() => selectAgyReply(r, invalid)).toThrow();
+  expect(() =>
+    selectAgyReply({ ...r, error: "network unavailable" }, text),
+  ).toThrow();
+});
 it("passes concatenated complete protocol responses unchanged to bounded host repair", () => {
   const text =
     '{"check_build":{"code":"brace } and \\\"quote"}}\n{"tool":"brick.build","input":{"code":"x"}}';

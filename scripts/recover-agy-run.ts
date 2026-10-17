@@ -21,6 +21,7 @@ import {
   checkAgyOutputBudget,
   selectAgyReply,
   AGY_TRANSPORT_VERSION,
+  AGY_STREAM_INTERRUPTION,
   type AgyEvent,
 } from "./spatial-benchmark/agy-channel";
 import {
@@ -50,9 +51,10 @@ export async function main(args: string[]) {
   const old = prior[0];
   assert(old.status !== "submitted", "Accepted builds must not be rerun");
   assert(
-    /Your previous response contained an improperly formatted function call|Native model response used \d+ output tokens/.test(
-      old.failure ?? "",
-    ),
+    old.failure === `agy turn failed: ${AGY_STREAM_INTERRUPTION}` ||
+      /Your previous response contained an improperly formatted function call|Native model response used \d+ output tokens/.test(
+        old.failure ?? "",
+      ),
     "Not a recognised recoverable transport/budget failure",
   );
   const m = structuredClone(priorManifest);
@@ -108,20 +110,34 @@ export async function main(args: string[]) {
     thread = "",
     maxTokens = 0;
   const fragments = new Map<number, string>();
-  for (const e of events) {
+  const resultPositions: number[] = [];
+  let lastCompleteAt = -1,
+    lastCompletedStep = -1,
+    latestStep = -1,
+    latestDone = false;
+  for (const [position, e] of events.entries()) {
     checkAgyEvent(e, m.model);
     if (e.event === "init") thread = e.conversation_id!;
     const s = e.step_update;
     if (s?.step_type === "agent_response" && typeof s.step_index === "number") {
+      latestStep = s.step_index;
+      latestDone = s.state === "DONE";
       const text = (fragments.get(s.step_index) ?? "") + (s.text_delta ?? "");
       fragments.set(s.step_index, text);
       if (s.state === "DONE") {
         checkAgyOutputBudget(s.usage?.output_tokens, budget);
         maxTokens = Math.max(maxTokens, s.usage!.output_tokens!);
-        if (text.trim()) lastComplete = text;
+        if (text.trim()) {
+          lastComplete = text;
+          lastCompleteAt = position;
+          lastCompletedStep = s.step_index;
+        }
       }
     }
-    if (e.event === "result") lastResult = e.result;
+    if (e.event === "result") {
+      lastResult = e.result;
+      resultPositions.push(position);
+    }
   }
   assert(
     thread && lastComplete,
@@ -150,6 +166,22 @@ export async function main(args: string[]) {
     requests.length,
     replies.length + 1,
     "Expected one interrupted native response",
+  );
+  assert(
+    latestDone && latestStep === lastCompletedStep,
+    "Latest native response is incomplete",
+  );
+  assert(
+    resultPositions.length === requests.length ||
+      resultPositions.length === requests.length - 1,
+    "Native results do not match external turns",
+  );
+  const previousResult =
+    resultPositions.at(resultPositions.length === requests.length ? -2 : -1) ??
+    -1;
+  assert(
+    lastCompleteAt > previousResult,
+    "Completed response belongs to an earlier turn",
   );
   replies.push(recovered);
   const { cases, worker, record } = await preflight(m, out);
