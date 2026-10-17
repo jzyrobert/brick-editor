@@ -1,0 +1,32 @@
+[
+  {
+    "phase": "before",
+    "caseId": "dragon--reference-v2--1",
+    "at": "2026-10-17T05:33:56.403Z",
+    "raw": "Gemini Models\tWeekly Limit Remaining\t98%\t2026-10-24T03:13:58Z\nGemini Models\tFive Hour Limit Remaining\t92%\t2026-10-17T08:13:58Z\nGemini 4 Argon\tGemini 4 Argon Weekly Limit\t50%\t2026-10-24T03:21:19Z\n",
+    "geminiWeekly": 98,
+    "geminiFiveHour": 92,
+    "argonWeekly": 50,
+    "gate": {
+      "remaining": 50,
+      "reserve": 5,
+      "estimatedNext": 5,
+      "sufficient": true
+    }
+  },
+  {
+    "phase": "after",
+    "caseId": "dragon--reference-v2--1",
+    "at": "2026-10-17T05:52:57.711Z",
+    "raw": "Gemini Models\tWeekly Limit Remaining\t98%\t2026-10-24T03:13:58Z\nGemini Models\tFive Hour Limit Remaining\t92%\t2026-10-17T08:13:58Z\nGemini 4 Argon\tGemini 4 Argon Weekly Limit\t37%\t2026-10-24T03:21:19Z\n",
+    "geminiWeekly": 98,
+    "geminiFiveHour": 92,
+    "argonWeekly": 37,
+    "next": {
+      "remaining": 37,
+      "reserve": 5,
+      "estimatedNext": 22,
+      "sufficient": true
+    }
+  }
+]

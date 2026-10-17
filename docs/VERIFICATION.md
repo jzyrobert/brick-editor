@@ -2,16 +2,22 @@
 
 ## Antigravity transport and Windows compiler — 17 October 2026
 
-The WSL model-free compiler probe passes all six gallery cases. The sixteen
+The WSL model-free compiler probe passes all six gallery cases. The seventeen
 spatial session/compiler integration tests pass on Windows through WSL, including
 namespace isolation, text feedback, freezing and final-answer notices. Focused
 transport/quota and gallery tests cover wrong-model/tool rejection, native
 response selection, missing quota, shared/separate limits, adaptive reserve and
 preservation of existing published entries/default generation. Existing gallery
 test fixtures now normalize platform separators and use Windows junctions for
-temporary directory links. Type checking passes. The first Flash build renders
-in all three standard gallery views; exact filled prompts match the earlier
-Luna preflight. Batch outcomes and publication verification are still pending;
+temporary directory links. Type checking and 40 focused transport/quota/gallery
+tests pass, including completed-response recovery, undeclared-route rejection
+and the unchanged run-wide repair bound. Exact filled prompts match the earlier
+Luna preflight. All nine accepted builds recompile to their frozen MPD hashes;
+27 standard final views were rendered and inspected without generation feedback.
+The archive verifies 445 files across 20 selected/earlier run records and the
+original pilot transport snapshots. Bundle verification checks 133 builds and
+54 new assets; SQLite replay gives exact SQL/index equality with all 124 prior
+entries and the default preserved. Remote publication is pending main validation;
 see the [run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md).
 
 ## Final-answer notice and continuation — 17 October 2026

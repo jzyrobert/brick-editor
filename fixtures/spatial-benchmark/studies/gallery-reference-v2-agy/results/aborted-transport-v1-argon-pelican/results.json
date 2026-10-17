@@ -1,0 +1,28 @@
+{
+  "version": "agy-native-cli/1",
+  "planned": 1,
+  "completed": 1,
+  "results": [
+    {
+      "caseId": "pelican--reference-v2--1",
+      "referenceCoverage": [],
+      "state": "frozen",
+      "status": "infrastructure-failure",
+      "files": {
+        "submission.txt": "6b6669a432ab3ae6e938e1fa0ac6a7bdd6d8f6cb27d3f9451cfb6943f1ab3fba"
+      },
+      "used": {
+        "turns": 2,
+        "searchCalls": 5,
+        "infoCalls": 0,
+        "referenceBytes": 181470,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "failure": "agy turn failed: Your previous response contained an improperly formatted function call: Malformed function call: Failed to parse function call: Function call is empty - no input to parse.\nPlease retry with a properly formatted function call\nRetries remaining: 3",
+      "seconds": 34
+    }
+  ],
+  "experimentallyEvaluated": false
+}

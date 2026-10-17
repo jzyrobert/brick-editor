@@ -2,14 +2,20 @@
 
 ## Antigravity gallery generation — 17 October 2026
 
-Added a native agy transport and serial quota-gated schedule for Gemini 3.8
-Flash/high and Gemini 4 Argon/high on the six corrected-reference gallery briefs.
-Windows hosts compile in the existing Linux namespace through WSL; no host-VM
-fallback is allowed. A Flash pilot accepted and rendered successfully. The
-Gemini cohort is in progress, with an aborted native transport attempt retained.
-Additive version-3 gallery bundles preserve existing builds and the featured
-generation; the main-only publishing workflow accepts a separate gallery token
-stored in GitHub Actions. [Procedure](AGY-GENERATION.md) and
+The native agy schedule completed all twelve Gemini 3.8 Flash/high and Gemini 4
+Argon/high cases: nine accepted builds and three model failures, with no quota
+skips. Windows compilation retains Linux namespace isolation through WSL.
+Completed native replies lost behind known CLI errors can be replayed unchanged
+in their own conversations with prior assistance, time and quota accounted for;
+all earlier outcomes remain archived. The owner approved the native 128K host
+guard; the CLI cannot set the earlier 32K server cap, and the original Flash
+pilot retains its 32K record.
+
+All nine frozen MPDs reproduce exactly and all 27 final views rendered. The
+reviewed additive bundle contains 133 entries, preserving the prior 124 and
+Fresh E default. Main-only publication is prepared using a separate gallery
+token stored in GitHub Actions. Final generation quota was 27% Argon weekly,
+97% Gemini weekly and 91% Gemini five-hour. [Procedure](AGY-GENERATION.md) and
 [run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md).
 
 ## Final-answer notice and last two Claude builds — 17 October 2026

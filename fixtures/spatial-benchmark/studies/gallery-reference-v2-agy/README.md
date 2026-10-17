@@ -89,14 +89,14 @@ malformed replies. Unknown errors, incomplete native streams, native tools and
 output-budget violations still fail. Earlier outcomes are preserved; any
 continuation uses only its own native conversation and remaining budgets.
 
-## Quota policy
-
 Argon's Ewok returned its exact stream-interruption diagnostic after a complete
 draft-check response had already reached DONE. Transport 8 verifies that the
 saved JSON belongs to the interrupted external turn before delivering it
 unchanged to the host. Its provider request is not repeated; only the normal
 compiler feedback can continue the same native conversation with remaining
 budgets. The earlier interruption remains archived.
+
+## Quota policy
 
 Initial quota was 100% Gemini weekly, 100% Gemini five-hour and 100% Argon
 weekly. After the Flash pilot it was 100% / 98% / 100%; after the aborted
@@ -107,9 +107,36 @@ purchased and quota resets are not awaited.
 
 ## Outcomes and publication
 
-Generation and publication are in progress. Cloudflare MCP and local Wrangler
-were unauthenticated in this session. The owner added the separate GitHub
-Actions secret `CLOUDFLARE_GALLERY_API_TOKEN`; publishing will use that credential
-without exposing it in chat or generation sessions.
-The final run table, frozen evidence and publication receipt will replace this
-status when the batch ends.
+9 accepted builds from 12 completed cases, 3 failed final outcomes and 0 quota-gated skips out of twelve planned cases. The schedule completed without a quota stop.
+
+| Brief     | Model                 | Outcome                                                          | Parts | Warnings | Active seconds | Build                                                   |
+| --------- | --------------------- | ---------------------------------------------------------------- | ----: | -------: | -------------: | ------------------------------------------------------- |
+| pelican   | Gemini 3.8 Flash/high | Accepted                                                         |   310 |        2 |            365 | [Open](https://bricks.robertj.in/?gallery=ee15b3045deb) |
+| pelican   | Gemini 4 Argon/high   | Accepted · continued                                             |   861 |        2 |           1462 | [Open](https://bricks.robertj.in/?gallery=54a3f3afdcfe) |
+| piplup    | Gemini 3.8 Flash/high | Accepted · continued                                             |   763 |        1 |            470 | [Open](https://bricks.robertj.in/?gallery=746ff27b7848) |
+| piplup    | Gemini 4 Argon/high   | Accepted · continued                                             |   922 |        1 |            731 | [Open](https://bricks.robertj.in/?gallery=ae16905b8678) |
+| temple    | Gemini 3.8 Flash/high | Accepted · continued                                             |  1397 |        1 |            496 | [Open](https://bricks.robertj.in/?gallery=e21c4fd3ccd3) |
+| temple    | Gemini 4 Argon/high   | Accepted · continued                                             |  1959 |        3 |           1473 | [Open](https://bricks.robertj.in/?gallery=7ea14e8f8e5d) |
+| destroyer | Gemini 3.8 Flash/high | model-failure: Invalid final submission; repair budget exhausted |     — |        — |            502 | —                                                       |
+| destroyer | Gemini 4 Argon/high   | Accepted                                                         |  5340 |        1 |            891 | [Open](https://bricks.robertj.in/?gallery=ca99d2770076) |
+| dragon    | Gemini 3.8 Flash/high | Accepted                                                         |   816 |        2 |            586 | [Open](https://bricks.robertj.in/?gallery=baf76cf0a61b) |
+| dragon    | Gemini 4 Argon/high   | model-failure: Run-wide infoCalls budget exhausted               |     — |        — |           1138 | —                                                       |
+| ewok      | Gemini 3.8 Flash/high | model-failure: Invalid final submission; repair budget exhausted |     — |        — |            518 | —                                                       |
+| ewok      | Gemini 4 Argon/high   | Accepted · continued                                             |  3364 |        1 |           1182 | [Open](https://bricks.robertj.in/?gallery=6bcbf8212ad1) |
+
+Targets remain advisory. Accepted means the compiler returned no errors; construction warnings remain visible and do not prove physical stability. Continued rows retain their own original conversations, prior assistance and cumulative active time. Earlier failures are preserved separately, including the original lower-cap and native-parser outcomes.
+
+Final observed quota at 2026-10-17T06:25:35.524Z: **97% Gemini weekly, 91% Gemini five-hour and 27% Argon weekly**. The next-run estimate uses each model's largest full-build quota drop, including original plus continuation phases, with a five-point reserve. Rounded counters are estimates; no credits were purchased.
+
+The additive publication bundle contains **9 new builds** and 133 total entries, preserving all 124 existing entries and the Fresh E default. Every accepted frozen source recompiles to its recorded MPD hash. The three standard Realistic views per build are final-only; no visual feedback or manual source repair enters generation. The bundle is ready for the main-only [gallery publishing workflow](https://github.com/jzyrobert/brick-editor/actions/workflows/gallery.yml), after all main validation passes.
+
+Cloudflare MCP and local Wrangler were unauthenticated. The owner entered a separate gallery-scoped token directly into GitHub Actions as `CLOUDFLARE_GALLERY_API_TOKEN`; no token value passed through chat, source, generation directories or the public archive.
+
+## Evidence and reproduction
+
+- [Archive manifest](archive-manifest.json): 20 selected and earlier run records, with archive/original SHA-256 hashes. Only unrelated Claude/GPT quota TSV rows are omitted from quota records; frozen generation files remain byte-identical.
+- [Schedule](schedule.json), per-run manifests/preflights, exact prompts, replies, mechanical audits, frozen submissions/MPDs, compiler reports, native usage summaries and quota readings. Native conversations/stderr, credentials, temporary Git roots and compiler bundles are excluded.
+- [Publication bundle](publication/manifest.json): checksummed SQL/index/assets and the original public baseline. Local SQLite replay reproduces the reviewed index exactly.
+- Type checking and formatting pass; 40 focused transport/quota/gallery tests and 17 compiler/session integration tests pass. No blinded visual assessment or controlled cross-transport quality comparison was performed. The native CLI's provider cap and internal housekeeping limitations remain as documented above.
+
+Use [the procedure](../../../../docs/AGY-GENERATION.md) for new runs; preserve new outputs in fresh directories rather than overwriting this frozen cohort.
