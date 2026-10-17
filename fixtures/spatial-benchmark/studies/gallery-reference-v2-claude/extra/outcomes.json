@@ -1,0 +1,66 @@
+[
+  {
+    "model": {
+      "id": "claude-haiku-5-5",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "caseId": "temple--reference-v2--1",
+    "retry": true,
+    "status": "submitted",
+    "failure": null,
+    "used": {
+      "turns": 2,
+      "searchCalls": 0,
+      "infoCalls": 0,
+      "referenceBytes": 149048,
+      "checks": 1,
+      "repairs": 0,
+      "compileMs": 1333
+    },
+    "seconds": 307,
+    "costUsd": 0.17,
+    "outputTokens": 126174,
+    "files": {
+      "submission.txt": "18d2f1525ec8d3fa28a9e088436970b26bcaa87f214444f1388bafe994d65114",
+      "compilation.json": "08d99af22669f28669bd47a79b664d2e00924c06accf34dc94117c98b5c68408",
+      "build.mpd": "8059b79b4b4995c47f2863c6689bc8922968b7395e082911203ba46561a31629"
+    }
+  },
+  {
+    "model": {
+      "id": "claude-opus-5-5",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "caseId": "pelican--reference-v2--1",
+    "retry": true,
+    "status": "submitted",
+    "failure": null,
+    "used": {
+      "turns": 7,
+      "searchCalls": 10,
+      "infoCalls": 0,
+      "referenceBytes": 186173,
+      "checks": 3,
+      "repairs": 0,
+      "compileMs": 2696
+    },
+    "seconds": 43,
+    "costUsd": 4.17,
+    "outputTokens": 92879,
+    "files": {
+      "submission.txt": "1b3ac3001a347081f265516bcf0d2d7643fee7e6f43adc0fba47d5ac33626801",
+      "compilation.json": "8bdeb810b1b6bb0821c010188a5d928eccfd06cad96870b43cbf0c246a33b9f3",
+      "build.mpd": "e93aeffe7c22497a3b1e5633c6a0e1899bffc303b4f58162eda57b0459b993af"
+    }
+  }
+]

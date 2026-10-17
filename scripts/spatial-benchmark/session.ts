@@ -46,7 +46,7 @@ export type TextChannel = (
     signal: AbortSignal;
   }>,
 ) => Promise<string>;
-type Counters = {
+export type Counters = {
   turns: number;
   searchCalls: number;
   infoCalls: number;
@@ -67,6 +67,16 @@ export type FrozenRun = {
     use: "not-inferred";
   }[];
   failure?: string;
+};
+/** The reply to the first check requested after the checks budget is spent. */
+export const FINAL_NOTICE =
+  "No draft checks remain and no further tries are available. Reply now with only your final brick.build call containing your complete build.";
+/** A frozen case continued in its own native session: its conversation so
+ * far, the run-wide budgets it already used, and the next message to send. */
+export type Continuation = {
+  messages: TextMessage[];
+  used: Counters;
+  message: string;
 };
 const fields = (v: Record<string, unknown>, allowed: string[]) => {
   for (const k of Object.keys(v))
@@ -91,6 +101,8 @@ export class GenerationSession {
   #workerHash: string;
   #returned = new Map<string, Set<FactField>>();
   #messages: TextMessage[] = [];
+  /** Set once a check beyond the budget has been answered with FINAL_NOTICE. */
+  #finalNotice = false;
   constructor(
     private readonly m: Manifest,
     private readonly c: ScheduledCase,
@@ -290,9 +302,15 @@ export class GenerationSession {
     }
     return response;
   }
-  async run(): Promise<FrozenRun> {
+  async run(continuation?: Continuation): Promise<FrozenRun> {
     if (this.#state !== "new")
       throw new Error("Generation cannot resume or re-enter");
+    if (continuation) {
+      registerFullLibraryFromDisk();
+      registerAgentData();
+      if (continuation.messages[0]?.content !== effectivePrompt(this.m, this.c))
+        throw new Error("Continuation differs from the effective input");
+    }
     this.#state = "generating";
     this.#start = Date.now();
     await mkdir(this.dir, { recursive: true });
@@ -322,6 +340,19 @@ export class GenerationSession {
         fields: this.c.condition.facts,
       });
       this.#messages = [{ role: "user", content: prompt }];
+      if (continuation) {
+        this.#used = structuredClone(continuation.used);
+        this.#finalNotice = continuation.message === FINAL_NOTICE;
+        this.#messages = [
+          ...continuation.messages,
+          { role: "user", content: continuation.message },
+        ];
+        await this.audit("continuation", {
+          priorMessages: continuation.messages.length,
+          used: continuation.used,
+          message: continuation.message,
+        });
+      }
       for (;;) {
         this.consume("turns");
         await this.audit("channel-request", {
@@ -378,6 +409,11 @@ export class GenerationSession {
         } catch {
           parsed = undefined;
         }
+        if (this.#finalNotice && !isBrickBuild(parsed)) {
+          failure = "Final brick.build required after the checks budget";
+          await this.audit("denied", { request: parsed ?? text, failure });
+          break;
+        }
         let response: string;
         try {
           if (obj(parsed) && Object.hasOwn(parsed, "parts_search")) {
@@ -395,6 +431,12 @@ export class GenerationSession {
               });
               response =
                 "Candidate feedback is unavailable. Submit the final brick.build call.";
+            } else if (this.#used.checks >= this.m.budgets.checks) {
+              // A check beyond the budget gets one notice to submit, not an
+              // immediate failure; after it only a final build is accepted.
+              this.#finalNotice = true;
+              await this.audit("final-notice", { request: parsed });
+              response = FINAL_NOTICE;
             } else {
               this.consume("checks");
               if (

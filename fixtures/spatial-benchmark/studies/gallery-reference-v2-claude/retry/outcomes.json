@@ -1,0 +1,94 @@
+[
+  {
+    "model": {
+      "id": "claude-haiku-5-5",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "caseId": "temple--reference-v2--1",
+    "retry": true,
+    "status": "model-failure",
+    "failure": "Declared output-token budget exhausted before a final answer",
+    "used": {
+      "turns": 1,
+      "searchCalls": 0,
+      "infoCalls": 0,
+      "referenceBytes": 149048,
+      "checks": 0,
+      "repairs": 0,
+      "compileMs": 0
+    },
+    "seconds": 659,
+    "costUsd": 0.12,
+    "outputTokens": 131092,
+    "files": {
+      "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "model": {
+      "id": "claude-opus-5-5",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "caseId": "pelican--reference-v2--1",
+    "retry": true,
+    "status": "model-failure",
+    "failure": "Run-wide checks budget exhausted",
+    "used": {
+      "turns": 6,
+      "searchCalls": 10,
+      "infoCalls": 0,
+      "referenceBytes": 186173,
+      "checks": 3,
+      "repairs": 0,
+      "compileMs": 2044
+    },
+    "seconds": 928,
+    "costUsd": 12.76,
+    "outputTokens": 361758,
+    "files": {
+      "submission.txt": "9b1a782826a77a0b2000bc3c73cdd789e2e1bb8a424200a42613d0a44b12bff3"
+    }
+  },
+  {
+    "model": {
+      "id": "claude-opus-5-5",
+      "effort": "high",
+      "sampling": {
+        "temperature": null,
+        "topP": null,
+        "seed": null
+      }
+    },
+    "caseId": "ewok--reference-v2--1",
+    "retry": true,
+    "status": "submitted",
+    "failure": null,
+    "used": {
+      "turns": 10,
+      "searchCalls": 20,
+      "infoCalls": 2,
+      "referenceBytes": 251354,
+      "checks": 3,
+      "repairs": 0,
+      "compileMs": 6606
+    },
+    "seconds": 1064,
+    "costUsd": 18.39,
+    "outputTokens": 385822,
+    "files": {
+      "submission.txt": "613d9d4f1f35ab2ef57a8a3a94faea09ae90b14328d8d7eb36d4c876637171e9",
+      "compilation.json": "7e5d706b646fa326fa0469db01677c221ce9027f108585cc47bb4fdd1b662f02",
+      "build.mpd": "d54ddfd013de3ac79741b7063605e81d1ed46855d88f07fa17e2b8811e1536ec"
+    }
+  }
+]

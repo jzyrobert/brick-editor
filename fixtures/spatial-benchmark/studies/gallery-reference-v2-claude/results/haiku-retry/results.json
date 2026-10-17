@@ -1,0 +1,28 @@
+{
+  "version": "claude-native-cli/3",
+  "planned": 1,
+  "completed": 1,
+  "results": [
+    {
+      "caseId": "temple--reference-v2--1",
+      "referenceCoverage": [],
+      "state": "frozen",
+      "status": "model-failure",
+      "files": {
+        "submission.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "used": {
+        "turns": 1,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 149048,
+        "checks": 0,
+        "repairs": 0,
+        "compileMs": 0
+      },
+      "failure": "Declared output-token budget exhausted before a final answer",
+      "seconds": 659
+    }
+  ],
+  "experimentallyEvaluated": false
+}

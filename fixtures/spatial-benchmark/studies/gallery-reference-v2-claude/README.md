@@ -48,6 +48,27 @@ Claude Code's own internal retries and its small housekeeping model calls are ou
 
 Haiku's 117-part pelican is thin but compiler-accepted, so it is published under the same rule as every other accepted output. Opus's pelican used its three checks and then asked for a fourth; its Ewok used both repairs without clearing overlaps and then replied in prose.
 
+## Retry of failed cases — 16 October 2026
+
+At the owner's request, each of the three failed cases ran once more from a fresh start with the same manifest, inputs and compiler, on transport 3 at `main` commit `81a13e0f` (`results/haiku-retry/`, `results/opus-retry/`, `retry/`). This is a deliberate exception to the cohort's no-retry rule, recorded as such; the original failures remain archived.
+
+| Brief   | Model            | Retry outcome                                                   | Parts | Warnings | Seconds | Cost (USD) | Build                                                   |
+| ------- | ---------------- | --------------------------------------------------------------- | ----: | -------: | ------: | ---------: | ------------------------------------------------------- |
+| temple  | Haiku 5.5 (high) | Model failure: output-token budget exhausted on the first reply |     — |        — |     659 |       0.12 | —                                                       |
+| pelican | Opus 5.5 (high)  | Model failure: run-wide checks budget exhausted                 |     — |        — |     928 |      12.76 | —                                                       |
+| ewok    | Opus 5.5 (high)  | Accepted                                                        |  2649 |        2 |    1064 |      18.39 | [Open](https://bricks.robertj.in/?gallery=d54ddfd013de) |
+
+Opus's Ewok ("Endor Explorer 497-E") recompiled to its frozen MPD hash and is published in the same generation as `gallery-reference-v2-claude-opus-ewok-retry`. The generation description now reports 22 of 24 Claude builds and names the retry. The live index has 122 unique builds; the 121 earlier entries are unchanged and Fresh E remains the default.
+
+## Uncapped Haiku temple and continued Opus pelican — 17 October 2026
+
+The two cases that failed again on retry were run once more under changed conditions the owner chose; both are labelled in their source names and in the generation description, and every earlier outcome stays archived.
+
+- **Haiku temple without the output cap** (`results/haiku-uncapped/`, manifest `haiku-uncapped.json`). The budget caps each reply at 32,768 output tokens, reasoning included, and the prompt never tells the model so; twice Haiku spent the whole cap reasoning before its first reply. This manifest differs from `haiku.json` only in raising `maxOutputTokens` to Haiku 5.5's own 128,000. Accepted after one check: "Buddhist temple precinct: shoji hall, five-storey pagoda and bell tower", 1,443 parts, 1 warning, 307 s, $0.17 ([open](https://bricks.robertj.in/?gallery=8059b79b4b49)).
+- **Opus pelican continued** (`results/opus-continue/`). The retry ended when Opus asked for a fourth check. Its native Claude session was resumed with `FINAL_NOTICE` ("No draft checks remain and no further tries are available. Reply now with only your final brick.build call containing your complete build."), keeping the conversation and the budgets it had used. Opus answered in one turn: "Pelican Fish Courier", 725 parts, 2 warnings, 43 s, $4.17 ([open](https://bricks.robertj.in/?gallery=e93aeffe7c22)).
+
+`FINAL_NOTICE` is now the harness default: the first check requested beyond the budget gets that notice instead of ending the run, without spending a check or repair; afterwards only a final build is accepted, and repairs of an invalid final build still apply. Both builds recompiled to their frozen MPD hashes. The live index has 124 unique builds, the 122 earlier entries unchanged and Fresh E still the default; all 24 Claude briefs now have a published build.
+
 ## Evidence and reproduction
 
 - **Implemented:** native Claude channel and runner, `--cases` for interrupted cases, four manifests, and an additive gallery publication into the existing v2 generation.

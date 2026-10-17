@@ -80,6 +80,9 @@ export async function claudeChannel(options: {
   dir: string;
   generationDir: string;
   model: ClaudeModel;
+  /** A native session to resume; its generation directory must be the one
+   * the session was created in. */
+  thread?: string;
 }) {
   const model = validateClaudeModel(options.model);
   const privateDir = join(options.dir, "native");
@@ -96,9 +99,10 @@ export async function claudeChannel(options: {
       tools: [],
       cwd: "empty generation directory",
       systemPrompt: CLAUDE_SYSTEM_PROMPT,
+      resumedThread: options.thread ?? null,
     }),
   );
-  let thread: string | undefined,
+  let thread = options.thread,
     turn = 0;
   const channel: TextChannel = async (request) => {
     if (request.model.id !== model.id || request.model.effort !== model.effort)

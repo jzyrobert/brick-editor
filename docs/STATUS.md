@@ -1,5 +1,13 @@
 # Implementation status
 
+## Final-answer notice and last two Claude builds — 17 October 2026
+
+A check requested beyond the budget now gets one final-answer notice instead of ending the run; `GenerationSession.run` and the Claude runner (`--continue-from`) can continue a frozen case in its own native session. Haiku's temple, rerun with the unannounced 32,768-token output cap raised to 128,000, and Opus's pelican, continued with the notice, were both accepted and published, so all 24 Claude briefs have a build (124 gallery builds). [Runs](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md#uncapped-haiku-temple-and-continued-opus-pelican--17-october-2026).
+
+## Claude v2 retry — 16 October 2026
+
+Retried the three failed Claude v2 cases once at the owner's request, with unchanged inputs. Opus's Ewok was accepted and published (122 gallery builds); Haiku's temple (output budget) and Opus's pelican (checks budget) failed again and stay unpublished. [Retry record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md#retry-of-failed-cases--16-october-2026).
+
 ## Claude v2 gallery cohort — 16 October 2026
 
 Ran the corrected-reference gallery cohort locally on Claude: six briefs × Haiku 5.5/high, Sonnet 5.5/high, Opus 5.5/high and Fable 5.1/medium, with the OpenAI cohort's manifests changed only in model and effort. A new native Claude CLI channel (`claude-native-cli`, neutral system prompt, tools off) and runner drive the same GenerationSession, facts, feedback and isolated compiler. Published all 21 accepted outputs with 63 renders into `e-reference-v2-20261014`, whose description now covers both families; 100 earlier entries and the Fresh E default are unchanged. Haiku's temple (output budget) and Opus's pelican and Ewok (model failures) are archived. A first attempt on Claude Code's default system prompt was aborted because invented tool markup cost repairs. Not a controlled comparison with the Codex-broker builds. [Runs and outcomes](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md).
