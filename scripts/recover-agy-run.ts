@@ -135,7 +135,7 @@ export async function main(args: string[]) {
       : lastComplete.trim();
   const normalized = normalizeAgyEnvelope(rawRecovered);
   const recovered = normalized.text;
-  assert(/^[{]/.test(recovered), "No JSON protocol response to recover");
+  assert(recovered.trim(), "No completed native response to recover");
   const audit = (await readFile(join(original, "audit.jsonl"), "utf8"))
     .trim()
     .split("\n")

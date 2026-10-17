@@ -81,6 +81,15 @@ unchanged to the normal bounded JSON-repair loop after verifying every object
 is complete and on a declared route. This consumes the original case's repair
 budget when continued; no object is chosen and no source is edited.
 
+Flash's first Star Destroyer attempt on transport 5 returned completed prose
+while diagnosing that same parser artifact and was rejected by the narrower
+transport guard. Transport 7 treats all completed text after either exact known
+diagnostic like successful native text: it reaches the unchanged host protocol,
+which rejects undeclared routes and spends the existing repair budget on
+malformed replies. Unknown errors, incomplete native streams, native tools and
+output-budget violations still fail. Earlier outcomes are preserved; any
+continuation uses only its own native conversation and remaining budgets.
+
 Initial quota was 100% Gemini weekly, 100% Gemini five-hour and 100% Argon
 weekly. After the Flash pilot it was 100% / 98% / 100%; after the aborted
 Argon attempt, 100% / 98% / 99%. Subsequent readings are retained per run.

@@ -92,6 +92,17 @@ object, merges objects or changes source. Every object must be complete and
 on a declared route; unknown routes, partial JSON and surrounding prose are
 rejected. The ordinary turn, check, repair and time limits remain in force.
 
+Transport 7 makes this handling consistent with successful native responses:
+after either exact known parser diagnostic, any nonempty **completed** native
+assistant text is delivered unchanged to the host, including prose and
+malformed JSON. The host already rejects undeclared routes and spends the
+ordinary repair budget on invalid protocol; the transport must not suppress
+that chance to repair merely because agy also emitted its parser artifact.
+No model code is edited and no extra feedback is supplied. A stream without a
+completed assistant response, an unknown error, a native tool/subagent attempt
+or an output-budget violation still fails. Versions 3–6 imposed the narrower
+content checks described above; their earlier outcomes remain archived.
+
 ## Quota and stopping
 
 `agy -p /usage` reads account quota without a model call. Each case records it

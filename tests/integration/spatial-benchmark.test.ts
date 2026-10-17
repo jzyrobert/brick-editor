@@ -129,6 +129,28 @@ it("blocks evaluator and native-tool routes and logs attempted access", async ()
     "read_file",
   );
 });
+it("repairs completed prose and concatenated JSON only within the run-wide budget", async () => {
+  const repaired = await replay(
+    ["<text>Invalid model response", valid],
+    (m) => {
+      m.conditions[0].policy = "blind-mechanical";
+      m.budgets.repairs = 1;
+    },
+  );
+  expect(repaired.frozen.status).toBe("submitted");
+  expect(repaired.frozen.used.repairs).toBe(1);
+  expect(repaired.transcripts[1].at(-1)?.content).toContain("Invalid protocol");
+  const exhausted = await replay(
+    [valid + "\n" + valid, "prose", valid],
+    (m) => {
+      m.conditions[0].policy = "blind-mechanical";
+      m.budgets.repairs = 1;
+    },
+  );
+  expect(exhausted.frozen.status).toBe("model-failure");
+  expect(exhausted.frozen.used.repairs).toBe(1);
+  expect(exhausted.calls).toBe(2);
+});
 it("answers a check beyond the budget once with a final-answer notice", async () => {
   const check = JSON.stringify({
     check_build: {

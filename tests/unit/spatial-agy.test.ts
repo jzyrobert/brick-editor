@@ -58,13 +58,9 @@ it("passes concatenated complete protocol responses unchanged to bounded host re
     '{"check_build":{"code":"brace } and \\\"quote"}}\n{"tool":"brick.build","input":{"code":"x"}}';
   const result = { status: "ERROR", error: emptyFunctionError, response: text };
   expect(selectAgyReply(result, text)).toBe(text);
-  expect(() => selectAgyReply(result, text + '{"check_build":')).toThrow();
-  expect(() =>
-    selectAgyReply(result, text + '{"tool":"run_command","input":{}}'),
-  ).toThrow();
-  expect(() => selectAgyReply(result, text + " prose")).toThrow();
+  expect(selectAgyReply(result, text + " prose")).toBe(text + " prose");
 });
-it("recovers only the exact empty-function artifact with a complete protocol object", () => {
+it("preserves completed text for normal host repair only after the exact native artifact", () => {
   const r = {
     status: "ERROR",
     error: emptyFunctionError,
@@ -89,10 +85,14 @@ it("recovers only the exact empty-function artifact with a complete protocol obj
       r.response,
     ),
   ).toBe(r.response);
-  expect(() => selectAgyReply(r, "partial JSON {")).toThrow();
-  expect(() =>
-    selectAgyReply(r, '{"tool":"run_command","input":{}}'),
-  ).toThrow();
+  for (const text of [
+    "unfinished JSON {",
+    '{"tool":"run_command","input":{}}',
+    "<text>ordinary prose",
+  ])
+    expect(selectAgyReply(r, text)).toBe(text);
+  expect(() => selectAgyReply(r)).toThrow();
+  expect(() => selectAgyReply(r, " ")).toThrow();
   expect(() =>
     selectAgyReply({ ...r, error: "quota exhausted" }, r.response),
   ).toThrow();
