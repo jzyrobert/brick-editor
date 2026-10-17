@@ -6,7 +6,7 @@ on:
         description: Reviewed publication bundle
         type: choice
         default: text-generations
-        options: [text-generations, gemini-agy]
+        options: [text-generations, gemini-agy, gemini-agy-retries]
 permissions:
   contents: read
   actions: read
@@ -44,6 +44,7 @@ jobs:
         run: |
           case "$GALLERY_COLLECTION" in
             gemini-agy) bundle=fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/publication ;;
+            gemini-agy-retries) bundle=fixtures/spatial-benchmark/studies/gallery-reference-v2-agy-retries/publication ;;
             text-generations) bundle=docs/samples/lego-style-study/generation-publication ;;
             *) exit 1 ;;
           esac
