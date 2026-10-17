@@ -1,5 +1,17 @@
 # Implementation status
 
+## Prompt assistance limits — 17 October 2026
+
+The Gemini gallery manifests opt into the prompt's assistance contract: ten
+search replies of up to five queries, three draft checks and two repairs. Part
+inspections, their batch size, total turns and reference bytes have no separate
+undisclosed allowance in this profile. Historical benchmark contracts are
+preserved. Recovery can switch contracts at a pending inspection after verifying
+the original transcript, retaining earlier denials, checks, time and quota.
+The owner requested continuation of Argon's dragon and fresh retries of Flash's
+Star Destroyer and Ewok; those outcomes will be recorded separately. See
+[the procedure](AGY-GENERATION.md).
+
 ## Antigravity gallery generation — 17 October 2026
 
 The native agy schedule completed all twelve Gemini 3.8 Flash/high and Gemini 4

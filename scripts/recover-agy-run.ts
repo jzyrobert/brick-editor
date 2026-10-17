@@ -34,12 +34,16 @@ import { hash, json } from "./spatial-benchmark/part-reference";
 const read = async (file: string) => JSON.parse(await readFile(file, "utf8"));
 export async function main(args: string[]) {
   if (
-    args.length !== 6 ||
+    (args.length !== 6 &&
+      !(args.length === 7 && args[6] === "--prompt-limits")) ||
     args[0] !== "--from" ||
     args[2] !== "--out" ||
     args[4] !== "--output-budget"
   )
-    throw new Error("Takes --from RUN --out EMPTY_DIR --output-budget TOKENS");
+    throw new Error(
+      "Takes --from RUN --out EMPTY_DIR --output-budget TOKENS [--prompt-limits]",
+    );
+  const promptLimits = args[6] === "--prompt-limits";
   const from = resolve(args[1]),
     out = resolve(args[3]);
   const priorManifest = validateManifest(
@@ -51,13 +55,17 @@ export async function main(args: string[]) {
   const old = prior[0];
   assert(old.status !== "submitted", "Accepted builds must not be rerun");
   assert(
-    old.failure === `agy turn failed: ${AGY_STREAM_INTERRUPTION}` ||
+    (promptLimits && old.failure === "Run-wide infoCalls budget exhausted") ||
+      old.failure === `agy turn failed: ${AGY_STREAM_INTERRUPTION}` ||
       /Your previous response contained an improperly formatted function call|Native model response used \d+ output tokens/.test(
         old.failure ?? "",
       ),
     "Not a recognised recoverable transport/budget failure",
   );
   const m = structuredClone(priorManifest);
+  if (promptLimits) m.assistanceLimits = "prompt";
+  const completedHostTurn =
+    promptLimits && old.failure === "Run-wide infoCalls budget exhausted";
   const budget = Number(args[5]);
   assert(
     Number.isInteger(budget) &&
@@ -164,8 +172,8 @@ export async function main(args: string[]) {
     .map((e) => e.payload.text);
   assert.equal(
     requests.length,
-    replies.length + 1,
-    "Expected one interrupted native response",
+    replies.length + (completedHostTurn ? 0 : 1),
+    "Expected one pending host request or interrupted native response",
   );
   assert(
     latestDone && latestStep === lastCompletedStep,
@@ -183,7 +191,13 @@ export async function main(args: string[]) {
     lastCompleteAt > previousResult,
     "Completed response belongs to an earlier turn",
   );
-  replies.push(recovered);
+  if (completedHostTurn)
+    assert.equal(
+      replies.at(-1),
+      recovered,
+      "Pending host request differs from the completed native response",
+    );
+  else replies.push(recovered);
   const { cases, worker, record } = await preflight(m, out);
   const c = cases.find((c) => c.id === old.caseId);
   assert(c, "Unscheduled recovery case");
@@ -199,6 +213,11 @@ export async function main(args: string[]) {
     originalFailure: old.failure,
     originalSeconds: old.seconds,
     originalManifestSha256: hash(json(priorManifest)),
+    assistanceLimits: {
+      before: priorManifest.assistanceLimits ?? "manifest",
+      after: m.assistanceLimits ?? "manifest",
+    },
+    historicalReplayTurns: completedHostTurn ? replies.length - 1 : 0,
     outputBudget: {
       before: priorManifest.budgets.maxOutputTokens,
       after: budget,
@@ -279,6 +298,7 @@ export async function main(args: string[]) {
       });
       return runtime.channel(request);
     },
+    completedHostTurn ? replies.length - 1 : 0,
   );
   let result;
   try {

@@ -48,6 +48,7 @@ export type TextChannel = (
 ) => Promise<string>;
 export type Counters = {
   turns: number;
+  searchReplies?: number;
   searchCalls: number;
   infoCalls: number;
   referenceBytes: number;
@@ -109,6 +110,7 @@ export class GenerationSession {
     private readonly dir: string,
     private readonly worker: string,
     channel: TextChannel,
+    private readonly historicalTurns = 0,
   ) {
     this.m = structuredClone(validateManifest(m));
     const expected = schedule(this.m).find((v) => v.id === c.id);
@@ -117,6 +119,20 @@ export class GenerationSession {
     this.c = structuredClone(expected);
     this.#channel = channel;
     this.#workerHash = hash(readFileSync(worker));
+    if (
+      !Number.isSafeInteger(historicalTurns) ||
+      historicalTurns < 0 ||
+      (historicalTurns > 0 && this.m.assistanceLimits !== "prompt")
+    )
+      throw new Error("Invalid historical replay boundary");
+  }
+  /** Retain the old host's replies during verified replay; switch contracts
+   * only at the request which the owner authorised us to resume. */
+  private get promptLimits() {
+    return (
+      this.m.assistanceLimits === "prompt" &&
+      (this.historicalTurns === 0 || this.#used.turns > this.historicalTurns)
+    );
   }
   private async audit(kind: string, payload: unknown) {
     await appendFile(
@@ -125,7 +141,12 @@ export class GenerationSession {
     );
   }
   private consume(key: keyof Counters, amount = 1) {
-    if (this.#used[key] + amount > this.m.budgets[key])
+    if (key === "searchReplies")
+      throw new Error("Search replies are counted separately");
+    const countOnly =
+      this.promptLimits &&
+      ["turns", "infoCalls", "referenceBytes"].includes(key);
+    if (!countOnly && this.#used[key] + amount > this.m.budgets[key])
       throw new Error(`Run-wide ${key} budget exhausted`);
     this.#used[key] += amount;
   }
@@ -183,6 +204,11 @@ export class GenerationSession {
     const queries = Array.isArray(request) ? request : [request];
     if (queries.length < 1 || queries.length > 5)
       throw new Error("Search batch requires 1–5 queries");
+    if (this.m.assistanceLimits === "prompt") {
+      if (this.promptLimits && (this.#used.searchReplies ?? 0) >= 10)
+        return "No search replies remain (10 of 10 used). Use the existing results, part_info or remaining draft checks, then submit your final brick.build call.";
+      this.#used.searchReplies = (this.#used.searchReplies ?? 0) + 1;
+    }
     const answers = [];
     for (const q of queries) {
       this.consume("searchCalls");
@@ -202,7 +228,7 @@ export class GenerationSession {
         q.limit !== undefined &&
         (!Number.isInteger(q.limit) ||
           Number(q.limit) < 1 ||
-          Number(q.limit) > 50)
+          (!this.promptLimits && Number(q.limit) > 50))
       )
         throw new Error("Invalid search limit");
       if (
@@ -265,10 +291,14 @@ export class GenerationSession {
     if (
       !Array.isArray(request.part_ids) ||
       !request.part_ids.length ||
-      request.part_ids.length > 8 ||
+      (!this.promptLimits && request.part_ids.length > 8) ||
       !request.part_ids.every((p) => typeof p === "string")
     )
-      throw new Error("part_info requires 1–8 IDs");
+      throw new Error(
+        this.promptLimits
+          ? "part_info requires a nonempty list of IDs"
+          : "part_info requires 1–8 IDs",
+      );
     const requested = request.fields ?? this.c.condition.facts;
     if (
       !Array.isArray(requested) ||

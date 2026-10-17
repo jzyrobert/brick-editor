@@ -61,7 +61,11 @@ const invalid = JSON.stringify({
     seed: 1,
   },
 });
-async function replay(replies: string[], configure?: (m: Manifest) => void) {
+async function replay(
+  replies: string[],
+  configure?: (m: Manifest) => void,
+  historicalTurns = 0,
+) {
   const m = structuredClone(base);
   configure?.(m);
   validateManifest(m);
@@ -69,12 +73,19 @@ async function replay(replies: string[], configure?: (m: Manifest) => void) {
     dir = join(root, `run-${n++}`);
   let calls = 0;
   const transcripts: TextMessage[][] = [];
-  const session = new GenerationSession(m, c, dir, worker, async (r) => {
-    transcripts.push([...r.messages]);
-    const text = replies[calls++];
-    if (text === undefined) throw new Error("transport exhausted");
-    return text;
-  });
+  const session = new GenerationSession(
+    m,
+    c,
+    dir,
+    worker,
+    async (r) => {
+      transcripts.push([...r.messages]);
+      const text = replies[calls++];
+      if (text === undefined) throw new Error("transport exhausted");
+      return text;
+    },
+    historicalTurns,
+  );
   const frozen = await session.run();
   return { m, c, dir, session, frozen, transcripts, calls };
 }
@@ -245,6 +256,76 @@ it("enforces search and reference-volume budgets across invalid output repairs",
   });
   expect(v.calls).toBe(0);
   expect(v.frozen.failure).toContain("referenceBytes");
+});
+it("honours prompt search replies without hidden inspection, turn or reference-volume caps", async () => {
+  const info = JSON.stringify({
+    part_info: {
+      part_ids: Array(9).fill("3039"),
+      fields: ["connectors"],
+      limit: 1,
+    },
+  });
+  const search = JSON.stringify({
+    parts_search: [{ query: "slope", limit: 1 }],
+  });
+  const r = await replay(
+    [...Array(9).fill(info), ...Array(11).fill(search), valid],
+    (m) => {
+      m.assistanceLimits = "prompt";
+      m.conditions[0].policy = "blind-mechanical";
+      m.conditions[0].facts = ["connectors"];
+      m.conditions[0].exposure = "on-demand";
+      m.budgets.searchCalls = 50;
+      m.budgets.checks = 3;
+      m.budgets.repairs = 2;
+      m.budgets.infoCalls = 0;
+      m.budgets.turns = 1;
+      m.budgets.referenceBytes = 1;
+    },
+  );
+  expect(r.frozen.status).toBe("submitted");
+  expect(r.frozen.used.infoCalls).toBe(9);
+  expect(r.frozen.used.turns).toBe(21);
+  expect(r.frozen.used.searchReplies).toBe(10);
+  expect(r.frozen.used.searchCalls).toBe(10);
+  expect(r.transcripts[20].at(-1)?.content).toContain(
+    "No search replies remain",
+  );
+  expect(r.frozen.used.referenceBytes).toBeGreaterThan(1);
+}, 30000);
+it("preserves historical denials before switching limits at a resumed request", async () => {
+  const info = JSON.stringify({
+    part_info: {
+      part_ids: Array(9).fill("3039"),
+      fields: ["connectors"],
+      limit: 1,
+    },
+  });
+  const r = await replay(
+    [info, info, valid],
+    (m) => {
+      m.assistanceLimits = "prompt";
+      m.conditions[0].policy = "blind-mechanical";
+      m.conditions[0].facts = ["connectors"];
+      m.conditions[0].exposure = "on-demand";
+      m.budgets.searchCalls = 50;
+      m.budgets.checks = 3;
+      m.budgets.repairs = 2;
+    },
+    1,
+  );
+  expect(r.transcripts[1].at(-1)?.content).toContain(
+    "part_info requires 1–8 IDs",
+  );
+  expect(r.transcripts[2].at(-1)?.content).not.toContain("Request denied");
+  expect(r.frozen.status).toBe("submitted");
+  expect(r.frozen.used.infoCalls).toBe(2);
+}, 30000);
+it("rejects a prompt contract with different check or repair allowances", () => {
+  const m = structuredClone(base);
+  m.assistanceLimits = "prompt";
+  m.budgets.checks = 1;
+  expect(() => validateManifest(m)).toThrow("Prompt assistance");
 });
 it("archives exact inspection requests/pages and blocks fields outside treatment", async () => {
   const info = JSON.stringify({
