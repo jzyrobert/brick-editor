@@ -13,6 +13,7 @@ import {
   GenerationSession,
   evaluateFrozen,
   stageEvaluation,
+  FINAL_NOTICE,
   type TextMessage,
 } from "../../scripts/spatial-benchmark/session";
 import {
@@ -128,7 +129,7 @@ it("blocks evaluator and native-tool routes and logs attempted access", async ()
     "read_file",
   );
 });
-it("enforces run-wide check budgets across final repairs", async () => {
+it("answers a check beyond the budget once with a final-answer notice", async () => {
   const check = JSON.stringify({
     check_build: {
       code: 'section("Draft",[place({part:"3039",at:[0,0,0],colour:4})]);',
@@ -141,9 +142,71 @@ it("enforces run-wide check budgets across final repairs", async () => {
   });
   expect(r.frozen.used.checks).toBe(1);
   expect(r.frozen.used.repairs).toBe(1);
-  expect(r.calls).toBe(3);
-  expect(r.frozen.status).toBe("model-failure");
-  expect(r.frozen.failure).toContain("checks budget");
+  expect(r.calls).toBe(4);
+  expect(r.transcripts[3].at(-1)?.content).toBe(FINAL_NOTICE);
+  expect(r.frozen.status).toBe("submitted");
+  const again = await replay([check, check, check], (m) => {
+    m.conditions[0].policy = "blind-mechanical";
+    m.budgets.checks = 1;
+  });
+  expect(again.calls).toBe(3);
+  expect(again.frozen.status).toBe("model-failure");
+  expect(again.frozen.failure).toContain("Final brick.build required");
+}, 30000);
+it("continues a frozen case from its conversation and used budgets", async () => {
+  const check = JSON.stringify({
+    check_build: {
+      code: 'section("Draft",[place({part:"3039",at:[0,0,0],colour:4})]);',
+    },
+  });
+  const configure = (m: Manifest) => {
+    m.conditions[0].policy = "blind-mechanical";
+    m.budgets.checks = 1;
+  };
+  const first = await replay([check, valid], configure);
+  const prompt = first.transcripts[0][0].content;
+  const m = structuredClone(base);
+  configure(m);
+  const c = schedule(m)[0];
+  const sent: TextMessage[][] = [];
+  const session = new GenerationSession(
+    m,
+    c,
+    join(root, `run-${n++}`),
+    worker,
+    async (r) => {
+      sent.push([...r.messages]);
+      return valid;
+    },
+  );
+  const used = { ...first.frozen.used, turns: 1, checks: 1 };
+  const frozen = await session.run({
+    messages: [
+      { role: "user", content: prompt },
+      { role: "assistant", content: check },
+    ],
+    used,
+    message: FINAL_NOTICE,
+  });
+  expect(sent).toHaveLength(1);
+  expect(sent[0]).toHaveLength(3);
+  expect(sent[0].at(-1)?.content).toBe(FINAL_NOTICE);
+  expect(frozen.status).toBe("submitted");
+  expect(frozen.used.turns).toBe(2);
+  expect(frozen.used.checks).toBe(1);
+  await expect(
+    new GenerationSession(
+      m,
+      c,
+      join(root, `run-${n++}`),
+      worker,
+      async () => valid,
+    ).run({
+      messages: [{ role: "user", content: "different" }],
+      used,
+      message: FINAL_NOTICE,
+    }),
+  ).rejects.toThrow(/differs from the effective input/);
 }, 30000);
 it("enforces search and reference-volume budgets across invalid output repairs", async () => {
   const search = JSON.stringify({ parts_search: { query: "slope", limit: 1 } });
