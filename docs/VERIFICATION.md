@@ -17,7 +17,15 @@ Luna preflight. All nine accepted builds recompile to their frozen MPD hashes;
 The archive verifies 445 files across 20 selected/earlier run records and the
 original pilot transport snapshots. Bundle verification checks 133 builds and
 54 new assets; SQLite replay gives exact SQL/index equality with all 124 prior
-entries and the default preserved. Remote publication is pending main validation;
+entries and the default preserved. Full PR and main validation passed before the
+[gallery workflow](https://github.com/jzyrobert/brick-editor/actions/runs/39011770268)
+published. The public index has 133 builds and all 54 new files return the exact
+reviewed bytes and hashes. The dedicated GitHub Actions gallery token now has
+verified D1/R2 access; its value was never read into chat or the repository.
+The reviewed index also passes 12 model/viewport checks across six phone and
+desktop sizes, using mocked gallery requests: correct four/five model counts,
+44 px filter controls and no horizontal overflow
+([UI checks](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/gallery-ui/checks.json));
 see the [run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md).
 
 ## Final-answer notice and continuation — 17 October 2026
