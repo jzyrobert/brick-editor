@@ -59,6 +59,9 @@ export async function main(argv: string[]) {
       {
         ...record,
         transport: AGY_TRANSPORT_VERSION,
+        modelCalls: null,
+        network:
+          "host-authenticated native agy model channel; compiler network namespace disabled",
         sourceHashes,
         selectedCases: only ?? null,
         runOrder: cases.map((c) => c.id),

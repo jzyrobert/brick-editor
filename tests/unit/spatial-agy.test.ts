@@ -6,6 +6,7 @@ import {
   validateAgyModel,
   selectAgyReply,
   checkAgyOutputBudget,
+  normalizeAgyEnvelope,
 } from "../../scripts/spatial-benchmark/agy-channel";
 import {
   parseAgyQuota,
@@ -13,6 +14,25 @@ import {
   quotaDrop,
 } from "../../scripts/spatial-benchmark/agy-quota";
 const model = { id: "gemini-3.8-flash-high", effort: "high" };
+it("adapts a draft-check carrier without changing its code, seed or check semantics", () => {
+  const code = 'script({title:"A"});\nsection("x", []);';
+  const normalized = normalizeAgyEnvelope(
+    JSON.stringify({ tool: "check_build", input: { code, seed: 1 } }),
+  );
+  expect(JSON.parse(normalized.text)).toEqual({
+    check_build: { code, seed: 1 },
+  });
+  expect(normalized.normalization).toBe("check_build-tool-envelope");
+  expect(
+    normalizeAgyEnvelope('{"tool":"run_command","input":{"code":"x"}}')
+      .normalization,
+  ).toBe(null);
+  expect(
+    normalizeAgyEnvelope(
+      '{"tool":"check_build","input":{"code":"x"},"extra":true}',
+    ).normalization,
+  ).toBe(null);
+});
 it("preserves completed lower-cap cases while refusing changes to generation inputs", () => {
   const requested = JSON.parse(
     readFileSync(

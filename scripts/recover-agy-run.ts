@@ -16,6 +16,7 @@ import {
 import {
   agyChannel,
   validateAgyModel,
+  normalizeAgyEnvelope,
   checkAgyEvent,
   checkAgyOutputBudget,
   selectAgyReply,
@@ -127,10 +128,12 @@ export async function main(args: string[]) {
   );
   // A raised budget can also recover a completed response that transport 3
   // stopped before the CLI emitted its result envelope.
-  const recovered =
+  const rawRecovered =
     lastResult?.status === "ERROR"
       ? selectAgyReply(lastResult, lastComplete)
       : lastComplete.trim();
+  const normalized = normalizeAgyEnvelope(rawRecovered);
+  const recovered = normalized.text;
   assert(/^[{]/.test(recovered), "No JSON protocol response to recover");
   const audit = (await readFile(join(original, "audit.jsonl"), "utf8"))
     .trim()
@@ -171,6 +174,9 @@ export async function main(args: string[]) {
     thread,
     replayedResponses: replies.length,
     recoveredResponseSha256: hash(recovered),
+    rawRecoveredResponseSha256: hash(rawRecovered),
+    envelopeNormalization: normalized.normalization,
+    unchangedCodeSha256: normalized.codeSha256,
     nativeStreamSha256: hash(await readFile(join(native, "events.jsonl"))),
     maxPriorNativeResponseTokens: maxTokens,
   };
@@ -191,6 +197,9 @@ export async function main(args: string[]) {
       {
         ...record,
         transport: AGY_TRANSPORT_VERSION,
+        modelCalls: null,
+        network:
+          "saved text replay without model calls, then only the original host-authenticated agy conversation; compiler network namespace disabled",
         sourceHashes,
         recovery,
         selectedCases: [c.id],

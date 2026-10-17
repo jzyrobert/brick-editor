@@ -7,7 +7,7 @@ import { json, hash } from "./part-reference";
 import type { TextChannel } from "./session";
 import { ModelBudgetFailure } from "./model-failure";
 
-export const AGY_TRANSPORT_VERSION = "agy-native-cli/4";
+export const AGY_TRANSPORT_VERSION = "agy-native-cli/5";
 export const AGY_SYSTEM_PROMPT =
   "You are a helpful assistant participating in a text-only JSON protocol. Return exactly one JSON object as ordinary response text. Never invoke native tools or functions. parts_search, part_info, check_build and brick.build are JSON messages handled by the external caller, not native function calls.";
 export type AgyModel = { id: string; effort: string };
@@ -83,6 +83,27 @@ export function checkAgyOutputBudget(tokens: number | undefined, max: number) {
     throw new ModelBudgetFailure(
       `Native model response used ${tokens} output tokens, exceeding the declared ${max}; agy exposes no server cap`,
     );
+}
+/** An observed agy response uses its tool/input envelope for a draft check.
+ * Adapt only this unambiguous carrier; preserve the code and seed verbatim.
+ * The host still validates and counts the normal check_build request. */
+export function normalizeAgyEnvelope(text: string) {
+  try {
+    const value = JSON.parse(text);
+    if (
+      Object.keys(value).sort().join(",") === "input,tool" &&
+      value.tool === "check_build" &&
+      typeof value.input?.code === "string"
+    )
+      return {
+        text: json({ check_build: value.input }),
+        normalization: "check_build-tool-envelope",
+        codeSha256: hash(value.input.code),
+      };
+  } catch {
+    /* Ordinary malformed text goes to the unchanged repair protocol. */
+  }
+  return { text, normalization: null, codeSha256: undefined };
 }
 export function checkAgyEvent(e: AgyEvent, model: AgyModel) {
   if (
@@ -219,6 +240,8 @@ export async function agyChannel(options: {
   let nativeResponseSha256 = "";
   let nativeRecoveredError: string | null = null;
   let resultConversationId: string | undefined;
+  let nativeNormalization: string | null = null;
+  let selectedReplySha256 = "";
   let maxNativeResponseTokens = 0;
   const nativeMetrics: unknown[] = [];
   let pending:
@@ -289,7 +312,11 @@ export async function agyChannel(options: {
       if (options.thread && result?.conversation_id !== options.thread)
         throw new Error("agy changed the resumed conversation ID");
       resultConversationId = result?.conversation_id;
-      const text = selectAgyReply(result, lastCompleted);
+      const selected = selectAgyReply(result, lastCompleted);
+      selectedReplySha256 = hash(selected);
+      const normalized = normalizeAgyEnvelope(selected);
+      const text = normalized.text;
+      nativeNormalization = normalized.normalization;
       nativeRecoveredError = result?.status === "ERROR" ? result.error! : null;
       nativeMetrics.push({
         turn,
@@ -361,6 +388,8 @@ export async function agyChannel(options: {
           maxNativeResponseTokens,
           nativeRecoveredError,
           conversationId: resultConversationId,
+          selectedReplySha256,
+          nativeNormalization,
         }) + "\n",
       );
       return text;

@@ -77,6 +77,13 @@ unchanged to the normal bounded protocol-repair loop; the adapter does not
 rewrite it into a valid request or alter the build source. Unrelated errors,
 unknown routes, native tools and incomplete JSON are still rejected.
 
+Transport 5 additionally adapts the observed
+`{"tool":"check_build","input":{"code":"…","seed":1}}` carrier to
+`{"check_build":{"code":"…","seed":1}}`. It changes only the envelope;
+the JavaScript and seed remain identical, the host validates the payload, and
+the request consumes the usual draft-check budget. Original and normalized
+response hashes are retained. Other payload formats still use ordinary repair.
+
 ## Quota and stopping
 
 `agy -p /usage` reads account quota without a model call. Each case records it

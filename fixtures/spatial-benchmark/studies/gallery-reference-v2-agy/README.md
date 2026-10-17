@@ -63,6 +63,14 @@ or a controlled comparison across transports.
   recognizes these two observed diagnostic forms. The original JSON is passed
   unchanged to the normal protocol-repair loop rather than corrected by the
   host. Native-tool, unknown-route and unrelated-error guards remain in place.
+- Transport 5 adapts the observed `tool: check_build` / `input` carrier to the
+  host's `check_build` field, preserving its code and seed exactly. The host
+  still validates and counts each check; no geometry or final source is edited.
+  Early generic `modelCalls: 0` / replay-network preflight fields describe the
+  shared model-free preflight, not the later native generation calls. Case
+  audits, native usage metadata and transport settings record the actual runs;
+  later preflights mark the provider call count unknown because CLI housekeeping
+  and internal retries are not fully observable.
 
 ## Quota policy
 

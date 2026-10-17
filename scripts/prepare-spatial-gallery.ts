@@ -266,7 +266,7 @@ export async function main(argv: string[]) {
   }
   const description =
     generation.description +
-    ` Gemini 3.8 Flash/high and Gemini 4 Argon/high were run through native agy on 17 October 2026: ${prepared.length} accepted builds from ${outcomes.length} completed cases. Inputs are fresh and render-blind; the native CLI cannot set a server output-token cap, so reported per-turn output is checked after completion. Failures remain archived.`;
+    ` Gemini 3.8 Flash/high and Gemini 4 Argon/high were run through native agy on 17 October 2026: ${prepared.length} accepted builds from ${outcomes.length} completed cases. Starting inputs are fresh and render-blind. The native-high profile uses a 128K host response guard because the CLI cannot set the earlier 32K server cap; the original Flash pilot keeps its 32K record. Transport recoveries remain in their own conversations, preserve source and assistance budgets, and are labelled in the archived runs. Failures remain archived.`;
   generation.description = description;
   index.generated = new Date(now * 1000).toISOString().replace(/\.000Z$/, "Z");
   index.builds.sort(
