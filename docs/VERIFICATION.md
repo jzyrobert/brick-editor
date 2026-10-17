@@ -1,5 +1,16 @@
 # Verification — 27 September 2026
 
+## Prompt assistance limits — 17 October 2026
+
+Type checking, 53 focused transport/gallery/live-runner tests and 20 session
+integration tests pass. Regression cases exercise more than eight inspections,
+nine IDs in one inspection, more than sixteen turns, reference volume beyond
+the historical cap, the ten-reply search allowance and an eleventh-search notice.
+A separate replay test preserves the old batch-size denial before changing the
+contract at a resumed request. The existing strict benchmark-budget cases still
+pass. Argon's actual thirteen saved requests were verified before its original
+native conversation received new feedback; no earlier model request was repeated.
+
 ## Antigravity transport and Windows compiler — 17 October 2026
 
 The WSL model-free compiler probe passes all six gallery cases. The seventeen

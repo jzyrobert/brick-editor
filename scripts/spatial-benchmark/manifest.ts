@@ -75,6 +75,9 @@ export type Manifest = {
   repetitions: number;
   order: "interleaved" | "randomised";
   budgets: Budgets;
+  /** Gallery assistance follows the limits in the filled prompt. Historical
+   * benchmark manifests retain their explicitly configured budget contract. */
+  assistanceLimits?: "prompt";
   infrastructureRetries: 0;
   evaluator: { version: string; views: string[]; protocol: string };
   tasks: Task[];
@@ -124,7 +127,13 @@ export function validateManifest(input: unknown): Manifest {
       "conditions",
     ],
     "manifest",
+    ["assistanceLimits"],
   );
+  if (
+    input.assistanceLimits !== undefined &&
+    input.assistanceLimits !== "prompt"
+  )
+    throw new Error("Invalid assistance limits contract");
   if (
     input.version !== MANIFEST_VERSION ||
     input.language !== "build-script-v1/brick.build-v1" ||
@@ -187,6 +196,15 @@ export function validateManifest(input: unknown): Manifest {
       throw new Error(`Invalid budget ${k}`);
   if (Number(input.budgets.turns) > 1000 || Number(input.repetitions) > 1000)
     throw new Error("Schedule exceeds preflight cap");
+  if (
+    input.assistanceLimits === "prompt" &&
+    (input.budgets.searchCalls !== 50 ||
+      input.budgets.checks !== 3 ||
+      input.budgets.repairs !== 2)
+  )
+    throw new Error(
+      "Prompt assistance requires ten five-query replies, three checks and two repairs",
+    );
   object(input.evaluator, ["version", "views", "protocol"], "evaluator");
   if (
     !string(input.evaluator.version) ||

@@ -80,7 +80,10 @@ export async function preflight(m: Manifest, out: string) {
     case: c,
   }));
   for (const input of inputs)
-    if (Buffer.byteLength(input.prompt) > m.budgets.referenceBytes)
+    if (
+      m.assistanceLimits !== "prompt" &&
+      Buffer.byteLength(input.prompt) > m.budgets.referenceBytes
+    )
       throw new Error(`Initial reference budget exceeded: ${input.caseId}`);
   await mkdir(join(out, "host-sources"));
   const hashes: Record<string, string> = {};

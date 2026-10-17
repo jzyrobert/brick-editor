@@ -26,6 +26,16 @@ and repairs enter its conversation. No sources from other builds, images or
 render feedback are provided. The six filled initial prompts are unchanged
 from the earlier corrected-reference gallery cohort.
 
+The Gemini manifests now select `assistanceLimits: "prompt"`. The runner allows
+ten search replies of at most five queries each, three draft checks and two
+repairs. Search queries and search replies are counted separately; an eleventh
+search reply receives a notice without a search result. The prompt gives no
+part-inspection call or batch-size allowance, so this profile imposes neither.
+It records inspection calls, total turns and reference bytes without using the
+historical eight-call, sixteen-turn or reference-volume caps to stop generation.
+The agreed time, output and compiler resource protections remain. Historical
+benchmark manifests without this option retain their original budget contract.
+
 The custom `brick-blind` main agent uses a protocol-only system prompt and
 requests empty tool/skill/plugin/MCP lists. A deny-all `PreToolUse` hook and streamed-event
 checks provide additional protection: any native tool or subagent attempt
@@ -167,6 +177,15 @@ raised; model, prompt, task and assistance changes are refused.
 Replay recompiles saved drafts and measures their compiler time again; its
 reported compiler milliseconds are replay measurements. Cumulative active
 seconds retain the original phase as well as the continuation.
+
+For the original Argon dragon stopped by the undisclosed inspection allowance,
+append `--prompt-limits` to the recovery command. This accepts only that exact
+host-budget failure, verifies all saved requests and completed native responses,
+and replays historical turns under their original limits. The new limits take
+effect at the pending request. Earlier host denials remain unchanged in the
+conversation; the pending inspection is answered without repeating its model
+call. Checks, repairs, active time and quota already spent are retained. Keep
+the original failure and every recovery attempt in separate directories.
 
 ## Freeze, render and publish
 
