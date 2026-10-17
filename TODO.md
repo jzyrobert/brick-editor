@@ -32,6 +32,7 @@ The CI and development VM measure SwiftShader triangles, draws, heap and CPU tim
 
 ## Spatial benchmark research
 
+- [ ] Decide whether generation prompts should state the per-reply output-token budget; the v2 cap is not announced, and Haiku spent it reasoning twice on the temple before an uncapped rerun succeeded.
 - [ ] Give Claude runs a payload-level broker like the Codex one if host-managed authentication allows it; the [Claude v2 cohort](fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md) uses the native CLI with a neutral system prompt, so Claude Code's internal retries and housekeeping calls remain outside the channel.
 - [ ] Measure isolated compiler heap requirements and declare memory/resource exhaustion semantics explicitly before the next gallery-scale benchmark. The v2 gallery Astra Star Destroyer exhausted 384 MiB; identical-source post-run compilation at 1024 MiB exposed 14 overlap errors. Preserve this failed outcome; do not silently raise budgets or repair evaluated candidates. [Evidence](fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
 

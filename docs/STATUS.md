@@ -1,5 +1,9 @@
 # Implementation status
 
+## Final-answer notice and last two Claude builds — 17 October 2026
+
+A check requested beyond the budget now gets one final-answer notice instead of ending the run; `GenerationSession.run` and the Claude runner (`--continue-from`) can continue a frozen case in its own native session. Haiku's temple, rerun with the unannounced 32,768-token output cap raised to 128,000, and Opus's pelican, continued with the notice, were both accepted and published, so all 24 Claude briefs have a build (124 gallery builds). [Runs](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md#uncapped-haiku-temple-and-continued-opus-pelican--17-october-2026).
+
 ## Claude v2 retry — 16 October 2026
 
 Retried the three failed Claude v2 cases once at the owner's request, with unchanged inputs. Opus's Ewok was accepted and published (122 gallery builds); Haiku's temple (output budget) and Opus's pelican (checks budget) failed again and stay unpublished. [Retry record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md#retry-of-failed-cases--16-october-2026).

@@ -1,5 +1,9 @@
 # Verification — 27 September 2026
 
+## Final-answer notice and continuation — 17 October 2026
+
+Type checking and formatting pass. The spatial-benchmark integration suite passes 16 tests, including the new final-notice and continuation cases; the four spatial-codex tests need the pinned Codex binary CI installs and fail identically on unmodified `main` locally. The continued Opus pelican resumed native session `324257f3…` with one new message. Both new builds recompiled to their frozen hashes; their twelve public files return 200; the live index has 124 unique builds with the 122 earlier entries unchanged and Fresh E the default. [Runs](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md#uncapped-haiku-temple-and-continued-opus-pelican--17-october-2026).
+
 ## Claude v2 retry publication — 16 October 2026
 
 Retry preflights match the original Haiku and Opus inputs, manifests and compiler bundle. The accepted Opus Ewok recompiled to its frozen MPD hash (`d54ddfd013de`); its three renders, MPD, script and report return 200. The live index has 122 unique builds, the 121 earlier entries match the pre-publication snapshot, and Fresh E remains the default.

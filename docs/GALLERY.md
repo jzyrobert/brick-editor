@@ -2,7 +2,7 @@
 
 The **E · corrected part references** cohort adds 17 fresh builds from Luna/high, Sol 6.1/high and Astra/medium using opt-in v2 generation references (14 October 2026). Select it under **Prompt generation**. The previous 83 entries and Fresh E default are preserved. One of 18 scheduled outputs failed and remains archived rather than repaired or replaced. [Sources, outcomes and publication checks](../fixtures/spatial-benchmark/studies/gallery-reference-v2/README.md).
 
-The same generation now also holds 22 Claude builds (16 October 2026): Haiku 5.5, Sonnet 5.5 and Opus 5.5 at high effort and Fable 5.1 at medium, with the same manifests through a native Claude CLI channel. Three of 24 cases failed; a single owner-requested retry of each recovered Opus’s Ewok, and the other two remain archived. The gallery has 122 entries; Fresh E is still the default. [Claude runs, transport notes and outcomes](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md).
+The same generation now also holds 24 Claude builds (16–17 October 2026): Haiku 5.5, Sonnet 5.5 and Opus 5.5 at high effort and Fable 5.1 at medium, with the same manifests through a native Claude CLI channel. Three of 24 cases failed at first; at the owner’s request Opus’s Ewok was retried, Haiku’s temple rerun without the output cap and Opus’s pelican continued with a final-answer notice, and the failed attempts remain archived. The gallery has 124 entries; Fresh E is still the default. [Claude runs, transport notes and outcomes](../fixtures/spatial-benchmark/studies/gallery-reference-v2-claude/README.md).
 
 Gallery and Play are the primary modes. The cream workshop shell gives model
 images most of the browsing space; Build, Instructions, Photo and Project are
