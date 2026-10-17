@@ -13,8 +13,11 @@ pilot retains its 32K record.
 
 All nine frozen MPDs reproduce exactly and all 27 final views rendered. The
 reviewed additive bundle contains 133 entries, preserving the prior 124 and
-Fresh E default. Main-only publication is prepared using a separate gallery
-token stored in GitHub Actions. Final generation quota was 27% Argon weekly,
+Fresh E default. The [main-only publishing workflow](https://github.com/jzyrobert/brick-editor/actions/runs/39011770268)
+published all 54 new assets using a separate gallery token stored in GitHub
+Actions. Public index equality and every asset's byte count and SHA-256 were
+verified; the [receipt](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/publication-receipt.json)
+records the result. Final generation quota was 27% Argon weekly,
 97% Gemini weekly and 91% Gemini five-hour. [Procedure](AGY-GENERATION.md) and
 [run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md).
 

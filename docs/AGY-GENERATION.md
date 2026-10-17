@@ -200,5 +200,9 @@ Enter it directly in GitHub's secrets settings, never in prompts, source or
 ordinary tool output. Main validation and the publishing workflow remain
 required; this procedure does not deploy the app by hand.
 
+The checked-in publication is frozen against its recorded baseline. A later
+batch needs a fresh reviewed bundle path and workflow selection; reapplying this
+bundle after publication is refused by the live-baseline check.
+
 See [the run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/README.md)
 for actual outcomes, transport revisions and publication status.

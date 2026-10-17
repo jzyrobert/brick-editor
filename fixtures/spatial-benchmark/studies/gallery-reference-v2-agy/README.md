@@ -128,7 +128,7 @@ Targets remain advisory. Accepted means the compiler returned no errors; constru
 
 Final observed quota at 2026-10-17T06:25:35.524Z: **97% Gemini weekly, 91% Gemini five-hour and 27% Argon weekly**. The next-run estimate uses each model's largest full-build quota drop, including original plus continuation phases, with a five-point reserve. Rounded counters are estimates; no credits were purchased.
 
-The additive publication bundle contains **9 new builds** and 133 total entries, preserving all 124 existing entries and the Fresh E default. Every accepted frozen source recompiles to its recorded MPD hash. The three standard Realistic views per build are final-only; no visual feedback or manual source repair enters generation. The bundle is ready for the main-only [gallery publishing workflow](https://github.com/jzyrobert/brick-editor/actions/workflows/gallery.yml), after all main validation passes.
+Published **9 new builds**, bringing the gallery to **133 entries**. All 124 earlier builds and the Fresh E default are unchanged. The [main-only publishing workflow](https://github.com/jzyrobert/brick-editor/actions/runs/39011770268) passed, including exact D1/index equality. Public verification fetched all 54 new assets and matched their byte counts and SHA-256 hashes. See [the publication receipt](publication-receipt.json). Final-only renders were inspected; no visual feedback or manual source repairs entered generation.
 
 Cloudflare MCP and local Wrangler were unauthenticated. The owner entered a separate gallery-scoped token directly into GitHub Actions as `CLOUDFLARE_GALLERY_API_TOKEN`; no token value passed through chat, source, generation directories or the public archive.
 
