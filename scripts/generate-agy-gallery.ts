@@ -15,8 +15,30 @@ import {
   type AgyQuota,
 } from "./spatial-benchmark/agy-quota";
 import { hash, json } from "./spatial-benchmark/part-reference";
+import { validateManifest } from "./spatial-benchmark/manifest";
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const read = async (file: string) => JSON.parse(await readFile(file, "utf8"));
+export function sameCompletedAgyManifest(actual: unknown, requested: unknown) {
+  const a = validateManifest(actual),
+    b = validateManifest(requested);
+  // The native CLI never received this unenforceable server-cap setting.
+  // Retain completed lower-budget cases when only that host guard is raised.
+  return (
+    a.budgets.maxOutputTokens <= b.budgets.maxOutputTokens &&
+    a.budgets.totalMs <= b.budgets.totalMs &&
+    isDeepStrictEqual(
+      {
+        ...a,
+        budgets: {
+          ...a.budgets,
+          maxOutputTokens: b.budgets.maxOutputTokens,
+          totalMs: b.budgets.totalMs,
+        },
+      },
+      b,
+    )
+  );
+}
 export async function main(argv: string[]) {
   const flags = new Map<string, string>();
   for (let i = 0; i < argv.length; i += 2) {
@@ -86,7 +108,10 @@ export async function main(argv: string[]) {
         if (
           results.completed !== 1 ||
           results.results[0]?.caseId !== caseId ||
-          !isDeepStrictEqual(await read(join(dir, "manifest.json")), manifest)
+          !sameCompletedAgyManifest(
+            await read(join(dir, "manifest.json")),
+            manifest,
+          )
         )
           throw new Error(`Existing case is incomplete or differs: ${dir}`);
       } else {

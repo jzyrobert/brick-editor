@@ -36,7 +36,12 @@ are retained locally and excluded from the published archive.
 
 The CLI cannot configure a server output-token cap. The adapter checks the
 reported output usage for each completed native model response and rejects a response exceeding
-the manifest's 32,768-token limit. This cannot prevent an over-budget provider
+the manifest's limit. The native-high profile now uses a 128,000-token host
+guard: the CLI cannot apply the older 32,768-token server cap, and native high
+thinking exceeded it in the transport trials. The first Flash pilot and
+earlier interrupted cases retain their original 32K records. Raising this host
+guard does not change the native model request or enable paid credits.
+This cannot prevent an over-budget provider
 call; it is an explicit difference from transports with a server cap. The CLI's
 own internal error handling and housekeeping calls are also outside the
 adapter's control. No API keys are copied into generation directories.
@@ -62,8 +67,15 @@ recovered. The original error and response hashes remain in the run metadata;
 normal compiler, search, check and repair limits still apply. Other errors
 and partial/nonprotocol text are rejected. Token limits are checked on every
 native model response, including internal retries, before recovery. A response
-over 32,768 tokens is a model-budget failure; totals across several internal
+over its declared manifest limit is a model-budget failure; totals across several internal
 calls are recorded separately rather than mistaken for one response.
+
+Transport 4 also recognizes the observed version of that same parser error
+which omits its detailed cause. Both complete diagnostic forms are matched
+exactly. A malformed payload referring to a declared route is delivered
+unchanged to the normal bounded protocol-repair loop; the adapter does not
+rewrite it into a valid request or alter the build source. Unrelated errors,
+unknown routes, native tools and incomplete JSON are still rejected.
 
 ## Quota and stopping
 
@@ -91,6 +103,24 @@ npx tsx scripts/spatial-benchmark-live-agy.ts --manifest fixtures/spatial-benchm
 
 Retain failures. A transport correction or deliberately changed retry must
 have a separate fresh directory and an explicit record of the prior outcome.
+
+An interrupted known empty-function/native-cap case can be continued in its
+original conversation, with no source edits or new design prompt:
+
+```sh
+npx tsx scripts/recover-agy-run.ts --from ARCHIVED_RUN --out FRESH_RUN --output-budget 128000
+```
+
+Recovery verifies all frozen hashes and the original compiler bundle, replays
+saved responses through the same host protocol, and checks that every replayed
+request is byte-identical to the original. It then delivers the lost completed
+native response. Only subsequent ordinary compiler/search feedback can resume
+that case's own CLI conversation. Replaying makes no model calls. The original
+active time is subtracted from the remaining time budget; searches, checks,
+repairs and turns are reconstructed by replay rather than reset. The earlier
+outcome remains archived and the recovery is labelled explicitly. Completed
+lower-cap records remain reusable when only this unenforceable host guard is
+raised; model, prompt, task and assistance changes are refused.
 
 ## Freeze, render and publish
 

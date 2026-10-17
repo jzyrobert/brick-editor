@@ -48,6 +48,21 @@ or a controlled comparison across transports.
   as soon as its usage arrives. For a response within budget, only the exact
   known empty-function artifact and a complete declared-protocol JSON object
   can be recovered. Other native errors and every tool attempt remain fatal.
+- Flash's transport-2 Piplup also hit the empty-function error, with a
+  40,554-token native response. Argon's transport-3 Piplup stopped at the old
+  guard with a 45,146-token response. All these records remain unchanged.
+  The native-high profile was then adapted to a 128,000-token host guard,
+  because `agy` cannot configure the former 32K server limit. This does not
+  change the native request, the filled prompts or the other assistance
+  budgets, and does not purchase credits. Flash and Argon both passed a
+  same-conversation resume smoke test. Recoveries replay saved responses with
+  exact request/compiler checks before continuing only the original model
+  conversation; the time already spent is retained.
+- Flash's temple returned the same function-parser error without its detailed
+  cause, followed by a complete JSON wrapper for `check_build`. Transport 4
+  recognizes these two observed diagnostic forms. The original JSON is passed
+  unchanged to the normal protocol-repair loop rather than corrected by the
+  host. Native-tool, unknown-route and unrelated-error guards remain in place.
 
 ## Quota policy
 

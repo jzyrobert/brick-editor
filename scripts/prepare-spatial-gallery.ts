@@ -125,6 +125,13 @@ export async function main(argv: string[]) {
       });
       const native = join(root, run.caseId + "--transport");
       let output = 0;
+      try {
+        output =
+          (await read(join(native, "inherited-usage.json")))
+            .cumulativeOutputTokens ?? 0;
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+      }
       for (const f of (await readdir(native)).filter((f) =>
         /^turn-\d+\.result\.json$/.test(f),
       ))

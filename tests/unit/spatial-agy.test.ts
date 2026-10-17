@@ -1,4 +1,6 @@
 import { expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { sameCompletedAgyManifest } from "../../scripts/generate-agy-gallery";
 import {
   checkAgyEvent,
   validateAgyModel,
@@ -11,6 +13,20 @@ import {
   quotaDrop,
 } from "../../scripts/spatial-benchmark/agy-quota";
 const model = { id: "gemini-3.8-flash-high", effort: "high" };
+it("preserves completed lower-cap cases while refusing changes to generation inputs", () => {
+  const requested = JSON.parse(
+    readFileSync(
+      "fixtures/spatial-benchmark/studies/gallery-reference-v2-agy/flash.json",
+      "utf8",
+    ),
+  );
+  const completed = structuredClone(requested);
+  completed.budgets.maxOutputTokens = 32768;
+  completed.budgets.totalMs -= 1000;
+  expect(sameCompletedAgyManifest(completed, requested)).toBe(true);
+  completed.tasks[0].brief += " changed";
+  expect(sameCompletedAgyManifest(completed, requested)).toBe(false);
+});
 const emptyFunctionError =
   "Your previous response contained an improperly formatted function call: Malformed function call: Failed to parse function call: Function call is empty - no input to parse.\nPlease retry with a properly formatted function call\nRetries remaining: 3";
 it("recovers only the exact empty-function artifact with a complete protocol object", () => {
@@ -20,6 +36,24 @@ it("recovers only the exact empty-function artifact with a complete protocol obj
     response: '{"parts_search":[]}',
   };
   expect(selectAgyReply(r, r.response)).toBe(r.response);
+  const malformedDeclaredRequest =
+    '{"tool":"check_build","input":{"code":"x"}}';
+  expect(
+    selectAgyReply(
+      { ...r, response: malformedDeclaredRequest },
+      malformedDeclaredRequest,
+    ),
+  ).toBe(malformedDeclaredRequest);
+  expect(
+    selectAgyReply(
+      {
+        ...r,
+        error:
+          "Your previous response contained an improperly formatted function call\nPlease retry with a properly formatted function call\nRetries remaining: 3",
+      },
+      r.response,
+    ),
+  ).toBe(r.response);
   expect(() => selectAgyReply(r, "partial JSON {")).toThrow();
   expect(() =>
     selectAgyReply(r, '{"tool":"run_command","input":{}}'),

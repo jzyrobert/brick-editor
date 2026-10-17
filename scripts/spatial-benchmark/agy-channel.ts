@@ -1,13 +1,13 @@
 import { spawn, execFileSync } from "node:child_process";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, writeFile, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve, basename, sep } from "node:path";
 import { createInterface } from "node:readline";
 import { json, hash } from "./part-reference";
 import type { TextChannel } from "./session";
 import { ModelBudgetFailure } from "./model-failure";
 
-export const AGY_TRANSPORT_VERSION = "agy-native-cli/3";
+export const AGY_TRANSPORT_VERSION = "agy-native-cli/4";
 export const AGY_SYSTEM_PROMPT =
   "You are a helpful assistant participating in a text-only JSON protocol. Return exactly one JSON object as ordinary response text. Never invoke native tools or functions. parts_search, part_info, check_build and brick.build are JSON messages handled by the external caller, not native function calls.";
 export type AgyModel = { id: string; effort: string };
@@ -23,6 +23,7 @@ export function validateAgyModel(model: AgyModel) {
 }
 export type AgyEvent = {
   event: string;
+  conversation_id?: string;
   init?: { model?: string; agent?: string; tools?: string[] };
   step_update?: {
     step_index?: number;
@@ -42,7 +43,7 @@ export type AgyEvent = {
   };
 };
 export const EMPTY_FUNCTION_ERROR =
-  /^Your previous response contained an improperly formatted function call: Malformed function call: Failed to parse function call: Function call is empty - no input to parse\.\r?\nPlease retry with a properly formatted function call\r?\nRetries remaining: \d+$/;
+  /^Your previous response contained an improperly formatted function call(?:: Malformed function call: Failed to parse function call: Function call is empty - no input to parse\.)?\r?\nPlease retry with a properly formatted function call\r?\nRetries remaining: \d+$/;
 function protocolObject(text: string) {
   try {
     const v = JSON.parse(text);
@@ -51,8 +52,9 @@ function protocolObject(text: string) {
     return (
       ["parts_search", "part_info", "check_build"].includes(keys) ||
       (keys === "input,tool" &&
-        v.tool === "brick.build" &&
-        typeof v.input?.code === "string")
+        ["brick.build", "check_build", "parts_search", "part_info"].includes(
+          v.tool,
+        ))
     );
   } catch {
     return false;
@@ -105,9 +107,38 @@ export function checkAgyEvent(e: AgyEvent, model: AgyModel) {
  * The CLI cannot set a server output-token cap: check reported usage on each
  * native response, record that limitation, and reject over-budget responses.
  */
-export async function agyChannel(options: { dir: string; model: AgyModel }) {
+export async function agyChannel(options: {
+  dir: string;
+  model: AgyModel;
+  thread?: string;
+  generationDir?: string;
+}) {
   const model = validateAgyModel(options.model);
-  const generationDir = await mkdtemp(join(tmpdir(), "brick-agy-"));
+  if (!!options.thread !== !!options.generationDir)
+    throw new Error(
+      "Resuming requires both conversation ID and its original generation directory",
+    );
+  if (options.thread && !/^[a-f0-9-]{36}$/.test(options.thread))
+    throw new Error("Invalid native conversation ID");
+  const generationDir = options.generationDir
+    ? resolve(options.generationDir)
+    : await mkdtemp(join(tmpdir(), "brick-agy-"));
+  if (options.generationDir) {
+    if (
+      !generationDir
+        .toLowerCase()
+        .startsWith((resolve(tmpdir()) + sep).toLowerCase()) ||
+      !basename(generationDir).startsWith("brick-agy-")
+    )
+      throw new Error("Resume directory is not an isolated agy temporary root");
+    const contents = await readdir(generationDir);
+    if (
+      !contents.includes(".git") ||
+      !contents.includes(".agents") ||
+      contents.some((n) => ![".git", ".agents"].includes(n))
+    )
+      throw new Error("Resume directory contains unexpected files");
+  }
   await mkdir(join(generationDir, ".agents", "agents"), { recursive: true });
   execFileSync("git", ["init", "-q", generationDir]);
   await writeFile(
@@ -139,6 +170,7 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
   );
   await mkdir(options.dir, { recursive: true });
   const args = [
+    ...(options.thread ? ["--conversation", options.thread] : []),
     "--agent",
     "brick-blind",
     "--model",
@@ -164,6 +196,7 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
       model,
       args,
       generationDir,
+      resumedThread: options.thread ?? null,
       nativeTools: "advertised by CLI; deny-all hook; attempted use fails case",
       serverOutputTokenCap:
         "not exposed by agy; checked against reported per-response usage",
@@ -185,6 +218,7 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
   let lastCompleted: string | undefined;
   let nativeResponseSha256 = "";
   let nativeRecoveredError: string | null = null;
+  let resultConversationId: string | undefined;
   let maxNativeResponseTokens = 0;
   const nativeMetrics: unknown[] = [];
   let pending:
@@ -244,12 +278,17 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
         if (step.state === "DONE" && text.trim()) lastCompleted = text;
       }
       if (e.event === "init") {
+        if (options.thread && e.conversation_id !== options.thread)
+          throw new Error("agy resumed a different native conversation");
         initialized = true;
         initResolve();
       }
       if (e.event !== "result") return;
       if (!pending) throw new Error("Unsolicited native result");
       const result = e.result;
+      if (options.thread && result?.conversation_id !== options.thread)
+        throw new Error("agy changed the resumed conversation ID");
+      resultConversationId = result?.conversation_id;
       const text = selectAgyReply(result, lastCompleted);
       nativeRecoveredError = result?.status === "ERROR" ? result.error! : null;
       nativeMetrics.push({
@@ -321,6 +360,7 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
           nativeAssistantResponses: responseSteps.size,
           maxNativeResponseTokens,
           nativeRecoveredError,
+          conversationId: resultConversationId,
         }) + "\n",
       );
       return text;
