@@ -157,6 +157,11 @@ export async function main(argv: string[]) {
           referenceCoverage: run.referenceCoverage,
           frozenFiles: run.files,
           serverOutputTokenCap: preflight.serverOutputTokenCap,
+          hostOutputTokenGuard: manifest.budgets.maxOutputTokens,
+          originalOutputTokenGuard:
+            preflight.recovery?.outputBudget?.before ??
+            manifest.budgets.maxOutputTokens,
+          continuedFromFrozenOutcome: Boolean(preflight.recovery),
         },
       };
       await writeFile(

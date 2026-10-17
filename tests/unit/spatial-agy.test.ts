@@ -53,6 +53,17 @@ it("preserves completed lower-cap cases while refusing changes to generation inp
 });
 const emptyFunctionError =
   "Your previous response contained an improperly formatted function call: Malformed function call: Failed to parse function call: Function call is empty - no input to parse.\nPlease retry with a properly formatted function call\nRetries remaining: 3";
+it("passes concatenated complete protocol responses unchanged to bounded host repair", () => {
+  const text =
+    '{"check_build":{"code":"brace } and \\\"quote"}}\n{"tool":"brick.build","input":{"code":"x"}}';
+  const result = { status: "ERROR", error: emptyFunctionError, response: text };
+  expect(selectAgyReply(result, text)).toBe(text);
+  expect(() => selectAgyReply(result, text + '{"check_build":')).toThrow();
+  expect(() =>
+    selectAgyReply(result, text + '{"tool":"run_command","input":{}}'),
+  ).toThrow();
+  expect(() => selectAgyReply(result, text + " prose")).toThrow();
+});
 it("recovers only the exact empty-function artifact with a complete protocol object", () => {
   const r = {
     status: "ERROR",

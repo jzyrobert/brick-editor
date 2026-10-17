@@ -84,6 +84,14 @@ the JavaScript and seed remain identical, the host validates the payload, and
 the request consumes the usual draft-check budget. Original and normalized
 response hashes are retained. Other payload formats still use ordinary repair.
 
+Transport 6 handles a further observed native retry artifact: multiple complete
+declared-protocol JSON objects can be concatenated inside one assistant step.
+For the same two exact parser diagnostics, the adapter delivers that entire
+text unchanged to the host's bounded JSON-repair loop. It never selects one
+object, merges objects or changes source. Every object must be complete and
+on a declared route; unknown routes, partial JSON and surrounding prose are
+rejected. The ordinary turn, check, repair and time limits remain in force.
+
 ## Quota and stopping
 
 `agy -p /usage` reads account quota without a model call. Each case records it

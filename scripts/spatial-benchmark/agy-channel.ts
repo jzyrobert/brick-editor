@@ -7,7 +7,7 @@ import { json, hash } from "./part-reference";
 import type { TextChannel } from "./session";
 import { ModelBudgetFailure } from "./model-failure";
 
-export const AGY_TRANSPORT_VERSION = "agy-native-cli/5";
+export const AGY_TRANSPORT_VERSION = "agy-native-cli/6";
 export const AGY_SYSTEM_PROMPT =
   "You are a helpful assistant participating in a text-only JSON protocol. Return exactly one JSON object as ordinary response text. Never invoke native tools or functions. parts_search, part_info, check_build and brick.build are JSON messages handled by the external caller, not native function calls.";
 export type AgyModel = { id: string; effort: string };
@@ -60,15 +60,48 @@ function protocolObject(text: string) {
     return false;
   }
 }
+/** A native parser retry can concatenate complete protocol objects inside one
+ * assistant step. Preserve the entire text for the host's bounded JSON repair;
+ * never select, merge or execute any of those objects here. */
+function completeProtocolResponses(text: string) {
+  let cursor = 0,
+    count = 0;
+  while (cursor < text.length) {
+    while (/\s/.test(text[cursor] ?? "") && cursor < text.length) cursor++;
+    if (cursor === text.length) break;
+    if (text[cursor] !== "{") return false;
+    const start = cursor;
+    let depth = 0,
+      quoted = false,
+      escaped = false;
+    for (; cursor < text.length; cursor++) {
+      const c = text[cursor];
+      if (quoted) {
+        if (escaped) escaped = false;
+        else if (c === "\\") escaped = true;
+        else if (c === '"') quoted = false;
+      } else if (c === '"') quoted = true;
+      else if (c === "{") depth++;
+      else if (c === "}" && --depth === 0) {
+        cursor++;
+        break;
+      }
+    }
+    if (quoted || depth !== 0 || !protocolObject(text.slice(start, cursor)))
+      return false;
+    count++;
+  }
+  return count > 0;
+}
 /** The CLI can report its empty-function parsing artifact after a complete
- * text response. Recover only that exact diagnostic with valid protocol JSON.
+ * text response. Recover only that exact diagnostic with complete protocol JSON.
  * Every tool attempt and per-provider-response token budget is checked first. */
 export function selectAgyReply(result: AgyEvent["result"], completed?: string) {
   const recover =
     result?.status === "ERROR" &&
     EMPTY_FUNCTION_ERROR.test(result.error ?? "") &&
     typeof completed === "string" &&
-    protocolObject(completed);
+    completeProtocolResponses(completed);
   if (
     (!recover && result?.status !== "SUCCESS") ||
     typeof result?.response !== "string"

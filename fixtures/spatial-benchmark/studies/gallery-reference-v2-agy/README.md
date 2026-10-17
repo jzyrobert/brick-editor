@@ -74,6 +74,13 @@ or a controlled comparison across transports.
 
 ## Quota policy
 
+Argon's first temple attempt on transport 5 returned two complete protocol
+objects in a single native assistant step after the known parser diagnostic.
+The initial failed outcome is retained. Transport 6 passes the entire text
+unchanged to the normal bounded JSON-repair loop after verifying every object
+is complete and on a declared route. This consumes the original case's repair
+budget when continued; no object is chosen and no source is edited.
+
 Initial quota was 100% Gemini weekly, 100% Gemini five-hour and 100% Argon
 weekly. After the Flash pilot it was 100% / 98% / 100%; after the aborted
 Argon attempt, 100% / 98% / 99%. Subsequent readings are retained per run.
