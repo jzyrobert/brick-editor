@@ -12,6 +12,7 @@ import {
   readAgyQuota,
   quotaGate,
   quotaDrop,
+  observedAgyRunCost,
   type AgyQuota,
 } from "./spatial-benchmark/agy-quota";
 import { hash, json } from "./spatial-benchmark/part-reference";
@@ -187,7 +188,7 @@ export async function main(argv: string[]) {
       }
       largestDrop[model] = Math.max(
         largestDrop[model],
-        quotaDrop(before, after, manifest.model.id),
+        await observedAgyRunCost(dir, manifest.model.id),
       );
       completed.push({
         model,

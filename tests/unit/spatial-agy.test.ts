@@ -1,5 +1,8 @@
 import { expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+import { mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve, sep } from "node:path";
 import { sameCompletedAgyManifest } from "../../scripts/generate-agy-gallery";
 import {
   checkAgyEvent,
@@ -12,6 +15,7 @@ import {
   parseAgyQuota,
   quotaGate,
   quotaDrop,
+  observedAgyRunCost,
 } from "../../scripts/spatial-benchmark/agy-quota";
 const model = { id: "gemini-3.8-flash-high", effort: "high" };
 it("adapts a draft-check carrier without changing its code, seed or check semantics", () => {
@@ -135,6 +139,49 @@ it("pins authorised Gemini models and rejects native tool/subagent events", () =
 });
 const raw = (weekly = 70, five = 60, argon = 40) =>
   `Gemini Models\tWeekly Limit Remaining\t${weekly}%\t2026-10-24T00:00:00Z\nGemini Models\tFive Hour Limit Remaining\t${five}%\t2026-10-17T05:00:00Z\nGemini 4 Argon\tGemini 4 Argon Weekly Limit\t${argon}%\t2026-10-24T00:00:00Z\n`;
+it("includes the original run in continuation cost and refuses cyclic history", async () => {
+  const root = await mkdtemp(join(tmpdir(), "agy-quota-test-"));
+  try {
+    const original = join(root, "original"),
+      continued = join(root, "continued");
+    await mkdir(original);
+    await mkdir(continued);
+    await writeFile(
+      join(original, "quota.json"),
+      JSON.stringify([
+        { phase: "before", ...parseAgyQuota(raw(100, 100, 100)) },
+        { phase: "after", ...parseAgyQuota(raw(100, 100, 90)) },
+      ]),
+    );
+    await writeFile(
+      join(original, "results.json"),
+      JSON.stringify({ results: [{}] }),
+    );
+    await writeFile(
+      join(continued, "quota.json"),
+      JSON.stringify([
+        { phase: "before", ...parseAgyQuota(raw(100, 100, 85)) },
+        { phase: "after", ...parseAgyQuota(raw(100, 100, 83)) },
+      ]),
+    );
+    await writeFile(
+      join(continued, "results.json"),
+      JSON.stringify({ results: [{ recovery: { from: original } }] }),
+    );
+    expect(await observedAgyRunCost(continued, "gemini-4-argon-high")).toBe(12);
+    await writeFile(
+      join(original, "results.json"),
+      JSON.stringify({ results: [{ recovery: { from: continued } }] }),
+    );
+    await expect(
+      observedAgyRunCost(continued, "gemini-4-argon-high"),
+    ).rejects.toThrow("Cyclic");
+  } finally {
+    if (!root.startsWith(resolve(tmpdir()) + sep))
+      throw new Error("Unexpected temporary test path");
+    await rm(root, { recursive: true, force: true });
+  }
+});
 it("measures each quota pool when the limiting counter changes", () => {
   const before = parseAgyQuota(raw(99, 98, 99)),
     after = parseAgyQuota(raw(99, 98, 92));

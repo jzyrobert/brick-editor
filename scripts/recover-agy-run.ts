@@ -27,6 +27,7 @@ import {
   readAgyQuota,
   quotaGate,
   quotaDrop,
+  observedAgyRunCost,
 } from "./spatial-benchmark/agy-quota";
 import { hash, json } from "./spatial-benchmark/part-reference";
 const read = async (file: string) => JSON.parse(await readFile(file, "utf8"));
@@ -179,6 +180,7 @@ export async function main(args: string[]) {
     unchangedCodeSha256: normalized.codeSha256,
     nativeStreamSha256: hash(await readFile(join(native, "events.jsonl"))),
     maxPriorNativeResponseTokens: maxTokens,
+    originalQuotaDrop: await observedAgyRunCost(from, m.model.id),
   };
   const sourceHashes: Record<string, string> = {};
   for (const name of [
