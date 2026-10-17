@@ -7,7 +7,7 @@ import { json, hash } from "./part-reference";
 import type { TextChannel } from "./session";
 import { ModelBudgetFailure } from "./model-failure";
 
-export const AGY_TRANSPORT_VERSION = "agy-native-cli/2";
+export const AGY_TRANSPORT_VERSION = "agy-native-cli/3";
 export const AGY_SYSTEM_PROMPT =
   "You are a helpful assistant participating in a text-only JSON protocol. Return exactly one JSON object as ordinary response text. Never invoke native tools or functions. parts_search, part_info, check_build and brick.build are JSON messages handled by the external caller, not native function calls.";
 export type AgyModel = { id: string; effort: string };
@@ -28,6 +28,7 @@ export type AgyEvent = {
     step_index?: number;
     state?: string;
     text_delta?: string;
+    usage?: { output_tokens?: number };
     step_type?: string;
     tool_name?: string;
     subagent_info?: unknown;
@@ -40,12 +41,46 @@ export type AgyEvent = {
     usage?: { output_tokens?: number; thinking_tokens?: number };
   };
 };
-/** The envelope concatenates internal retry responses. Use the last complete
- * assistant step, and never accept a failed turn even if it has valid JSON. */
+export const EMPTY_FUNCTION_ERROR =
+  /^Your previous response contained an improperly formatted function call: Malformed function call: Failed to parse function call: Function call is empty - no input to parse\.\r?\nPlease retry with a properly formatted function call\r?\nRetries remaining: \d+$/;
+function protocolObject(text: string) {
+  try {
+    const v = JSON.parse(text);
+    if (!v || typeof v !== "object" || Array.isArray(v)) return false;
+    const keys = Object.keys(v).sort().join(",");
+    return (
+      ["parts_search", "part_info", "check_build"].includes(keys) ||
+      (keys === "input,tool" &&
+        v.tool === "brick.build" &&
+        typeof v.input?.code === "string")
+    );
+  } catch {
+    return false;
+  }
+}
+/** The CLI can report its empty-function parsing artifact after a complete
+ * text response. Recover only that exact diagnostic with valid protocol JSON.
+ * Every tool attempt and per-provider-response token budget is checked first. */
 export function selectAgyReply(result: AgyEvent["result"], completed?: string) {
-  if (result?.status !== "SUCCESS" || typeof result.response !== "string")
+  const recover =
+    result?.status === "ERROR" &&
+    EMPTY_FUNCTION_ERROR.test(result.error ?? "") &&
+    typeof completed === "string" &&
+    protocolObject(completed);
+  if (
+    (!recover && result?.status !== "SUCCESS") ||
+    typeof result?.response !== "string"
+  )
     throw new Error(`agy turn failed: ${result?.error ?? result?.status}`);
   return (completed ?? result.response).trim();
+}
+export function checkAgyOutputBudget(tokens: number | undefined, max: number) {
+  if (typeof tokens !== "number" || !Number.isFinite(tokens) || tokens < 0)
+    throw new Error("Missing native per-response token accounting");
+  if (tokens > max)
+    throw new ModelBudgetFailure(
+      `Native model response used ${tokens} output tokens, exceeding the declared ${max}; agy exposes no server cap`,
+    );
 }
 export function checkAgyEvent(e: AgyEvent, model: AgyModel) {
   if (
@@ -67,8 +102,8 @@ export function checkAgyEvent(e: AgyEvent, model: AgyModel) {
  * agy currently advertises tools even for tools:[] on a primary custom agent.
  * A deny-all PreToolUse hook blocks execution; ANY tool attempt invalidates
  * the case. Its advertised tools and all events are retained as host evidence.
- * The CLI cannot set a server output-token cap: enforce reported output usage
- * after each turn, record that limitation, and never accept an over-budget reply.
+ * The CLI cannot set a server output-token cap: check reported usage on each
+ * native response, record that limitation, and reject over-budget responses.
  */
 export async function agyChannel(options: { dir: string; model: AgyModel }) {
   const model = validateAgyModel(options.model);
@@ -131,7 +166,7 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
       generationDir,
       nativeTools: "advertised by CLI; deny-all hook; attempted use fails case",
       serverOutputTokenCap:
-        "not exposed by agy; checked against reported per-turn usage",
+        "not exposed by agy; checked against reported per-response usage",
       systemPrompt: AGY_SYSTEM_PROMPT,
       hostManagedAuthentication: true,
     }) + "\n",
@@ -149,6 +184,9 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
   const responseSteps = new Map<number, string>();
   let lastCompleted: string | undefined;
   let nativeResponseSha256 = "";
+  let nativeRecoveredError: string | null = null;
+  let maxNativeResponseTokens = 0;
+  const nativeMetrics: unknown[] = [];
   let pending:
     | {
         resolve: (text: string) => void;
@@ -191,6 +229,18 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
         const text =
           (responseSteps.get(step.step_index) ?? "") + (step.text_delta ?? "");
         responseSteps.set(step.step_index, text);
+        if (step.state === "DONE" && pending) {
+          nativeMetrics.push({
+            turn,
+            step: step.step_index,
+            outputTokens: step.usage?.output_tokens,
+          });
+          checkAgyOutputBudget(step.usage?.output_tokens, pending.max);
+          maxNativeResponseTokens = Math.max(
+            maxNativeResponseTokens,
+            step.usage!.output_tokens!,
+          );
+        }
         if (step.state === "DONE" && text.trim()) lastCompleted = text;
       }
       if (e.event === "init") {
@@ -201,21 +251,23 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
       if (!pending) throw new Error("Unsolicited native result");
       const result = e.result;
       const text = selectAgyReply(result, lastCompleted);
+      nativeRecoveredError = result?.status === "ERROR" ? result.error! : null;
+      nativeMetrics.push({
+        turn,
+        status: result?.status,
+        recoveredError: nativeRecoveredError,
+      });
       nativeResponseSha256 = hash(result!.response!);
       const used = result!.usage?.output_tokens;
       if (typeof used !== "number" || used < previousOutput)
         throw new Error("Missing or invalid native token accounting");
       const delta = used - previousOutput;
       previousOutput = used;
+      if (maxNativeResponseTokens === 0 && delta > 0)
+        throw new Error("No native response accounting");
       const p = pending;
       pending = undefined;
-      if (delta > p.max)
-        p.reject(
-          new ModelBudgetFailure(
-            "Declared output-token budget exceeded (native CLI has no server cap)",
-          ),
-        );
-      else p.resolve(text);
+      p.resolve(text);
     } catch (e) {
       fail(e as Error);
     }
@@ -248,6 +300,7 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
     ++turn;
     responseSteps.clear();
     lastCompleted = undefined;
+    maxNativeResponseTokens = 0;
     const abort = () => fail(new Error("agy deadline exceeded"));
     request.signal.addEventListener("abort", abort, { once: true });
     try {
@@ -266,6 +319,8 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
           cumulativeOutputTokens: previousOutput,
           nativeResponseSha256,
           nativeAssistantResponses: responseSteps.size,
+          maxNativeResponseTokens,
+          nativeRecoveredError,
         }) + "\n",
       );
       return text;
@@ -289,6 +344,10 @@ export async function agyChannel(options: { dir: string; model: AgyModel }) {
     }
     await writeFile(join(options.dir, "events.jsonl"), stdout);
     await writeFile(join(options.dir, "stderr.txt"), stderr);
+    await writeFile(
+      join(options.dir, "metrics.json"),
+      JSON.stringify(nativeMetrics, null, 2) + "\n",
+    );
   };
   return { channel, close };
 }

@@ -11,7 +11,7 @@ import { isDeepStrictEqual } from "node:util";
 import {
   readAgyQuota,
   quotaGate,
-  quotaRemaining,
+  quotaDrop,
   type AgyQuota,
 } from "./spatial-benchmark/agy-quota";
 import { hash, json } from "./spatial-benchmark/part-reference";
@@ -32,9 +32,11 @@ export async function main(argv: string[]) {
   const out = resolve(flags.get("--out")!);
   await mkdir(out, { recursive: true });
   const completed: unknown[] = [],
-    quotas: unknown[] = [];
-  let stopReason: string | null = null,
-    largestDrop = 0;
+    quotas: unknown[] = [],
+    skipped: unknown[] = [];
+  const largestDrop = { flash: 0, argon: 0 };
+  const stoppedModels = new Map<string, string>();
+  let stopReason: string | null = null;
   const save = () =>
     writeFile(
       join(out, "schedule.json"),
@@ -45,6 +47,7 @@ export async function main(argv: string[]) {
           results: completed,
           quotas,
           largestDrop,
+          skipped,
           stopReason,
         },
         null,
@@ -59,7 +62,7 @@ export async function main(argv: string[]) {
     "dragon",
     "ewok",
   ]) {
-    for (const model of ["flash", "argon"]) {
+    for (const model of ["flash", "argon"] as const) {
       const caseId = task + "--reference-v2--1";
       const manifestPath = join(
         ROOT,
@@ -71,6 +74,11 @@ export async function main(argv: string[]) {
         model === "flash" && task === "pelican" && flags.has("--pilot")
           ? resolve(flags.get("--pilot")!)
           : join(out, `${model}-${task}`);
+      if (stoppedModels.has(model) && !existsSync(dir)) {
+        skipped.push({ model, task, reason: stoppedModels.get(model) });
+        await save();
+        continue;
+      }
       if (existsSync(dir)) {
         if (!existsSync(join(dir, "results.json")))
           throw new Error(`Incomplete existing output: ${dir}`);
@@ -90,13 +98,15 @@ export async function main(argv: string[]) {
           await save();
           return;
         }
-        const gate = quotaGate(quota, manifest.model.id, largestDrop);
+        const gate = quotaGate(quota, manifest.model.id, largestDrop[model]);
         quotas.push({ caseId, model, ...quota, gate });
         if (!gate.sufficient) {
-          stopReason = "Insufficient quota for next run plus reserve";
+          const reason = "Insufficient quota for next run plus reserve";
+          stoppedModels.set(model, reason);
+          skipped.push({ model, task, reason, gate });
           await save();
-          console.log(json({ event: "schedule-stopped", stopReason, gate }));
-          return;
+          console.log(json({ event: "model-quota-stop", model, gate }));
+          continue;
         }
         await save();
         const code = await new Promise<number | null>((done, fail) => {
@@ -150,10 +160,9 @@ export async function main(argv: string[]) {
         await save();
         return;
       }
-      largestDrop = Math.max(
-        largestDrop,
-        quotaRemaining(before, manifest.model.id) -
-          quotaRemaining(after, manifest.model.id),
+      largestDrop[model] = Math.max(
+        largestDrop[model],
+        quotaDrop(before, after, manifest.model.id),
       );
       completed.push({
         model,
@@ -188,8 +197,17 @@ export async function main(argv: string[]) {
       }
     }
   }
+  if (skipped.length)
+    stopReason =
+      "Quota reserve reached for one or more models; other eligible cases completed";
+  await save();
   console.log(
-    json({ event: "gallery-schedule-completed", completed: completed.length }),
+    json({
+      event: "gallery-schedule-ended",
+      completed: completed.length,
+      skipped: skipped.length,
+      stopReason,
+    }),
   );
 }
 if (

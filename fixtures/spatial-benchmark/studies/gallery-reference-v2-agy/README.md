@@ -22,7 +22,7 @@ or a controlled comparison across transports.
   because closed Windows stdin pipes were unreliable.
 - A Flash smoke test confirmed continuation memory. A requested sentinel-file
   read reported no file tool available and returned no sentinel content.
-  Native tools are disabled by the custom agent, with a deny-all hook and
+  The custom agent requests no native tools, with a deny-all hook and
   streamed tool-attempt rejection as additional guards. The initialization
   event still lists the CLI's general tool catalog.
 - The first real Flash pilot, on transport 1, accepted **Captain Barnaby the
@@ -41,6 +41,13 @@ or a controlled comparison across transports.
   selects the last completed assistant response from the stream. It still rejects every errored turn. Native
   retries and their usage remain visible in local evidence; no output is
   edited or manually repaired.
+- The transport-2 Argon pelican also failed with the empty-function diagnostic.
+  Its stream contains a 34,101-token provider response, above the declared
+  32,768-token budget, followed by an internal retry. The original outcome is
+  unchanged; transport 3 now rejects such a response as a model-budget failure
+  as soon as its usage arrives. For a response within budget, only the exact
+  known empty-function artifact and a complete declared-protocol JSON object
+  can be recovered. Other native errors and every tool attempt remain fatal.
 
 ## Quota policy
 
@@ -54,7 +61,8 @@ purchased and quota resets are not awaited.
 ## Outcomes and publication
 
 Generation and publication are in progress. Cloudflare MCP and local Wrangler
-were unauthenticated in this session. A separate GitHub Actions secret can
-provide the gallery token without exposing it in chat or generation sessions.
+were unauthenticated in this session. The owner added the separate GitHub
+Actions secret `CLOUDFLARE_GALLERY_API_TOKEN`; publishing will use that credential
+without exposing it in chat or generation sessions.
 The final run table, frozen evidence and publication receipt will replace this
 status when the batch ends.

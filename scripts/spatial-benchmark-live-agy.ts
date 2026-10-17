@@ -13,7 +13,7 @@ import {
 import {
   readAgyQuota,
   quotaGate,
-  quotaRemaining,
+  quotaDrop,
   type AgyQuota,
 } from "./spatial-benchmark/agy-quota";
 import { hash, json } from "./spatial-benchmark/part-reference";
@@ -66,7 +66,7 @@ export async function main(argv: string[]) {
         nativeTools:
           "deny-all PreToolUse hook; any attempted native tool fails case",
         serverOutputTokenCap:
-          "not exposed; reported usage checked after each turn",
+          "not exposed; reported usage checked for each native response",
       },
       null,
       2,
@@ -175,8 +175,7 @@ export async function main(argv: string[]) {
       const after = await readAgyQuota();
       largestDrop = Math.max(
         largestDrop,
-        quotaRemaining(previous, m.model.id) -
-          quotaRemaining(after, m.model.id),
+        quotaDrop(previous, after, m.model.id),
       );
       quotas.push({
         phase: "after",

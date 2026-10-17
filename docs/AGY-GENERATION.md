@@ -26,8 +26,8 @@ and repairs enter its conversation. No sources from other builds, images or
 render feedback are provided. The six filled initial prompts are unchanged
 from the earlier corrected-reference gallery cohort.
 
-The custom `brick-blind` main agent uses a neutral system prompt and empty
-tool/skill/plugin/MCP lists. A deny-all `PreToolUse` hook and streamed-event
+The custom `brick-blind` main agent uses a protocol-only system prompt and
+requests empty tool/skill/plugin/MCP lists. A deny-all `PreToolUse` hook and streamed-event
 checks provide additional protection: any native tool or subagent attempt
 invalidates the run. The CLI's initialization event still advertises its full
 tool catalog; that field alone is not evidence that a model used a tool. The
@@ -35,7 +35,7 @@ Flash transport probe was unable to access a file tool. Native host diagnostics
 are retained locally and excluded from the published archive.
 
 The CLI cannot configure a server output-token cap. The adapter checks the
-reported per-turn output usage after completion and rejects a reply exceeding
+reported output usage for each completed native model response and rejects a response exceeding
 the manifest's 32,768-token limit. This cannot prevent an over-budget provider
 call; it is an explicit difference from transports with a server cap. The CLI's
 own internal error handling and housekeeping calls are also outside the
@@ -47,12 +47,23 @@ the final completed assistant step from streaming events. `agy` may concatenate 
 internal retry responses in its final envelope; passing that concatenation
 directly to the benchmark would create a protocol error the model did not
 emit as one response. Every underlying event and the envelope hash remain in
-local evidence. An errored native result is always rejected, even if its text
-contains a valid JSON object. This transport behavior differs from a direct
+local evidence. Transport 2 rejected every errored native result, even if its text
+contained a valid JSON object. This transport behavior differs from a direct
 provider broker and does not establish a controlled model comparison. The
 `--json-schema` option was tested and rejected for production: it introduced
 internal retries and a native resource-tool attempt in a Flash probe, which
 the adapter rejected. Failed probes are retained locally.
+
+Transport 3 handles a reproduced CLI artifact: a complete JSON response can be
+followed by the exact `Function call is empty - no input to parse` parsing
+diagnostic. Only that full known diagnostic, with a completed JSON object on
+one of the declared protocol routes and no native tool attempt, can be
+recovered. The original error and response hashes remain in the run metadata;
+normal compiler, search, check and repair limits still apply. Other errors
+and partial/nonprotocol text are rejected. Token limits are checked on every
+native model response, including internal retries, before recovery. A response
+over 32,768 tokens is a model-budget failure; totals across several internal
+calls are recorded separately rather than mistaken for one response.
 
 ## Quota and stopping
 
@@ -60,11 +71,13 @@ the adapter rejected. Failed probes are retained locally.
 before and after generation. Flash is gated on Gemini weekly and five-hour
 limits; Argon is also gated on its separate weekly limit. Missing quota stops
 the schedule. The next-run estimate is the larger of five percentage points
-and 1.5 times the largest observed drop plus two points, with another five
+and 1.5 times that model's largest observed drop plus two points, with another five
 points reserved. Rounded percentages and unrelated account use mean this is
 an estimate, not a guarantee that the provider will finish the next request.
 The batch stops after three consecutive infrastructure failures. It does not
-purchase credits or wait for quota resets.
+purchase credits or wait for quota resets. A model with insufficient quota is
+skipped while eligible cases from the other model continue. Every shared and
+model-specific counter is compared separately when measuring consumption.
 
 An existing completed case can be reused only within the same schedule after
 its manifest, case ID and frozen file hashes are verified. An incomplete
