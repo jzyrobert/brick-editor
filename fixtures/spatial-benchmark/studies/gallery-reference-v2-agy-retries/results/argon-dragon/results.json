@@ -1,0 +1,55 @@
+{
+  "version": "agy-native-cli/8",
+  "planned": 1,
+  "completed": 1,
+  "results": [
+    {
+      "caseId": "dragon--reference-v2--1",
+      "referenceCoverage": [],
+      "state": "frozen",
+      "status": "model-failure",
+      "files": {
+        "submission.txt": "3b34a469886c8e904f15b6b17905c22c753ff0434eb5aedc872552181827ca3a",
+        "compilation.json": "d90ecd8bad669c5b055002613feb4600b607b4c774d8bdef901f9eea1974d3cd"
+      },
+      "used": {
+        "turns": 17,
+        "searchCalls": 10,
+        "infoCalls": 9,
+        "referenceBytes": 436937,
+        "checks": 3,
+        "repairs": 2,
+        "compileMs": 13999,
+        "searchReplies": 2
+      },
+      "failure": "Invalid final submission; repair budget exhausted",
+      "seconds": 2332,
+      "recovery": {
+        "from": "C:\\Users\\jzyro\\Documents\\brick-editor\\.local\\agy-gallery\\argon-dragon",
+        "originalStatus": "model-failure",
+        "originalFailure": "Run-wide infoCalls budget exhausted",
+        "originalSeconds": 1138,
+        "originalManifestSha256": "1e95cbb851e3676aed9a15b3be1ff3d99fde61c2e8d49e1ccda57d7e8a7a9f1b",
+        "assistanceLimits": {
+          "before": "manifest",
+          "after": "prompt"
+        },
+        "historicalReplayTurns": 12,
+        "outputBudget": {
+          "before": 128000,
+          "after": 128000
+        },
+        "remainingTotalMs": 2462000,
+        "thread": "3348f219-b0fa-4a8e-8a83-a3f54a9399c0",
+        "replayedResponses": 13,
+        "recoveredResponseSha256": "e22afdfb664785d166ed8e4000365ba17cd8eda95c4335fd21729bd9ea968a38",
+        "rawRecoveredResponseSha256": "e22afdfb664785d166ed8e4000365ba17cd8eda95c4335fd21729bd9ea968a38",
+        "envelopeNormalization": null,
+        "nativeStreamSha256": "465390c9ae03e143e1a55b0a07ac8e81fa1eea53add2fefa9c74c1e11110c5a4",
+        "maxPriorNativeResponseTokens": 55224,
+        "originalQuotaDrop": 13
+      }
+    }
+  ],
+  "experimentallyEvaluated": false
+}

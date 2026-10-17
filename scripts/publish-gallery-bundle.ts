@@ -162,7 +162,7 @@ export function verifyBundle(dir: string) {
       if (
         !(
           manifest.v === 3
-            ? /^fixtures\/spatial-benchmark\/studies\/gallery-reference-v2-agy\/publication\/inputs\/[a-z0-9-]+$/
+            ? /^fixtures\/spatial-benchmark\/studies\/gallery-reference-v2-agy(?:-retries)?\/publication\/inputs\/[a-z0-9-]+$/
             : /^docs\/samples\/lego-style-study\/[a-z0-9/-]+$/
         ).test(input.folder) ||
         input.images !== 0 ||

@@ -126,6 +126,14 @@ purchased and quota resets are not awaited.
 
 Targets remain advisory. Accepted means the compiler returned no errors; construction warnings remain visible and do not prove physical stability. Continued rows retain their own original conversations, prior assistance and cumulative active time. Earlier failures are preserved separately, including the original lower-cap and native-parser outcomes.
 
+The owner subsequently identified that the prompt did not disclose the separate
+eight-call inspection allowance which stopped Argon's dragon. That outcome is
+a runner-limit failure, despite its recorded `model-failure` status. The runner
+now offers the prompt's assistance contract; the owner-requested Argon
+continuation and fresh Flash Star Destroyer/Ewok retries are recorded in
+[the follow-up archive](../gallery-reference-v2-agy-retries/README.md). These
+original frozen outcomes and the first publication remain unchanged.
+
 Final observed quota at 2026-10-17T06:25:35.524Z: **97% Gemini weekly, 91% Gemini five-hour and 27% Argon weekly**. The next-run estimate uses each model's largest full-build quota drop, including original plus continuation phases, with a five-point reserve. Rounded counters are estimates; no credits were purchased.
 
 Published **9 new builds**, bringing the gallery to **133 entries**. All 124 earlier builds and the Fresh E default are unchanged. The [main-only publishing workflow](https://github.com/jzyrobert/brick-editor/actions/runs/39011770268) passed, including exact D1/index equality. Public verification fetched all 54 new assets and matched their byte counts and SHA-256 hashes. See [the publication receipt](publication-receipt.json). Final-only renders were inspected; no visual feedback or manual source repairs entered generation.
