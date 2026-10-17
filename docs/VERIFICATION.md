@@ -1,5 +1,18 @@
 # Verification — 27 September 2026
 
+## Corrected-limit Gemini follow-up — 17 October 2026
+
+Both Flash retries recompile to their frozen MPD hashes, and all six standard
+final views render and were inspected without generation feedback. The archive
+verifies 84 files across three records, including the initial local-only replay
+check. Filled prompts match their original inputs byte for byte. The additive
+bundle verifies 135 entries and 12 assets; SQLite replay reproduces its exact
+index from the 133-entry baseline, preserving earlier builds and the Fresh E
+default. All 54 focused transport/gallery/live-runner tests, type checking and
+full formatting checks pass. Publication is pending
+main validation and the protected workflow.
+[Run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy-retries/README.md).
+
 ## Prompt assistance limits — 17 October 2026
 
 Type checking, 53 focused transport/gallery/live-runner tests and 20 session

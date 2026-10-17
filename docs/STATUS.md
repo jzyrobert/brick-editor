@@ -1,5 +1,17 @@
 # Implementation status
 
+## Corrected-limit Gemini follow-up — 17 October 2026
+
+Both owner-requested fresh Flash retries passed: Star Destroyer (4,050 parts)
+and Ewok Classic Space (2,748 parts), with one warning each. Argon's dragon
+resumed its original conversation beyond the old inspection and turn caps, but
+its final source still failed schema validation after both repairs. All prior
+failures remain unchanged. Two accepted builds and six inspected final views
+are prepared for an additive 133-to-135 gallery publication, pending main
+validation and the protected Cloudflare workflow. Final generation quota was
+13% Argon weekly, 97% Gemini weekly and 97% Gemini five-hour.
+[Run record](../fixtures/spatial-benchmark/studies/gallery-reference-v2-agy-retries/README.md).
+
 ## Prompt assistance limits — 17 October 2026
 
 The Gemini gallery manifests opt into the prompt's assistance contract: ten
@@ -15,7 +27,7 @@ Star Destroyer and Ewok; those outcomes will be recorded separately. See
 ## Antigravity gallery generation — 17 October 2026
 
 The native agy schedule completed all twelve Gemini 3.8 Flash/high and Gemini 4
-Argon/high cases: nine accepted builds and three model failures, with no quota
+Argon/high cases: nine accepted builds and three recorded failures, with no quota
 skips. Windows compilation retains Linux namespace isolation through WSL.
 Completed native replies lost behind known CLI errors can be replayed unchanged
 in their own conversations with prior assistance, time and quota accounted for;

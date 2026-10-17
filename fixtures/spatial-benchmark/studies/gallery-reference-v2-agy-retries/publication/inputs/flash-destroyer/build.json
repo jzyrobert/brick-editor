@@ -1,0 +1,7323 @@
+{
+  "buildScript": 1,
+  "title": "Imperial Star Destroyer - Devastator",
+  "description": "UCS-scale Imperial-class Star Destroyer with terraced command superstructure, dual deflector shield globes, tractor beam mast, heavy turbolaser barbettes, lateral brim trench greebles, ventral hangar bay capturing the Tantive IV, triple primary ion engine cluster, and architectural display stand.",
+  "palette": {
+    "hull": "light bluish grey",
+    "trim": "dark bluish grey",
+    "stand": "black",
+    "ion": "trans light blue",
+    "red": "dark red",
+    "glow": "trans orange",
+    "sensor": "trans red"
+  },
+  "components": {
+    "TrenchGreeble": {
+      "size": [
+        1,
+        2
+      ],
+      "ops": [
+        {
+          "op": "place",
+          "part": "3023b",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "2877",
+          "at": [
+            0,
+            1,
+            0
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "3023b",
+          "at": [
+            0,
+            4,
+            0
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            0,
+            5,
+            0
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            0,
+            5,
+            1
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            0,
+            6,
+            1
+          ],
+          "colour": "trim"
+        }
+      ]
+    },
+    "HullArmorPlate": {
+      "size": [
+        2,
+        2
+      ],
+      "ops": [
+        {
+          "op": "place",
+          "part": "3022",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            0,
+            1,
+            0
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            1,
+            1,
+            0
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "3023b",
+          "at": [
+            0,
+            1,
+            1
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            0,
+            2,
+            0
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            1,
+            2,
+            0
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            0,
+            2,
+            1
+          ],
+          "colour": "trim"
+        }
+      ]
+    },
+    "SuperstructureGreeble": {
+      "size": [
+        2,
+        2
+      ],
+      "ops": [
+        {
+          "op": "place",
+          "part": "3022",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "2877",
+          "at": [
+            0,
+            1,
+            0
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "3069b",
+          "at": [
+            0,
+            4,
+            0
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            0,
+            1,
+            1
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            1,
+            1
+          ],
+          "colour": "ion"
+        }
+      ]
+    },
+    "TurbolaserBarbette": {
+      "size": [
+        2,
+        2
+      ],
+      "ops": [
+        {
+          "op": "place",
+          "part": "4032b",
+          "at": [
+            0,
+            0,
+            0
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3023b",
+          "at": [
+            0,
+            1,
+            0
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "3794b",
+          "at": [
+            0,
+            1,
+            1
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "4599b",
+          "at": [
+            0,
+            2,
+            0
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "4599b",
+          "at": [
+            1,
+            2,
+            0
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            0,
+            2,
+            1
+          ],
+          "colour": "hull"
+        }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "name": "DisplayStand",
+      "ops": [
+        {
+          "op": "box",
+          "at": [
+            -16,
+            0,
+            -8
+          ],
+          "size": [
+            32,
+            2,
+            26
+          ],
+          "colour": "stand",
+          "top": "tile"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -15,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -14,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -13,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -12,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -11,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -10,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -9,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -8,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -7,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -6,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -5,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -4,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -3,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -2,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -1,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            0,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            1,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            2,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            3,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            4,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            5,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            6,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            7,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            8,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            9,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            10,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            11,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            12,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            13,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            14,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            -8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -15,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -14,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -13,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -12,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -11,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -10,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -9,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -8,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -7,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -6,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -5,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -4,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -3,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -2,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -1,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            0,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            1,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            2,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            3,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            4,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            5,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            6,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            7,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            8,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            9,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            10,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            11,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            12,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            13,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            14,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            17
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            -7
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            -6
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            -5
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            -4
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            -3
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            -2
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            -1
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            0
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            1
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            2
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            3
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            4
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            5
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            6
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            7
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            9
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            10
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            11
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            12
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            13
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            14
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            15
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -16,
+            2,
+            16
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            -7
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            -6
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            -5
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            -4
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            -3
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            -2
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            -1
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            0
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            1
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            2
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            3
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            4
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            5
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            6
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            7
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            8
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            9
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            10
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            11
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            12
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            13
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            14
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            15
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            15,
+            2,
+            16
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "box",
+          "at": [
+            -2,
+            2,
+            -3
+          ],
+          "size": [
+            4,
+            12,
+            3
+          ],
+          "colour": "stand",
+          "texture": "grille"
+        },
+        {
+          "op": "box",
+          "at": [
+            -2,
+            2,
+            13
+          ],
+          "size": [
+            4,
+            12,
+            3
+          ],
+          "colour": "stand",
+          "texture": "grille"
+        },
+        {
+          "op": "box",
+          "at": [
+            -6,
+            2,
+            -7
+          ],
+          "size": [
+            12,
+            2,
+            2
+          ],
+          "colour": "trim",
+          "top": "tile"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -5,
+            4,
+            -7
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            4,
+            4,
+            -7
+          ],
+          "colour": "ion"
+        }
+      ]
+    },
+    {
+      "name": "VentralHull",
+      "ops": [
+        {
+          "op": "box",
+          "at": [
+            -2,
+            14,
+            -32
+          ],
+          "size": [
+            4,
+            4,
+            62
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "3960",
+          "at": [
+            -2,
+            12,
+            -10
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "4032b",
+          "at": [
+            -1,
+            11,
+            -9
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "box",
+          "at": [
+            -3,
+            15,
+            2
+          ],
+          "size": [
+            6,
+            3,
+            12
+          ],
+          "colour": "trim",
+          "texture": "grille"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            3
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            4
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            5
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            6
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            7
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            8
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            9
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            10
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            11
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -2,
+            14,
+            12
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            3
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            4
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            5
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            6
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            7
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            8
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            9
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            10
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            11
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            1,
+            14,
+            12
+          ],
+          "colour": "sensor"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            0,
+            11,
+            4
+          ],
+          "colour": "white"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            0,
+            12,
+            4
+          ],
+          "colour": "red"
+        },
+        {
+          "op": "place",
+          "part": "3024",
+          "at": [
+            0,
+            11,
+            5
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "3023b",
+          "at": [
+            -1,
+            11,
+            6
+          ],
+          "colour": "white"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -1,
+            12,
+            6
+          ],
+          "colour": "red"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            0,
+            12,
+            6
+          ],
+          "colour": "red"
+        },
+        {
+          "op": "place",
+          "part": "3023b",
+          "at": [
+            -1,
+            11,
+            7
+          ],
+          "colour": "white"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -1,
+            11,
+            8
+          ],
+          "colour": "glow"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            0,
+            11,
+            8
+          ],
+          "colour": "glow"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            0,
+            13,
+            6
+          ],
+          "colour": "trans-clear"
+        }
+      ]
+    },
+    {
+      "name": "MainHull",
+      "ops": [
+        {
+          "op": "box",
+          "at": [
+            -1,
+            14,
+            -32
+          ],
+          "size": [
+            3,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            0,
+            18,
+            -32
+          ],
+          "size": [
+            1,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -1,
+            18,
+            -32
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            1,
+            18,
+            -32
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            0,
+            22,
+            -32
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -2,
+            14,
+            -30
+          ],
+          "size": [
+            5,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -1,
+            18,
+            -30
+          ],
+          "size": [
+            3,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -2,
+            18,
+            -30
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            2,
+            18,
+            -30
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -1,
+            22,
+            -30
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            1,
+            22,
+            -30
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "box",
+          "at": [
+            -2,
+            14,
+            -28
+          ],
+          "size": [
+            5,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -1,
+            18,
+            -28
+          ],
+          "size": [
+            3,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -2,
+            18,
+            -28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            2,
+            18,
+            -28
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -1,
+            22,
+            -28
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            1,
+            22,
+            -28
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "box",
+          "at": [
+            -3,
+            14,
+            -26
+          ],
+          "size": [
+            7,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -2,
+            18,
+            -26
+          ],
+          "size": [
+            5,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -3,
+            18,
+            -26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            3,
+            18,
+            -26
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -2,
+            22,
+            -26
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            2,
+            22,
+            -26
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            22,
+            -26
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -3,
+            14,
+            -24
+          ],
+          "size": [
+            7,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -2,
+            18,
+            -24
+          ],
+          "size": [
+            5,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -3,
+            18,
+            -24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            3,
+            18,
+            -24
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -2,
+            22,
+            -24
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            2,
+            22,
+            -24
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            22,
+            -24
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -4,
+            14,
+            -22
+          ],
+          "size": [
+            9,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -3,
+            18,
+            -22
+          ],
+          "size": [
+            7,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -4,
+            18,
+            -22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            4,
+            18,
+            -22
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -3,
+            22,
+            -22
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            3,
+            22,
+            -22
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            22,
+            -22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            0,
+            22,
+            -22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            12,
+            -22
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -5,
+            14,
+            -20
+          ],
+          "size": [
+            11,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -4,
+            18,
+            -20
+          ],
+          "size": [
+            9,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -5,
+            18,
+            -20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            5,
+            18,
+            -20
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -4,
+            22,
+            -20
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            4,
+            22,
+            -20
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            22,
+            -20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            22,
+            -20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            22,
+            -20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            12,
+            -20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            0,
+            12,
+            -20
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -5,
+            14,
+            -18
+          ],
+          "size": [
+            11,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -4,
+            18,
+            -18
+          ],
+          "size": [
+            9,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -5,
+            18,
+            -18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            5,
+            18,
+            -18
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -4,
+            22,
+            -18
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            4,
+            22,
+            -18
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            22,
+            -18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            22,
+            -18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            22,
+            -18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            12,
+            -18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            0,
+            12,
+            -18
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -6,
+            14,
+            -16
+          ],
+          "size": [
+            13,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -5,
+            18,
+            -16
+          ],
+          "size": [
+            11,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -6,
+            18,
+            -16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            6,
+            18,
+            -16
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -5,
+            22,
+            -16
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            5,
+            22,
+            -16
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -4,
+            22,
+            -16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            22,
+            -16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            0,
+            22,
+            -16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            2,
+            22,
+            -16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -4,
+            12,
+            -16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            12,
+            -16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            2,
+            12,
+            -16
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -7,
+            14,
+            -14
+          ],
+          "size": [
+            15,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -6,
+            18,
+            -14
+          ],
+          "size": [
+            13,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -7,
+            18,
+            -14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            7,
+            18,
+            -14
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -6,
+            22,
+            -14
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            6,
+            22,
+            -14
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            22,
+            -14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            22,
+            -14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            22,
+            -14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            22,
+            -14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            3,
+            22,
+            -14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            -14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            12,
+            -14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            12,
+            -14
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -7,
+            14,
+            -12
+          ],
+          "size": [
+            15,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -6,
+            18,
+            -12
+          ],
+          "size": [
+            13,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -7,
+            18,
+            -12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            7,
+            18,
+            -12
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -6,
+            22,
+            -12
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            6,
+            22,
+            -12
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            22,
+            -12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            22,
+            -12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            22,
+            -12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            22,
+            -12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            3,
+            22,
+            -12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            -12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            12,
+            -12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            12,
+            -12
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -8,
+            14,
+            -10
+          ],
+          "size": [
+            17,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -7,
+            18,
+            -10
+          ],
+          "size": [
+            15,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -8,
+            18,
+            -10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            8,
+            18,
+            -10
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -7,
+            22,
+            -10
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            7,
+            22,
+            -10
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            22,
+            -10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -4,
+            22,
+            -10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            22,
+            -10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            0,
+            22,
+            -10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            2,
+            22,
+            -10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            22,
+            -10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            12,
+            -10
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -8,
+            14,
+            -8
+          ],
+          "size": [
+            17,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -7,
+            18,
+            -8
+          ],
+          "size": [
+            15,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -8,
+            18,
+            -8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            8,
+            18,
+            -8
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -7,
+            22,
+            -8
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            7,
+            22,
+            -8
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            22,
+            -8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -4,
+            22,
+            -8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            22,
+            -8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            0,
+            22,
+            -8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            2,
+            22,
+            -8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            22,
+            -8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            12,
+            -8
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -9,
+            14,
+            -6
+          ],
+          "size": [
+            19,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -8,
+            18,
+            -6
+          ],
+          "size": [
+            17,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -9,
+            18,
+            -6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            9,
+            18,
+            -6
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -8,
+            22,
+            -6
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            8,
+            22,
+            -6
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -7,
+            22,
+            -6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            22,
+            -6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            22,
+            -6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            22,
+            -6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            22,
+            -6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            3,
+            22,
+            -6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            5,
+            22,
+            -6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -7,
+            12,
+            -6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            5,
+            12,
+            -6
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -10,
+            14,
+            -4
+          ],
+          "size": [
+            21,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -9,
+            18,
+            -4
+          ],
+          "size": [
+            19,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -10,
+            18,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            10,
+            18,
+            -4
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -9,
+            22,
+            -4
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            9,
+            22,
+            -4
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            22,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            22,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -4,
+            22,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            22,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            0,
+            22,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            2,
+            22,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            22,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            6,
+            22,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            12,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            -4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            12,
+            -4
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -10,
+            14,
+            -2
+          ],
+          "size": [
+            21,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -9,
+            18,
+            -2
+          ],
+          "size": [
+            19,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -10,
+            18,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            10,
+            18,
+            -2
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -9,
+            22,
+            -2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            9,
+            22,
+            -2
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            22,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            22,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -4,
+            22,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            22,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            0,
+            22,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            2,
+            22,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            22,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            6,
+            22,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            12,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            -2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            12,
+            -2
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -11,
+            14,
+            0
+          ],
+          "size": [
+            23,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -10,
+            18,
+            0
+          ],
+          "size": [
+            21,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -11,
+            18,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            11,
+            18,
+            0
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -10,
+            22,
+            0
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            10,
+            22,
+            0
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -9,
+            22,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -7,
+            22,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            22,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            22,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            22,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            22,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            3,
+            22,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            5,
+            22,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            7,
+            22,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -9,
+            12,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            12,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            3,
+            12,
+            0
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            6,
+            12,
+            0
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -11,
+            14,
+            2
+          ],
+          "size": [
+            23,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -10,
+            18,
+            2
+          ],
+          "size": [
+            21,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -11,
+            18,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            11,
+            18,
+            2
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -10,
+            22,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            10,
+            22,
+            2
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -9,
+            22,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -7,
+            22,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            22,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            22,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            22,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            22,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            3,
+            22,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            5,
+            22,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            7,
+            22,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -9,
+            12,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            12,
+            2
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            6,
+            12,
+            2
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -12,
+            14,
+            4
+          ],
+          "size": [
+            25,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -11,
+            18,
+            4
+          ],
+          "size": [
+            23,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -12,
+            18,
+            4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            12,
+            18,
+            4
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -11,
+            22,
+            4
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            11,
+            22,
+            4
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -10,
+            22,
+            4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            8,
+            22,
+            4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -10,
+            12,
+            4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -7,
+            12,
+            4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            5,
+            12,
+            4
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            8,
+            12,
+            4
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -13,
+            14,
+            6
+          ],
+          "size": [
+            27,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -12,
+            18,
+            6
+          ],
+          "size": [
+            25,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -13,
+            18,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            13,
+            18,
+            6
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -12,
+            22,
+            6
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            12,
+            22,
+            6
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -11,
+            22,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -9,
+            22,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            8,
+            22,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            10,
+            22,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -11,
+            12,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            12,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            12,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            7,
+            12,
+            6
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -13,
+            14,
+            8
+          ],
+          "size": [
+            27,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -12,
+            18,
+            8
+          ],
+          "size": [
+            25,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -13,
+            18,
+            8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            13,
+            18,
+            8
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -12,
+            22,
+            8
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            12,
+            22,
+            8
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -11,
+            22,
+            8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            9,
+            22,
+            8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -11,
+            12,
+            8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            12,
+            8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            12,
+            8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            7,
+            12,
+            8
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -14,
+            14,
+            10
+          ],
+          "size": [
+            29,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -13,
+            18,
+            10
+          ],
+          "size": [
+            27,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -14,
+            18,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            14,
+            18,
+            10
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -13,
+            22,
+            10
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            13,
+            22,
+            10
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -12,
+            22,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -10,
+            22,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            9,
+            22,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            11,
+            22,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -12,
+            12,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -9,
+            12,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            12,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            6,
+            12,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            9,
+            12,
+            10
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -14,
+            14,
+            12
+          ],
+          "size": [
+            29,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -13,
+            18,
+            12
+          ],
+          "size": [
+            27,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -14,
+            18,
+            12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            14,
+            18,
+            12
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -13,
+            22,
+            12
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            13,
+            22,
+            12
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -12,
+            22,
+            12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -10,
+            22,
+            12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            9,
+            22,
+            12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            11,
+            22,
+            12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -12,
+            12,
+            12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -9,
+            12,
+            12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            12,
+            12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            6,
+            12,
+            12
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            9,
+            12,
+            12
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -15,
+            14,
+            14
+          ],
+          "size": [
+            31,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -14,
+            18,
+            14
+          ],
+          "size": [
+            29,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -15,
+            18,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            15,
+            18,
+            14
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -14,
+            22,
+            14
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            14,
+            22,
+            14
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -13,
+            22,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -11,
+            22,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            10,
+            22,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            12,
+            22,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -13,
+            12,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -10,
+            12,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -7,
+            12,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            5,
+            12,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            8,
+            12,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            11,
+            12,
+            14
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -16,
+            14,
+            16
+          ],
+          "size": [
+            33,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -15,
+            18,
+            16
+          ],
+          "size": [
+            31,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -16,
+            18,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            16,
+            18,
+            16
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -15,
+            22,
+            16
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            15,
+            22,
+            16
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -14,
+            22,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -12,
+            22,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            10,
+            22,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            12,
+            22,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -14,
+            12,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -11,
+            12,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            12,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            12,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            7,
+            12,
+            16
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            10,
+            12,
+            16
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -16,
+            14,
+            18
+          ],
+          "size": [
+            33,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -15,
+            18,
+            18
+          ],
+          "size": [
+            31,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -16,
+            18,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            16,
+            18,
+            18
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -15,
+            22,
+            18
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            15,
+            22,
+            18
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -14,
+            22,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -12,
+            22,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            11,
+            22,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            13,
+            22,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -14,
+            12,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -11,
+            12,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            12,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            12,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            12,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            12,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            7,
+            12,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            10,
+            12,
+            18
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -17,
+            14,
+            20
+          ],
+          "size": [
+            35,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -16,
+            18,
+            20
+          ],
+          "size": [
+            33,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -17,
+            18,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            17,
+            18,
+            20
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -16,
+            22,
+            20
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            16,
+            22,
+            20
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -15,
+            22,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -13,
+            22,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            11,
+            22,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            13,
+            22,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -15,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -12,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -9,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -6,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -3,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            0,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            3,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            6,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            9,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            12,
+            12,
+            20
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -18,
+            14,
+            22
+          ],
+          "size": [
+            37,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -17,
+            18,
+            22
+          ],
+          "size": [
+            35,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -18,
+            18,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            18,
+            18,
+            22
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -17,
+            22,
+            22
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            17,
+            22,
+            22
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -16,
+            22,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -14,
+            22,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -12,
+            22,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            11,
+            22,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            13,
+            22,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            15,
+            22,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -16,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -13,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -10,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -7,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -4,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            2,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            5,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            8,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            11,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            14,
+            12,
+            22
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -18,
+            14,
+            24
+          ],
+          "size": [
+            37,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -17,
+            18,
+            24
+          ],
+          "size": [
+            35,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -18,
+            18,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            18,
+            18,
+            24
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -17,
+            22,
+            24
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            17,
+            22,
+            24
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -16,
+            22,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -14,
+            22,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            12,
+            22,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            14,
+            22,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -16,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -13,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -10,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -7,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -4,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -1,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            2,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            5,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            8,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            11,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            14,
+            12,
+            24
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -19,
+            14,
+            26
+          ],
+          "size": [
+            39,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -18,
+            18,
+            26
+          ],
+          "size": [
+            37,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -19,
+            18,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            19,
+            18,
+            26
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -18,
+            22,
+            26
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            18,
+            22,
+            26
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -17,
+            22,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -15,
+            22,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -13,
+            22,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            12,
+            22,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            14,
+            22,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            16,
+            22,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -17,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -14,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -11,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            7,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            10,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            13,
+            12,
+            26
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -19,
+            14,
+            28
+          ],
+          "size": [
+            39,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "box",
+          "at": [
+            -18,
+            18,
+            28
+          ],
+          "size": [
+            37,
+            4,
+            2
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            -19,
+            18,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TrenchGreeble",
+          "at": [
+            19,
+            18,
+            28
+          ]
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            -18,
+            22,
+            28
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "54200",
+          "at": [
+            18,
+            22,
+            28
+          ],
+          "colour": "hull",
+          "turn": 180
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -17,
+            22,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -15,
+            22,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -13,
+            22,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            12,
+            22,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            14,
+            22,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            16,
+            22,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -17,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -14,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -11,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -8,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -5,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            -2,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            1,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            4,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            7,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            10,
+            12,
+            28
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "HullArmorPlate",
+          "at": [
+            13,
+            12,
+            28
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Superstructure",
+      "ops": [
+        {
+          "op": "box",
+          "at": [
+            -6,
+            22,
+            4
+          ],
+          "size": [
+            13,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            -6,
+            26,
+            4
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            6,
+            26,
+            4
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "box",
+          "at": [
+            -6,
+            22,
+            6
+          ],
+          "size": [
+            13,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            -6,
+            26,
+            6
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            6,
+            26,
+            6
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "box",
+          "at": [
+            -7,
+            22,
+            8
+          ],
+          "size": [
+            15,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "box",
+          "at": [
+            -7,
+            22,
+            10
+          ],
+          "size": [
+            15,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            -7,
+            26,
+            10
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            7,
+            26,
+            10
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "box",
+          "at": [
+            -7,
+            22,
+            12
+          ],
+          "size": [
+            15,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            -7,
+            26,
+            12
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            7,
+            26,
+            12
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "box",
+          "at": [
+            -8,
+            22,
+            14
+          ],
+          "size": [
+            17,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "box",
+          "at": [
+            -8,
+            22,
+            16
+          ],
+          "size": [
+            17,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            -8,
+            26,
+            16
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            8,
+            26,
+            16
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "box",
+          "at": [
+            -9,
+            22,
+            18
+          ],
+          "size": [
+            19,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            -9,
+            26,
+            18
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            9,
+            26,
+            18
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "box",
+          "at": [
+            -9,
+            22,
+            20
+          ],
+          "size": [
+            19,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "box",
+          "at": [
+            -9,
+            22,
+            22
+          ],
+          "size": [
+            19,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            -9,
+            26,
+            22
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            9,
+            26,
+            22
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "box",
+          "at": [
+            -10,
+            22,
+            24
+          ],
+          "size": [
+            21,
+            4,
+            2
+          ],
+          "colour": "hull",
+          "texture": "masonry"
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            -10,
+            26,
+            24
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "place",
+          "part": "2412b",
+          "at": [
+            10,
+            26,
+            24
+          ],
+          "colour": "trim",
+          "turn": 90
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            -5,
+            26,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            3,
+            26,
+            6
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            -5,
+            26,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            3,
+            26,
+            10
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            -5,
+            26,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            3,
+            26,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            -5,
+            26,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            3,
+            26,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            -5,
+            26,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            3,
+            26,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TurbolaserBarbette",
+          "at": [
+            -9,
+            26,
+            8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TurbolaserBarbette",
+          "at": [
+            8,
+            26,
+            8
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TurbolaserBarbette",
+          "at": [
+            -10,
+            26,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TurbolaserBarbette",
+          "at": [
+            9,
+            26,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TurbolaserBarbette",
+          "at": [
+            -11,
+            26,
+            20
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "TurbolaserBarbette",
+          "at": [
+            10,
+            26,
+            20
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -5,
+            26,
+            12
+          ],
+          "size": [
+            11,
+            4,
+            14
+          ],
+          "colour": "hull",
+          "texture": "grille",
+          "top": "tile"
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            -3,
+            30,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            1,
+            30,
+            14
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            -3,
+            30,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            1,
+            30,
+            18
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            -3,
+            30,
+            22
+          ]
+        },
+        {
+          "op": "instance",
+          "component": "SuperstructureGreeble",
+          "at": [
+            1,
+            30,
+            22
+          ]
+        },
+        {
+          "op": "box",
+          "at": [
+            -3,
+            30,
+            18
+          ],
+          "size": [
+            7,
+            3,
+            8
+          ],
+          "colour": "hull",
+          "top": "tile"
+        },
+        {
+          "op": "box",
+          "at": [
+            -1,
+            33,
+            22
+          ],
+          "size": [
+            3,
+            3,
+            3
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "box",
+          "at": [
+            -7,
+            36,
+            22
+          ],
+          "size": [
+            15,
+            3,
+            3
+          ],
+          "colour": "hull",
+          "top": "tile"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -6,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -5,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -4,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -3,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -2,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            -1,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            0,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            1,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            2,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            3,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            4,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            5,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3070b",
+          "at": [
+            6,
+            37,
+            21
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "4032b",
+          "at": [
+            -6,
+            39,
+            22
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3941",
+          "at": [
+            -6,
+            40,
+            22
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "4740",
+          "at": [
+            -6,
+            43,
+            22
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "4032b",
+          "at": [
+            4,
+            39,
+            22
+          ],
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "3941",
+          "at": [
+            4,
+            40,
+            22
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "4740",
+          "at": [
+            4,
+            43,
+            22
+          ],
+          "colour": "hull"
+        },
+        {
+          "op": "place",
+          "part": "3957a",
+          "at": [
+            0,
+            39,
+            22
+          ],
+          "colour": "trim"
+        }
+      ]
+    },
+    {
+      "name": "EngineSection",
+      "ops": [
+        {
+          "op": "box",
+          "at": [
+            -20,
+            14,
+            30
+          ],
+          "size": [
+            41,
+            12,
+            2
+          ],
+          "colour": "trim",
+          "texture": "grille",
+          "top": "tile"
+        },
+        {
+          "op": "cylinder",
+          "at": [
+            -10,
+            14,
+            32
+          ],
+          "diameter": 4,
+          "height": 6,
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "4740",
+          "at": [
+            -9,
+            20,
+            33
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "place",
+          "part": "4589",
+          "at": [
+            -9,
+            21,
+            33
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "cylinder",
+          "at": [
+            6,
+            14,
+            32
+          ],
+          "diameter": 4,
+          "height": 6,
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "4740",
+          "at": [
+            7,
+            20,
+            33
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "place",
+          "part": "4589",
+          "at": [
+            7,
+            21,
+            33
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "cylinder",
+          "at": [
+            -2,
+            19,
+            32
+          ],
+          "diameter": 4,
+          "height": 6,
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "4740",
+          "at": [
+            -1,
+            25,
+            33
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "place",
+          "part": "4589",
+          "at": [
+            -1,
+            26,
+            33
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "cylinder",
+          "at": [
+            -15,
+            14,
+            32
+          ],
+          "diameter": 2,
+          "height": 4,
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -15,
+            18,
+            32
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -14,
+            18,
+            32
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "cylinder",
+          "at": [
+            -4,
+            14,
+            32
+          ],
+          "diameter": 2,
+          "height": 4,
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -4,
+            18,
+            32
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            -3,
+            18,
+            32
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "cylinder",
+          "at": [
+            3,
+            14,
+            32
+          ],
+          "diameter": 2,
+          "height": 4,
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            3,
+            18,
+            32
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            4,
+            18,
+            32
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "cylinder",
+          "at": [
+            14,
+            14,
+            32
+          ],
+          "diameter": 2,
+          "height": 4,
+          "colour": "trim"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            14,
+            18,
+            32
+          ],
+          "colour": "ion"
+        },
+        {
+          "op": "place",
+          "part": "6141",
+          "at": [
+            15,
+            18,
+            32
+          ],
+          "colour": "ion"
+        }
+      ]
+    }
+  ]
+}

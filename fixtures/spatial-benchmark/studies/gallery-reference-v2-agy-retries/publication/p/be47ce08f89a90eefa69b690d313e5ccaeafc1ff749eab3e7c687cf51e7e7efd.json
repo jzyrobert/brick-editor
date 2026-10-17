@@ -1,0 +1,604 @@
+{
+  "gallery": 1,
+  "source": "gallery-reference-v2-agy-flash-destroyer",
+  "generation": "e-reference-v2-20261014",
+  "label": "flash-destroyer",
+  "prompt": {
+    "id": "imperial-star-destroyer-5000",
+    "brief": "imperial star destroyer",
+    "targetParts": 5000
+  },
+  "agent": {
+    "id": "agy/gemini-3-8-flash-high/high",
+    "runner": "agy",
+    "model": "gemini-3.8-flash-high",
+    "effort": "high"
+  },
+  "run": {
+    "model": "gemini-3.8-flash-high",
+    "runner": "agy",
+    "effort": "high",
+    "accepted": true,
+    "targetParts": 5000,
+    "parts": 4050,
+    "seconds": 465,
+    "attemptsUsed": 2,
+    "tokens": {
+      "output": 69217
+    },
+    "benchmark": {
+      "transport": "agy-native-cli/8",
+      "observationPolicy": "blind-mechanical",
+      "factsVersion": "spatial-part-facts/2",
+      "assistanceLimits": "prompt",
+      "used": {
+        "turns": 4,
+        "searchCalls": 0,
+        "infoCalls": 0,
+        "referenceBytes": 149045,
+        "checks": 2,
+        "repairs": 1,
+        "compileMs": 12593
+      },
+      "referenceCoverage": [
+        {
+          "part": "2412b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "2431.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "2445.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "26603.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "2877.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3002.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3003.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3004.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3005.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3020.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3021.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3022.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3023b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3024.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3027.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3028.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3029.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3030.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3031.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3032.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3034.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3035.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3036.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3068b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3069b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3070b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3460.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3623.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3666.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3710.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3794b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3795.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3832.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3941.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3957a.dat",
+          "available": [
+            "shape",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "3960.dat",
+          "available": [
+            "shape",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "4032b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "4162.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "4282.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "4477.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "4589.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "4599b.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "4740.dat",
+          "available": [
+            "shape",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "54200.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "60479.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "6141.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "63864.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "87079.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        },
+        {
+          "part": "92438.dat",
+          "available": [
+            "shape",
+            "connectors",
+            "capabilities"
+          ],
+          "returned": [],
+          "use": "not-inferred"
+        }
+      ],
+      "frozenFiles": {
+        "submission.txt": "fd57f874343a9ff527a8ae1708a4c4d2fe8769bbf376b06e5c14d049f416f3a7",
+        "compilation.json": "1df0caa997d55a809b34946b1b11f898aa954dde2eabbd551c2d063ab1803f8c",
+        "build.mpd": "5e42ff26f9f9e2a60e011494c59c8fb9d9358a3d1b41d5920e34a6b3d7a30702"
+      },
+      "serverOutputTokenCap": "not exposed; reported usage checked for each native response",
+      "hostOutputTokenGuard": 128000,
+      "originalOutputTokenGuard": 128000,
+      "continuedFromFrozenOutcome": false
+    }
+  },
+  "compile": {
+    "stats": {
+      "parts": 4050,
+      "designs": 49,
+      "lots": 90,
+      "massingCells": 15490,
+      "massingParts": 1471,
+      "placedParts": 2579,
+      "sections": 5,
+      "components": 4,
+      "opsRun": 718,
+      "scriptBytes": 46490,
+      "ldrawBytes": 117005,
+      "partsPerScriptKB": 89.2,
+      "compileMs": 89,
+      "checkMs": 382
+    },
+    "check": {
+      "overlaps": 0,
+      "offGrid": 0,
+      "groups": 178,
+      "covered": 4043,
+      "uncovered": 7,
+      "health": "warning: 4043 parts with verified connectors form 178 separately connected groups; 27 parts are not connected to anything. 7 parts have no verified connector data (custom, tilted or not yet verified); they may join these groups."
+    },
+    "target": {
+      "target": 5000,
+      "parts": 4050,
+      "difference": -950,
+      "percent": -19
+    },
+    "problems": [
+      {
+        "severity": "warning",
+        "code": "floating",
+        "message": "1221 part(s) in 177 group(s) are not connected to the main structure (largest group: 2822 parts); e.g. 2877 at [-19, 14, 30], 3004 at [-8, 14, 32], 3004 at [8, 14, 32], 3004 at [0, 19, 32], 6141 at [-15, 18, 32], 6141 at [-4, 18, 32]",
+        "ops": [
+          "sections[4].ops[0]",
+          "sections[4].ops[1]",
+          "sections[4].ops[4]",
+          "sections[4].ops[7]",
+          "sections[4].ops[10]",
+          "sections[4].ops[13]",
+          "sections[4].ops[16]",
+          "sections[4].ops[19]",
+          "sections[1].ops[0]",
+          "sections[3].ops[52]",
+          "sections[4].ops[11]",
+          "sections[4].ops[12]"
+        ]
+      }
+    ]
+  },
+  "render": {
+    "width": 1280,
+    "height": 960,
+    "look": "realistic",
+    "backdrop": "blank",
+    "background": "#ffffff",
+    "webpQuality": 0.86
+  }
+}

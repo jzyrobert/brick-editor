@@ -1,0 +1,121 @@
+{
+  "version": "spatial-benchmark/1",
+  "id": "gallery-reference-v2-gemini-4-argon",
+  "language": "build-script-v1/brick.build-v1",
+  "assistance": "macro-assisted-v1",
+  "factsVersion": "spatial-part-facts/2",
+  "model": {
+    "id": "gemini-4-argon-high",
+    "effort": "high",
+    "sampling": {
+      "temperature": null,
+      "topP": null,
+      "seed": null
+    }
+  },
+  "buildSeed": 1,
+  "orderSeed": 20261014,
+  "repetitions": 1,
+  "order": "interleaved",
+  "budgets": {
+    "turns": 16,
+    "searchCalls": 50,
+    "infoCalls": 8,
+    "referenceBytes": 500000,
+    "checks": 3,
+    "repairs": 2,
+    "compileMs": 120000,
+    "totalMs": 2462000,
+    "compilerBytes": 16000000,
+    "sourceBytes": 300000,
+    "maxOutputTokens": 128000
+  },
+  "infrastructureRetries": 0,
+  "evaluator": {
+    "version": "spatial-assessment/1",
+    "views": [
+      "iso",
+      "front",
+      "iso-back",
+      "back"
+    ],
+    "protocol": "docs/SPATIAL-BENCHMARK.md"
+  },
+  "tasks": [
+    {
+      "id": "pelican",
+      "split": "development",
+      "brief": "a pelican riding a bicycle",
+      "targetParts": 800,
+      "palette": [],
+      "inventory": null,
+      "aliases": null,
+      "sizePolicy": "advisory"
+    },
+    {
+      "id": "piplup",
+      "split": "development",
+      "brief": "piplup",
+      "targetParts": 1000,
+      "palette": [],
+      "inventory": null,
+      "aliases": null,
+      "sizePolicy": "advisory"
+    },
+    {
+      "id": "temple",
+      "split": "development",
+      "brief": "a japanese buddhist temple",
+      "targetParts": 2000,
+      "palette": [],
+      "inventory": null,
+      "aliases": null,
+      "sizePolicy": "advisory"
+    },
+    {
+      "id": "destroyer",
+      "split": "development",
+      "brief": "imperial star destroyer",
+      "targetParts": 5000,
+      "palette": [],
+      "inventory": null,
+      "aliases": null,
+      "sizePolicy": "advisory"
+    },
+    {
+      "id": "dragon",
+      "split": "development",
+      "brief": "a dragon",
+      "targetParts": 1000,
+      "palette": [],
+      "inventory": null,
+      "aliases": null,
+      "sizePolicy": "advisory"
+    },
+    {
+      "id": "ewok",
+      "split": "development",
+      "brief": "ewok inspired version of the classic 1970s lego space sets",
+      "targetParts": 3000,
+      "palette": [],
+      "inventory": null,
+      "aliases": null,
+      "sizePolicy": "advisory"
+    }
+  ],
+  "conditions": [
+    {
+      "id": "reference-v2",
+      "prompt": "build-agent.md",
+      "reply": "brick-build.md",
+      "policy": "blind-mechanical",
+      "facts": [
+        "shape",
+        "connectors",
+        "capabilities"
+      ],
+      "exposure": "on-demand"
+    }
+  ],
+  "assistanceLimits": "prompt"
+}

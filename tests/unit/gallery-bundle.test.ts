@@ -37,6 +37,22 @@ afterEach(() =>
 );
 
 describe("reviewed gallery publication", () => {
+  it("verifies the corrected-limit Gemini follow-up while preserving the published baseline", () => {
+    const { index, manifest } = verifyBundle(
+      resolve(
+        "fixtures/spatial-benchmark/studies/gallery-reference-v2-agy-retries/publication",
+      ),
+    );
+    expect(manifest.v).toBe(3);
+    expect(manifest.before).toHaveLength(133);
+    expect(index.builds).toHaveLength(135);
+    expect(manifest.files).toHaveLength(12);
+    expect(manifest.before.every((id) => manifest.after.includes(id))).toBe(
+      true,
+    );
+    expect(index.generations?.find((g) => g.default)?.id).toBe("e-fresh");
+    expect(manifest.inputs?.every((i) => i.images === 0)).toBe(true);
+  });
   it("verifies the complete six-prompt, three-model replacement before uploads", () => {
     const { index, manifest } = verifyBundle(bundle);
     expect(index.builds).toHaveLength(18);
