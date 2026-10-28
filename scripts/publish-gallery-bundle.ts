@@ -19,8 +19,9 @@ import {
 import { INDEX_QUERY } from "./gallery-publish";
 
 type Manifest = {
-  v?: 2 | 3;
+  v?: 2 | 3 | 4;
   beforeIndexSha256?: string;
+  previousDefaultGeneration?: string;
   defaultGeneration?: string;
   generations?: { id: string; builds: number }[];
   indexSha256?: string;
@@ -81,6 +82,33 @@ export function verifyAdditiveIndex(before: GalleryIndex, after: GalleryIndex) {
     throw new Error("Additive publication has no new builds");
 }
 
+/** A featured switch moves only the default flag, between two existing
+ * generations; every build, prompt, agent and description is unchanged. */
+export function verifyFeaturedSwitch(
+  before: GalleryIndex,
+  after: GalleryIndex,
+  from: string | undefined,
+  to: string | undefined,
+) {
+  const plain = (i: GalleryIndex) => ({
+    ...i,
+    generated: "",
+    generations: i.generations?.map(({ default: _, ...g }) => g),
+  });
+  if (!isDeepStrictEqual(plain(before), plain(after)))
+    throw new Error("Featured switch must not change gallery content");
+  const featured = (i: GalleryIndex) =>
+    i.generations?.filter((g) => g.default).map((g) => g.id);
+  if (
+    !from ||
+    !to ||
+    from === to ||
+    !isDeepStrictEqual(featured(before), [from]) ||
+    !isDeepStrictEqual(featured(after), [to])
+  )
+    throw new Error("Unexpected featured generation switch");
+}
+
 export function verifyBundle(dir: string) {
   const manifest: Manifest = JSON.parse(
     readFileSync(join(dir, "manifest.json"), "utf8"),
@@ -88,8 +116,8 @@ export function verifyBundle(dir: string) {
   const index = decodeGalleryIndex(
     JSON.parse(readFileSync(join(dir, "index.json"), "utf8")),
   );
-  const history = manifest.v === 2 || manifest.v === 3;
-  if (manifest.v === 3) {
+  const history = manifest.v === 2 || manifest.v === 3 || manifest.v === 4;
+  if (manifest.v === 3 || manifest.v === 4) {
     const bytes = readFileSync(join(dir, "before-index.json"));
     const before = decodeGalleryIndex(JSON.parse(bytes.toString()));
     if (
@@ -100,7 +128,17 @@ export function verifyBundle(dir: string) {
       )
     )
       throw new Error("Additive baseline checksum/roster changed");
-    verifyAdditiveIndex(before, index);
+    if (manifest.v === 3) verifyAdditiveIndex(before, index);
+    else {
+      verifyFeaturedSwitch(
+        before,
+        index,
+        manifest.previousDefaultGeneration,
+        manifest.defaultGeneration,
+      );
+      if (!same(manifest.before, manifest.after) || manifest.files.length)
+        throw new Error("Featured switch must not change builds or files");
+    }
   }
   if (history) {
     if (
@@ -156,9 +194,9 @@ export function verifyBundle(dir: string) {
       throw new Error(
         "Latest E must include three high-effort models for every brief",
       );
-    if (!manifest.inputs?.length)
+    if (manifest.v !== 4 && !manifest.inputs?.length)
       throw new Error("Missing text-only input provenance");
-    for (const input of manifest.inputs) {
+    for (const input of manifest.inputs ?? []) {
       if (
         !(
           manifest.v === 3
@@ -229,7 +267,11 @@ export function verifyBundle(dir: string) {
       throw new Error(`File checksum changed: ${f.key}`);
   }
   for (const b of index.builds) {
-    if (manifest.v === 3 && manifest.before.includes(b.id)) continue;
+    if (
+      (manifest.v === 3 || manifest.v === 4) &&
+      manifest.before.includes(b.id)
+    )
+      continue;
     const keys = [
       `b/${b.mpd}.mpd.gz`,
       `s/${b.script}.json`,
@@ -314,25 +356,39 @@ export async function main(args: string[]) {
     throw new Error(
       "Visible gallery changed since review; refusing to hide other builds",
     );
-  if (manifest.v === 3 && same(current, manifest.before)) {
-    const beforeRows: GalleryRow[] = JSON.parse(
-      command([
-        "d1",
-        "execute",
-        "brick-gallery",
-        "--remote",
-        "--json",
-        "--command",
-        INDEX_QUERY,
-      ]),
-    ).at(-1).results;
-    verifyLiveIndex(
-      galleryIndexFromRows(beforeRows, reviewed.files, new Date()),
-      decodeGalleryIndex(
-        JSON.parse(readFileSync(join(dir, "before-index.json"), "utf8")),
-      ),
+  const liveIndex = () =>
+    galleryIndexFromRows(
+      JSON.parse(
+        command([
+          "d1",
+          "execute",
+          "brick-gallery",
+          "--remote",
+          "--json",
+          "--command",
+          INDEX_QUERY,
+        ]),
+      ).at(-1).results as GalleryRow[],
+      reviewed.files,
+      new Date(),
     );
+  const baseline = () =>
+    decodeGalleryIndex(
+      JSON.parse(readFileSync(join(dir, "before-index.json"), "utf8")),
+    );
+  // A featured switch is idempotent: the live index must be either side.
+  let switched = false;
+  if (manifest.v === 4) {
+    const live = liveIndex();
+    try {
+      verifyLiveIndex(live, reviewed);
+      switched = true;
+    } catch {
+      verifyLiveIndex(live, baseline());
+    }
   }
+  if (manifest.v === 3 && same(current, manifest.before))
+    verifyLiveIndex(liveIndex(), baseline());
   const queue = [...manifest.files];
   await Promise.all(
     Array.from({ length: 4 }, async () => {
@@ -377,7 +433,7 @@ export async function main(args: string[]) {
     throw new Error(
       "Visible gallery changed during upload; refusing publication",
     );
-  if (same(latest, manifest.before))
+  if (same(latest, manifest.before) && !switched)
     command([
       "d1",
       "execute",
@@ -386,18 +442,7 @@ export async function main(args: string[]) {
       "--file",
       join(dir, "publish.sql"),
     ]);
-  const rows: GalleryRow[] = JSON.parse(
-    command([
-      "d1",
-      "execute",
-      "brick-gallery",
-      "--remote",
-      "--json",
-      "--command",
-      INDEX_QUERY,
-    ]),
-  ).at(-1).results;
-  const actual = galleryIndexFromRows(rows, reviewed.files, new Date());
+  const actual = liveIndex();
   verifyLiveIndex(actual, reviewed);
   const temporary = mkdtempSync(join(tmpdir(), "brick-gallery-index-"));
   try {
@@ -423,7 +468,7 @@ export async function main(args: string[]) {
   if (!same(after, manifest.after))
     throw new Error("Published roster does not match the reviewed bundle");
   console.log(
-    `Published ${manifest.after.length} reviewed builds${manifest.v === 2 ? "; latest E is featured and history remains browsable" : "; the earlier builds are retained as hidden history"}`,
+    `Published ${manifest.after.length} reviewed builds${manifest.v === 4 ? `; ${manifest.defaultGeneration} is now featured` : manifest.v === 2 ? "; latest E is featured and history remains browsable" : "; the earlier builds are retained as hidden history"}`,
   );
 }
 if (

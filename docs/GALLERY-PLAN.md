@@ -419,7 +419,8 @@ open; new reviewed cohorts keep prompt version separate from runner/model/effort
 
 The gallery's default **Latest** filter selects the featured cohort, while
 **All generations** or a named cohort exposes earlier text-only builds. The
-current reviewed default is fresh E with three high-effort models. Historical
+current reviewed default is E · corrected part references (featured 28 October
+2026 by a v4 bundle that moves only the flag); fresh E remains browsable. Historical
 image-input and visual-feedback runs are excluded from publication. Cards and
 detail notes name the cohort and starting conditions. See [GALLERY](GALLERY.md).
 

@@ -1,5 +1,11 @@
 # Gallery and interactive models
 
+**E · corrected part references** is the featured generation (28 October 2026):
+Gallery opens on its 52 builds from nine models across OpenAI, Claude and
+Gemini. The switch moves only the featured flag; all 135 entries, and the
+earlier **E · fresh builds** cohort, stay browsable under **Prompt generation**.
+[Featured-switch bundle](../fixtures/spatial-benchmark/studies/gallery-reference-v2-featured/README.md).
+
 The Gemini cohort contains eleven accepted builds from Gemini 3.8 Flash/high
 and Gemini 4 Argon/high in **E · corrected part references** (17 October 2026).
 The first publication added nine builds. After correcting runner assistance
@@ -23,12 +29,12 @@ available through **Tools** for the same open document.
 
 ## Browsing responses
 
-Gallery opens on the latest fresh **E** generation, with responses grouped by their prompt. Earlier text-only generations remain available through **Prompt generation**; **All generations** includes the full published history. Fresh E is selected explicitly, even when an F experiment ran later.
+Gallery opens on the featured generation, **E · corrected part references**, with responses grouped by their prompt. Earlier text-only generations remain available through **Prompt generation**; **All generations** includes the full published history. The featured generation is chosen explicitly, not by date.
 Search matches prompt names, full briefs, build titles, AI model names and
 reasoning efforts; it ignores case and accents and matches every entered word.
 Combine **Prompt** and **AI model** to compare one brief or follow one model
 across briefs. Combine **Prompt generation** with either filter to compare versions. **View prompt** narrows directly to a group's prompt. Result
-counts describe the matching collection, and **Clear filters** returns to the latest E builds. Empty results keep the controls and offer the same reset.
+counts describe the matching collection, and **Clear filters** returns to the featured builds. Empty results keep the controls and offer the same reset.
 
 **More filters** reveals reasoning effort and sorting (newest builds or prompt
 A–Z). The shared viewing angles are always visible on desktop. Phones keep one
@@ -59,8 +65,10 @@ Play or a model tool. They reset on a fresh page load.
 
 ### Prompt generations
 
-The default **E · fresh builds** collection contains six briefs with Sol 6.1,
-Astra 6 and Opus 5.5, all at high effort. Each build starts in its own empty
+The default **E · corrected part references** collection contains six briefs
+with OpenAI, Claude and Gemini models, using corrected v2 part references (see
+the top of this page). The earlier **E · fresh builds** collection contains six
+briefs with Sol 6.1, Astra 6 and Opus 5.5, all at high effort. Each build starts in its own empty
 directory/session with the same E input for that brief, no prior model source,
 and no images or visual feedback. The [fresh comparison](samples/lego-style-study/fresh-e/README.md)
 retains the exact inputs, sources and provenance. Sources are unchanged; the
@@ -68,17 +76,18 @@ published images use the shared Realistic settings.
 
 The generation filter separates prompt version from starting conditions:
 
-| Generation                 | Builds | Starting conditions                                |
-| -------------------------- | -----: | -------------------------------------------------- |
-| E · fresh builds (default) |     18 | Brief only; three models                           |
-| F · fresh builds           |      6 | Brief only; Sol                                    |
-| E · source revisions       |     18 | Original Sol creative build supplied; three models |
-| F · source revisions       |      6 | Original Sol creative build supplied; Sol          |
-| C · fresh builds           |      4 | Brief only; Sol; excludes image-assisted bird runs |
-| B · fresh builds           |      2 | Brief only; Sol                                    |
-| A · fresh builds           |      2 | Brief only; Sol                                    |
-| Original · creative prompt |     12 | Previous gallery collection; Sol and Opus          |
-| Earlier · original rules   |     12 | Earlier temple/effort and Ewok/target experiments  |
+| Generation                              | Builds | Starting conditions                                |
+| --------------------------------------- | -----: | -------------------------------------------------- |
+| E · corrected part references (default) |     52 | Brief only; v2 part references; nine models        |
+| E · fresh builds                        |     21 | Brief only; three models                           |
+| F · fresh builds                        |      6 | Brief only; Sol                                    |
+| E · source revisions                    |     18 | Original Sol creative build supplied; three models |
+| F · source revisions                    |      6 | Original Sol creative build supplied; Sol          |
+| C · fresh builds                        |      4 | Brief only; Sol; excludes image-assisted bird runs |
+| B · fresh builds                        |      2 | Brief only; Sol                                    |
+| A · fresh builds                        |      2 | Brief only; Sol                                    |
+| Original · creative prompt              |     12 | Previous gallery collection; Sol and Opus          |
+| Earlier · original rules                |     12 | Earlier temple/effort and Ewok/target experiments  |
 
 All **80** published entries are text-only runs. Historical image-input and
 visual-feedback studies remain in the repository but are excluded from the
@@ -89,8 +98,8 @@ per model/brief does not separate prompt effects from variation between runs.
 
 Cards and detail facts identify the generation. Generation notes explain the
 starting conditions. The selection survives detail and Play round trips for
-the current visit, and resets to latest E on a fresh page load. The header's
-Play shortcut chooses a featured E build when the workspace is empty.
+the current visit, and resets to the featured generation on a fresh page load. The header's
+Play shortcut chooses a featured build when the workspace is empty.
 
 The [reviewed publication bundle](samples/lego-style-study/generation-publication/README.md)
 contains the complete index, content-addressed files, exact input hashes,

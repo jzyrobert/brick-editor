@@ -12,8 +12,10 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import {
   verifyBundle,
+  verifyFeaturedSwitch,
   verifyLiveIndex,
 } from "../../scripts/publish-gallery-bundle";
+import { decodeGalleryIndex } from "../../src/catalog/gallery-index";
 
 const bundle = resolve("docs/samples/lego-style-study/gallery-publication");
 const temporary: string[] = [];
@@ -37,6 +39,35 @@ afterEach(() =>
 );
 
 describe("reviewed gallery publication", () => {
+  const featured = resolve(
+    "fixtures/spatial-benchmark/studies/gallery-reference-v2-featured/publication",
+  );
+  const read = (file: string) =>
+    decodeGalleryIndex(JSON.parse(readFileSync(join(featured, file), "utf8")));
+  it("features corrected part references without changing any build", () => {
+    const { index, manifest } = verifyBundle(featured);
+    expect(manifest.v).toBe(4);
+    expect(manifest.files).toHaveLength(0);
+    expect(manifest.after).toEqual(manifest.before);
+    expect(index.builds).toHaveLength(135);
+    expect(
+      index.generations?.filter((g) => g.default).map((g) => g.id),
+    ).toEqual(["e-reference-v2-20261014"]);
+  });
+  it("rejects a featured switch that also changes content", () => {
+    const before = read("before-index.json"),
+      after = read("index.json");
+    expect(() =>
+      verifyFeaturedSwitch(before, after, "e-fresh", "e-reference-v2-20261014"),
+    ).not.toThrow();
+    after.builds[0] = { ...after.builds[0], title: "Edited" };
+    expect(() =>
+      verifyFeaturedSwitch(before, after, "e-fresh", "e-reference-v2-20261014"),
+    ).toThrow("must not change gallery content");
+    expect(() =>
+      verifyFeaturedSwitch(before, read("index.json"), "e-fresh", "f-fresh"),
+    ).toThrow("Unexpected featured generation switch");
+  });
   it("verifies the corrected-limit Gemini follow-up while preserving the published baseline", () => {
     const { index, manifest } = verifyBundle(
       resolve(

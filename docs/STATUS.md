@@ -1,5 +1,15 @@
 # Implementation status
 
+## Corrected part references featured — 28 October 2026
+
+The gallery's featured generation moves from **E · fresh builds** to **E ·
+corrected part references** (52 builds). A reviewed v4 bundle
+([featured switch](../fixtures/spatial-benchmark/studies/gallery-reference-v2-featured/README.md))
+changes only the two `is_default` flags; `publish-gallery-bundle.ts` refuses a
+v4 bundle that alters any build, prompt, agent, description or file, and its
+publication is idempotent. Live publication runs from main through the gallery
+workflow (`feature-reference-v2`).
+
 ## Corrected-limit Gemini follow-up — 17 October 2026
 
 Both owner-requested fresh Flash retries passed: Star Destroyer (4,050 parts)
