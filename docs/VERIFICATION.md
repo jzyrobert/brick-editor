@@ -1,5 +1,16 @@
 # Verification — 27 September 2026
 
+## Corrected part references featured — 28 October 2026
+
+The live `index.json` on 28 October matched the corrected-limit follow-up's
+reviewed index (generated time aside), so it is the v4 bundle's baseline. The
+bundle verifies: same 135-build roster, no files, and the only index change is
+the featured flag. Two new unit tests cover it and reject a switch that also
+edits content or features the wrong generation; the gallery bundle, index and
+view suites (24 tests) and type checking pass. The publication SQL, run twice on
+an in-memory SQLite copy of the migrations, leaves exactly one featured
+generation.
+
 ## Corrected-limit Gemini follow-up — 17 October 2026
 
 Both Flash retries recompile to their frozen MPD hashes, and all six standard
